@@ -1,0 +1,4774 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>视频 Prompt 反推工作台</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #121315;
+      --panel: #1c1e21;
+      --panel-2: #24272b;
+      --panel-3: #2d3136;
+      --line: rgba(255, 255, 255, .1);
+      --line-strong: rgba(255, 255, 255, .18);
+      --text: #f4f6f8;
+      --muted: #a9b1ba;
+      --soft: #7e8791;
+      --cyan: #5bd8ff;
+      --green: #70d394;
+      --amber: #f2bd67;
+      --rose: #ef8192;
+      --ink: #0c1114;
+      --shadow: 0 20px 70px rgba(0, 0, 0, .32);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: auto;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: minmax(56px, auto) auto;
+      width: 100vw;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        var(--bg);
+      background-size: 36px 36px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: minmax(230px, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(18, 19, 21, .96);
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 1px solid rgba(91, 216, 255, .34);
+      border-radius: var(--radius);
+      background: rgba(91, 216, 255, .1);
+      color: var(--cyan);
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 780;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .subtitle {
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    .workspace.inspector-collapsed {
+      grid-template-columns: none;
+    }
+
+    .rail,
+    .main,
+    .lower,
+    .inspector {
+      display: contents;
+    }
+
+    .rail,
+    .inspector {
+      min-height: 0;
+      overflow: visible;
+      background: transparent;
+    }
+
+    .rail {
+      border-right: 0;
+    }
+
+    .inspector {
+      border-left: 0;
+    }
+
+    .inspector-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .inspector-toggle {
+      flex: 0 0 auto;
+    }
+
+    .workspace.inspector-collapsed .inspector {
+      overflow: visible;
+    }
+
+    .workspace.inspector-collapsed .inspector .section {
+      height: auto;
+      padding: 18px;
+    }
+
+    .workspace.inspector-collapsed .inspector .section-head {
+      justify-content: space-between;
+    }
+
+    .workspace.inspector-collapsed .inspector-title {
+      justify-content: flex-start;
+      width: auto;
+    }
+
+    .workspace.inspector-collapsed .inspector-title h2,
+    .workspace.inspector-collapsed #selectedShotLabel,
+    .workspace.inspector-collapsed .field-stack {
+      display: initial;
+    }
+
+    .workspace.inspector-collapsed .field-stack {
+      display: grid;
+    }
+
+    .main {
+      min-width: 0;
+      min-height: 0;
+      display: contents;
+      overflow: visible;
+      background: transparent;
+    }
+
+    .section {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(28, 30, 33, .92);
+      box-shadow: 0 12px 42px rgba(0, 0, 0, .16);
+    }
+
+    .section:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .rail > .section:nth-child(1) {
+      order: 0;
+    }
+
+    .rail > .section[data-step="source"] {
+      order: 10;
+    }
+
+    .rail > .section:nth-child(3) {
+      order: 12;
+    }
+
+    .rail > .section:nth-child(4) {
+      order: 32;
+    }
+
+    .inspector > .section {
+      order: 35;
+    }
+
+    .inspector-toggle {
+      display: none !important;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      color: #e8edf1;
+      font-size: 13px;
+      font-weight: 820;
+      line-height: 1.2;
+    }
+
+    .meta {
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .btn,
+    .icon-btn,
+    .tab,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .055);
+      color: #edf2f5;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+      user-select: none;
+    }
+
+    .btn:hover,
+    .icon-btn:hover,
+    .tab:hover,
+    .chip:hover {
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, .09);
+    }
+
+    .btn:active,
+    .icon-btn:active,
+    .tab:active,
+    .chip:active {
+      transform: translateY(1px);
+    }
+
+    .btn {
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .btn[disabled] {
+      cursor: not-allowed;
+      opacity: .55;
+      transform: none;
+    }
+
+    .btn.primary {
+      border-color: transparent;
+      background: var(--cyan);
+      color: var(--ink);
+    }
+
+    .btn.success {
+      border-color: transparent;
+      background: var(--green);
+      color: #07180e;
+    }
+
+    .btn.warn {
+      border-color: rgba(242, 189, 103, .44);
+      background: rgba(242, 189, 103, .12);
+      color: #ffe1ad;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+    }
+
+    .icon,
+    [data-lucide] {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      stroke-width: 2;
+    }
+
+    .dropzone {
+      position: relative;
+      display: grid;
+      min-height: 112px;
+      place-items: center;
+      padding: 14px;
+      border: 1px dashed rgba(255, 255, 255, .24);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .dropzone.is-dragging {
+      border-color: var(--cyan);
+      background: rgba(91, 216, 255, .075);
+    }
+
+    .dropzone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .drop-inner {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      max-width: 238px;
+      line-height: 1.45;
+    }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .upload-grid .dropzone {
+      min-height: 104px;
+    }
+
+    .source-summary {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-line;
+    }
+
+    .source-prompt {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .source-prompt textarea {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .confirm-actions .span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .reverse-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .reverse-actions .span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .drop-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: var(--radius);
+      background: rgba(91, 216, 255, .1);
+      color: var(--cyan);
+    }
+
+    .project-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-config {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .history-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    #runHistorySelect {
+      max-width: 200px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      color: #d7dde2;
+      font-size: 12px;
+      font-weight: 740;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(9, 10, 11, .46);
+      color: var(--text);
+      outline: none;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      height: 36px;
+      padding: 0 10px;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+      padding: 9px 10px;
+      line-height: 1.45;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(91, 216, 255, .56);
+      box-shadow: 0 0 0 3px rgba(91, 216, 255, .12);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 30px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .chip.is-active {
+      border-color: rgba(91, 216, 255, .58);
+      background: rgba(91, 216, 255, .14);
+      color: #dff8ff;
+    }
+
+    .viewer {
+      order: 20;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(360px, 54vh) auto;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(28, 30, 33, .92);
+      box-shadow: 0 12px 42px rgba(0, 0, 0, .16);
+    }
+
+    .viewer.is-portrait .video-shell {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      justify-self: center;
+      aspect-ratio: 9 / 16;
+    }
+
+    .viewer.is-square .video-shell {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      justify-self: center;
+      aspect-ratio: 1 / 1;
+    }
+
+    .viewer.is-landscape .video-shell {
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-shell {
+      grid-row: 1;
+      grid-column: 1;
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255, 255, 255, .04) 25%, transparent 25%),
+        #090a0b;
+      background-position: 0 0, 0 12px;
+      background-size: 24px 24px;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      object-fit: contain;
+      background: #090a0b;
+    }
+
+    .viewer.is-portrait video,
+    .viewer.is-portrait .image-preview {
+      min-height: 0;
+    }
+
+    .image-preview {
+      display: none;
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      object-fit: contain;
+      background: #090a0b;
+    }
+
+    .empty-video {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .empty-video strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #dce4e8;
+      font-size: 15px;
+    }
+
+    .viewer {
+      position: relative;
+    }
+
+    .viewer-step {
+      grid-row: 1;
+      grid-column: 1;
+      align-self: start;
+      justify-self: start;
+      z-index: 3;
+      margin: 12px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px 4px 4px;
+      border-radius: 999px;
+      background: rgba(10, 13, 15, .72);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: #dce3e8;
+      font-size: 11px;
+      font-weight: 760;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .video-info {
+      grid-row: 1;
+      grid-column: 1;
+      align-self: end;
+      justify-self: end;
+      z-index: 3;
+      margin: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+      max-width: min(60%, 280px);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-width: 0;
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 999px;
+      background: rgba(12, 14, 16, .76);
+      color: #dce3e8;
+      font-size: 11px;
+      font-weight: 760;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
+
+    .badge.is-name {
+      max-width: min(360px, 42vw);
+    }
+
+    .frame-strip {
+      grid-row: 2;
+      grid-column: 1;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      height: 92px;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
+    }
+
+    .frame {
+      position: relative;
+      flex: 0 0 auto;
+      height: 100%;
+      width: auto;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      cursor: pointer;
+    }
+
+    .frame.is-active {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    .frame.is-ref {
+      border-color: var(--green);
+    }
+
+    .frame-ref {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      min-height: 0;
+      height: 20px;
+      padding: 0 7px;
+      border-radius: 5px;
+      background: rgba(8, 12, 14, .74);
+      color: #dff8ff;
+      font-size: 10px;
+      font-weight: 760;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+
+    .frame:hover .frame-ref {
+      opacity: 1;
+    }
+
+    .frame.is-ref .frame-ref {
+      opacity: 1;
+      background: var(--green);
+      color: #07180e;
+    }
+
+    .frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #090a0b;
+    }
+
+    .viewer.is-portrait .frame {
+      aspect-ratio: 9 / 16;
+    }
+
+    .viewer.is-square .frame {
+      aspect-ratio: 1 / 1;
+    }
+
+    .frame.placeholder {
+      aspect-ratio: 16 / 9;
+      min-width: 96px;
+    }
+
+    .frame span {
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .66);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 780;
+    }
+
+    .frame.placeholder {
+      display: grid;
+      place-items: center;
+      color: var(--soft);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .lower {
+      min-height: 0;
+      display: contents;
+      overflow: visible;
+    }
+
+    .shots,
+    .prompt-panel,
+    .result-viewer {
+      min-height: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(28, 30, 33, .92);
+      box-shadow: 0 12px 42px rgba(0, 0, 0, .16);
+    }
+
+    .prompt-panel {
+      order: 40;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto;
+      gap: 12px;
+      overflow: visible;
+    }
+
+    .shots {
+      order: 30;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 10px;
+      overflow: visible;
+    }
+
+    .result-viewer {
+      order: 60;
+    }
+
+    .shot-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-content: start;
+      gap: 8px;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .shot {
+      position: relative;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+      cursor: pointer;
+    }
+
+    .shot-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border-radius: 5px;
+      background: rgba(239, 129, 146, .14);
+      color: var(--rose);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+
+    .shot:hover .shot-remove {
+      opacity: 1;
+    }
+
+    .shot-remove:hover {
+      background: rgba(239, 129, 146, .26);
+    }
+
+    .shot.is-active {
+      border-color: rgba(91, 216, 255, .58);
+      background: rgba(91, 216, 255, .08);
+    }
+
+    .shot-index {
+      display: grid;
+      height: 52px;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .06);
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 820;
+    }
+
+    .shot-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+      color: #eef4f7;
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .shot-title span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .shot-desc {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .tab {
+      min-height: 30px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .tab.is-active {
+      background: rgba(112, 211, 148, .13);
+      border-color: rgba(112, 211, 148, .44);
+      color: #dffbe8;
+    }
+
+    .output {
+      min-height: 190px;
+      height: 100%;
+      resize: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .prompt-panel > .section-head,
+    .prompt-panel > .tabs,
+    .prompt-panel > .translation-panel,
+    .prompt-panel > .semantic-panel,
+    .prompt-panel > .output {
+      grid-column: 1;
+      min-width: 0;
+    }
+
+    .translation-panel,
+    .semantic-panel {
+      display: grid;
+      gap: 6px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .translation-panel.is-hidden {
+      display: none;
+    }
+
+    .translation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .translation-grid textarea {
+      min-height: 88px;
+      max-height: 170px;
+      resize: vertical;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .semantic-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .translation-panel label,
+    .semantic-panel label {
+      color: #edf4f7;
+    }
+
+    #semanticPrompt {
+      min-height: 74px;
+      resize: vertical;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .field-pair {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field-pair-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .locale-tag {
+      color: var(--soft);
+      font-size: 11px;
+      font-weight: 720;
+    }
+
+    .field-locale {
+      display: grid;
+      gap: 4px;
+    }
+
+    .field-locale textarea {
+      min-height: 70px;
+    }
+
+    .dify-panel {
+      grid-column: 1;
+      grid-row: auto;
+      min-height: 0;
+      overflow: visible;
+      margin-top: 4px;
+      padding: 16px 0 0;
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .dify-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 96px;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .dify-grid .field:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .dify-grid .field:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+
+    .reference-panel {
+      display: grid;
+      grid-template-columns: minmax(128px, .72fr) minmax(0, 1fr);
+      gap: 10px;
+      margin: 10px 0;
+      align-items: stretch;
+    }
+
+    .reference-panel .dropzone {
+      min-height: 118px;
+      padding: 12px;
+    }
+
+    .reference-preview {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
+      min-height: 118px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .reference-thumb {
+      width: 96px;
+      height: 96px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .24);
+      object-fit: contain;
+    }
+
+    .reference-copy {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .reference-copy strong {
+      overflow: hidden;
+      color: #edf7f9;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .route-matrix {
+      display: grid;
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .route-row {
+      display: grid;
+      grid-template-columns: minmax(108px, 1fr) 68px minmax(118px, 1fr) 42px;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .route-row.is-active {
+      border-color: rgba(91, 216, 255, .52);
+      background: rgba(91, 216, 255, .09);
+      color: #e9f8fc;
+    }
+
+    .route-row.is-unconfigured {
+      border-style: dashed;
+      opacity: .66;
+    }
+
+    .route-row strong {
+      color: inherit;
+      font-size: 12px;
+    }
+
+    .route-select {
+      justify-content: flex-start;
+      min-height: 30px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .route-row input {
+      height: 30px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+
+    .route-state {
+      color: var(--soft);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .route-row.is-active .route-state {
+      color: var(--cyan);
+      font-weight: 780;
+    }
+
+    .video-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .result-viewer {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      overflow: hidden;
+      margin-top: 0;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .result-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .result-empty {
+      min-height: 78px;
+      padding: 16px;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .03);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .result-empty.is-hidden {
+      display: none;
+    }
+
+    .video-card,
+    .asset-card {
+      display: grid;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .video-card.is-kept,
+    .asset-card.is-kept {
+      border-color: rgba(112, 211, 148, .55);
+      background: rgba(112, 211, 148, .08);
+    }
+
+    .video-card video {
+      width: 100%;
+      min-height: 160px;
+      aspect-ratio: 9 / 16;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #050607;
+    }
+
+    .asset-card img {
+      width: 100%;
+      min-height: 160px;
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      object-fit: contain;
+      background: #050607;
+    }
+
+    .asset-card textarea {
+      min-height: 118px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    .video-card-title {
+      color: #edf4f7;
+      font-size: 12px;
+      font-weight: 780;
+      line-height: 1.35;
+    }
+
+    .screening-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .score-input {
+      height: 30px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+
+    .inspector .section {
+      padding: 18px;
+    }
+
+    .field-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .field-pair {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .quality-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .quality {
+      min-height: 58px;
+      padding: 9px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .quality strong {
+      display: block;
+      color: #f0f4f6;
+      font-size: 12px;
+    }
+
+    .quality span {
+      display: block;
+      margin-top: 4px;
+      color: var(--soft);
+      font-size: 11px;
+    }
+
+    .workflow-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .workflow-step {
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      align-items: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease, transform .1s ease;
+    }
+
+    .workflow-step:hover {
+      border-color: rgba(91, 216, 255, .5);
+      background: rgba(91, 216, 255, .06);
+    }
+
+    .workflow-step:active {
+      transform: translateY(1px);
+    }
+
+    .workflow-area {
+      display: block;
+      margin-top: 3px;
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 760;
+      letter-spacing: .02em;
+    }
+
+    .step-tag {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      height: 19px;
+      margin-right: 8px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(91, 216, 255, .14);
+      border: 1px solid rgba(91, 216, 255, .4);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 820;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    @keyframes stepFlash {
+      0% { box-shadow: 0 0 0 0 rgba(91, 216, 255, .0); }
+      18% { box-shadow: 0 0 0 3px rgba(91, 216, 255, .65); }
+      100% { box-shadow: 0 0 0 0 rgba(91, 216, 255, .0); }
+    }
+
+    .step-flash {
+      animation: stepFlash 1.2s ease;
+      border-radius: var(--radius);
+    }
+
+    .workflow-step.is-active {
+      border-color: rgba(91, 216, 255, .52);
+      background: rgba(91, 216, 255, .08);
+      color: #edf8fb;
+    }
+
+    .workflow-step.is-done {
+      border-color: rgba(112, 211, 148, .34);
+    }
+
+    .workflow-index {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .06);
+      color: inherit;
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .workflow-title {
+      display: block;
+      color: inherit;
+      font-size: 12px;
+      font-weight: 820;
+      line-height: 1.2;
+    }
+
+    .workflow-desc {
+      display: block;
+      margin-top: 3px;
+      color: var(--soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .workflow-state {
+      color: var(--soft);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .workflow-step.is-active .workflow-state {
+      color: var(--cyan);
+      font-weight: 780;
+    }
+
+    .workflow-step.is-done .workflow-state {
+      color: var(--green);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    .dot.ready {
+      background: var(--green);
+    }
+
+    .hidden-probe,
+    canvas {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 30;
+      display: none;
+      max-width: 320px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(36, 39, 43, .98);
+      color: #e9f0f3;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    /* Below this width there isn't room for shots column + Prompt/Dify side-by-side,
+       so stack Dify under Prompt to free horizontal space. */
+    @media (max-width: 1480px) {
+      .prompt-panel {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto minmax(220px, 1fr) auto;
+        overflow: auto;
+      }
+
+      .dify-panel {
+        grid-column: 1;
+        grid-row: auto;
+        overflow: visible;
+        padding: 14px 0 0;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
+
+    /* Narrow desktop / laptop: switch to a scrolling stacked layout and keep the
+       inspector accessible (stacked) rather than hiding the field editor. */
+    @media (max-width: 1240px) {
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .workspace {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .workspace.inspector-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .workspace.inspector-collapsed .inspector {
+        overflow: visible;
+      }
+
+      .workspace.inspector-collapsed .inspector .section {
+        height: auto;
+        padding: 15px;
+      }
+
+      .workspace.inspector-collapsed .inspector .section-head {
+        justify-content: space-between;
+      }
+
+      .workspace.inspector-collapsed .inspector-title {
+        justify-content: flex-start;
+        width: auto;
+      }
+
+      .workspace.inspector-collapsed .inspector-title h2,
+      .workspace.inspector-collapsed #selectedShotLabel,
+      .workspace.inspector-collapsed .field-stack {
+        display: initial;
+      }
+
+      .workspace.inspector-collapsed .field-stack {
+        display: grid;
+      }
+
+      .rail {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .inspector {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .main {
+        grid-template-rows: auto auto;
+        overflow: visible;
+      }
+
+      .lower {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        overflow: visible;
+      }
+
+      .shots,
+      .prompt-panel,
+      .result-viewer {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .shots {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .shot-list {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(190px, 230px);
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .result-viewer {
+        overflow: visible;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        height: auto;
+        padding: 12px;
+      }
+
+      .top-actions {
+        flex-wrap: wrap;
+      }
+
+      .workspace,
+      .lower {
+        grid-template-columns: 1fr;
+      }
+
+      .dify-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .translation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        grid-template-rows: auto auto;
+      }
+
+      .viewer.is-portrait {
+        grid-template-rows: minmax(220px, 50vh) auto;
+      }
+
+      .rail,
+      .inspector,
+      .shots,
+      .prompt-panel {
+        border-right: 0;
+        border-left: 0;
+      }
+
+      .frame-strip {
+        height: 84px;
+      }
+
+      video {
+        min-height: 0;
+      }
+
+      .prompt-panel {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><i data-lucide="scan-eye"></i></div>
+        <div class="brand-title">
+          <h1>视频 Prompt 反推工作台</h1>
+          <div class="subtitle">上传素材、AI 反推、编辑 Prompt、进入 Dify</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="status" id="status"><span class="dot" id="statusDot"></span><span id="statusText">等待上传参考素材</span></span>
+        <button class="btn" type="button" id="copyBtn"><i data-lucide="copy"></i>复制 Prompt</button>
+        <button class="btn success" type="button" id="downloadBtn"><i data-lucide="download"></i>导出 JSON</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="rail">
+        <section class="section">
+          <div class="section-head">
+            <h2>工作流</h2>
+            <span class="meta" id="workflowStatus">待上传</span>
+          </div>
+          <div class="workflow-list" id="workflowList"></div>
+        </section>
+
+        <section class="section" data-step="source">
+          <div class="section-head">
+            <h2><span class="step-tag">STEP 1</span>上传与配置</h2>
+          </div>
+          <div class="project-grid source-config">
+            <div class="field">
+              <label for="projectName">项目名</label>
+              <input id="projectName" type="text" value="新建视频反推项目">
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="aspect">画幅</label>
+                <select id="aspect">
+                  <option>16:9</option>
+                  <option>9:16</option>
+                  <option>1:1</option>
+                  <option>4:3</option>
+                  <option>3:2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="clipDuration">时长</label>
+                <input id="clipDuration" type="text" value="4.0 秒">
+              </div>
+            </div>
+            <div class="field">
+              <label for="promptMode">输出类型</label>
+              <select id="promptMode">
+                <option value="video">文生视频</option>
+                <option value="image-video">图生视频</option>
+                <option value="image">生图</option>
+                <option value="storyboard">分镜脚本</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="model">反推模型</label>
+              <select id="model">
+                <option value="">请选择反推模型</option>
+                <option value="qwen">qwen</option>
+                <option value="doubao">doubao</option>
+              </select>
+            </div>
+            <div class="history-bar">
+              <select id="projectSelect" title="历史项目">
+                <option value="">历史项目…</option>
+              </select>
+              <button class="icon-btn" type="button" id="saveProjectBtn" title="保存当前为项目"><i data-lucide="save"></i></button>
+              <button class="icon-btn" type="button" id="deleteProjectBtn" title="删除所选项目"><i data-lucide="trash-2"></i></button>
+            </div>
+          </div>
+          <div class="upload-grid">
+            <div class="dropzone" id="dropzone">
+              <input id="videoInput" type="file" accept="video/*">
+              <div class="drop-inner">
+                <div class="drop-icon" aria-hidden="true"><i data-lucide="video"></i></div>
+                <strong>视频上传口</strong>
+                <span>识别为视频后抽帧，确认后再反推。</span>
+              </div>
+            </div>
+            <div class="dropzone" id="imageDropzone">
+              <input id="imageInput" type="file" accept="image/*">
+              <div class="drop-inner">
+                <div class="drop-icon" aria-hidden="true"><i data-lucide="image"></i></div>
+                <strong>图片上传口</strong>
+                <span>识别为图片后作为参考图，确认后再反推。</span>
+              </div>
+            </div>
+          </div>
+          <div class="source-prompt">
+            <label for="analyzePrompt">反推指令 <span class="meta">Dify prompt</span></label>
+            <textarea id="analyzePrompt" spellcheck="false">生成视频反推提示词，包括完整运镜、转场、节奏和主体动作</textarea>
+          </div>
+          <div class="source-summary" id="sourceSummary">未上传素材。上传后会先识别视频/图片模式，再由人工确认是否反推。</div>
+          <div class="confirm-actions">
+            <button class="btn primary span-2" type="button" id="analyzeBtn"><i data-lucide="scan-search"></i>AI 自动反推</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <h2>反推质量</h2>
+          </div>
+          <div class="quality-grid">
+            <div class="quality"><strong id="frameCount">0</strong><span>关键帧</span></div>
+            <div class="quality"><strong id="shotCount">1</strong><span>分镜</span></div>
+            <div class="quality"><strong id="signalCount">0</strong><span>字段</span></div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="main">
+        <section class="viewer" data-step="source">
+          <span class="viewer-step"><span class="step-tag">STEP 1</span>素材预览</span>
+          <div class="video-shell">
+            <video id="preview" controls playsinline></video>
+            <div class="empty-video" id="emptyVideo">
+              <div>
+                <strong>上传视频或图片后会在这里预览</strong>
+                <span>先识别素材模式，再确认是否反推 Prompt。</span>
+              </div>
+            </div>
+            <img class="image-preview" id="imagePreview" alt="参考图片预览">
+          </div>
+          <div class="video-info" id="videoInfo"></div>
+          <div class="frame-strip" id="frameStrip"></div>
+        </section>
+
+        <section class="lower">
+          <div class="shots" data-step="reverse">
+            <div class="section-head">
+              <h2><span class="step-tag">STEP 2</span>反推结果</h2>
+              <span class="meta">AI 自动写入字段</span>
+            </div>
+            <div class="reverse-actions">
+              <button class="btn primary" type="button" id="analyzeInlineBtn"><i data-lucide="scan-search"></i>AI 自动反推</button>
+              <button class="btn" type="button" id="generateInlineBtn"><i data-lucide="sparkles"></i>生成初稿</button>
+              <button class="btn span-2" type="button" id="addShotBtn"><i data-lucide="plus"></i>新增分镜</button>
+            </div>
+            <div class="shot-list" id="shotList"></div>
+          </div>
+
+          <div class="prompt-panel" data-step="prompt">
+            <div class="section-head">
+              <h2><span class="step-tag">STEP 3</span>Prompt 输出</h2>
+              <div class="prompt-actions">
+                <button class="btn" type="button" id="generateBtn"><i data-lucide="sparkles"></i>生成初稿</button>
+                <button class="btn" type="button" id="translateBtn"><i data-lucide="languages"></i>智能翻译</button>
+                <button class="btn warn" type="button" id="aiRewriteBtn"><i data-lucide="wand-sparkles"></i>AI 修改</button>
+              </div>
+            </div>
+            <div class="tabs">
+              <button class="tab is-active" type="button" data-tab="full">整体 Prompt</button>
+              <button class="tab" type="button" data-tab="shots">分镜 Prompt</button>
+              <button class="tab" type="button" data-tab="json">JSON 规格</button>
+            </div>
+            <div class="translation-panel is-hidden" id="translationPanel">
+              <div class="semantic-head">
+                <label>翻译结果 <span class="meta">中文 / English 独立编辑</span></label>
+                <span class="meta">编辑后同步到最终 Prompt</span>
+              </div>
+              <div class="translation-grid">
+                <div class="field-locale">
+                  <span class="locale-tag">中文</span>
+                  <textarea id="promptZh" spellcheck="false" placeholder="中文 Prompt 会在这里单独显示。"></textarea>
+                </div>
+                <div class="field-locale">
+                  <span class="locale-tag">English</span>
+                  <textarea id="promptEn" spellcheck="false" placeholder="English prompt will be shown here."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="semantic-panel">
+              <div class="semantic-head">
+                <label for="semanticPrompt">语译段落 <span class="meta">user_prompt</span></label>
+                <button class="btn" type="button" id="semanticBuildBtn"><i data-lucide="list-filter"></i>生成语译</button>
+              </div>
+              <textarea id="semanticPrompt" spellcheck="false" placeholder="主体、场景、动作、镜头、光线、风格、限制…"></textarea>
+            </div>
+            <textarea class="output" id="output" spellcheck="false"></textarea>
+            <div class="dify-panel" data-step="dify">
+              <div class="section-head">
+                <h2><span class="step-tag">STEP 4</span>Dify 线路与生成</h2>
+                <div class="prompt-actions">
+                  <span class="meta" id="routeStatus">等待 Prompt</span>
+                  <span class="meta" id="difyStatus">未检测</span>
+                </div>
+              </div>
+              <div class="route-matrix" id="difyRoutes"></div>
+              <div class="reference-panel">
+                <div class="dropzone" id="referenceDropzone">
+                  <input id="referenceImageInput" type="file" accept="image/*">
+                  <div class="drop-inner">
+                    <div class="drop-icon" aria-hidden="true"><i data-lucide="image-up"></i></div>
+                    <strong>用户参考图</strong>
+                    <span>用于图生视频，不覆盖左侧反推素材。</span>
+                  </div>
+                </div>
+                <div class="reference-preview">
+                  <img class="reference-thumb" id="referencePreview" alt="用户参考图预览">
+                  <div class="reference-copy">
+                    <strong id="referenceImageMeta">未设置参考图</strong>
+                    <span>上传后会自动切到图生视频线路，并随 Prompt 一起进入 Dify。</span>
+                    <button class="btn" type="button" id="clearReferenceBtn"><i data-lucide="x"></i>清除参考图</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dify-grid">
+                <div class="field">
+                  <label for="difyInputs">附加变量 JSON</label>
+                  <textarea id="difyInputs" placeholder="{&quot;style&quot;:&quot;cinematic&quot;}"></textarea>
+                </div>
+                <div class="field">
+                  <label for="batchSize">批量</label>
+                <input id="batchSize" type="number" min="1" max="20" value="1">
+                </div>
+                <div class="field">
+                  <label for="difyModelChoice">模型选择</label>
+                  <input id="difyModelChoice" type="text" list="difyModelOptions" placeholder="自动显示或手动指定">
+                  <datalist id="difyModelOptions">
+                    <option value="等待 Dify 返回模型列表"></option>
+                  </datalist>
+                </div>
+              </div>
+              <div class="prompt-actions">
+                <button class="btn primary" type="button" id="runDifyBtn"><i data-lucide="send"></i>确认进入 Dify</button>
+                <button class="btn" type="button" id="loadDifyBtn"><i data-lucide="list-video"></i>查看最新批次</button>
+                <button class="btn success" type="button" id="saveSelectionBtn"><i data-lucide="check"></i>保存筛选</button>
+              </div>
+            </div>
+          </div>
+          <div class="result-viewer" data-step="result">
+            <div class="section-head">
+              <h2><span class="step-tag">STEP 5</span>结果查看</h2>
+              <div class="prompt-actions">
+                <select id="runHistorySelect" title="历史批次">
+                  <option value="">历史批次…</option>
+                </select>
+                <button class="btn primary" type="button" id="rerunPromptBtn"><i data-lucide="rotate-cw"></i>当前 Prompt 再生成</button>
+                <button class="btn" type="button" id="rerunImageBtn"><i data-lucide="image-up"></i>参考图再生成</button>
+                <button class="btn success" type="button" id="rerunKeptBtn"><i data-lucide="check-circle"></i>保留项再生成</button>
+                <button class="btn" type="button" id="deliveryBtn"><i data-lucide="package"></i>导出交付包</button>
+                <span class="meta" id="resultSummary">未载入结果</span>
+              </div>
+            </div>
+            <div class="result-toolbar" id="resultToolbar">
+              <button class="tab is-active" type="button" data-result-filter="all">全部</button>
+              <button class="tab" type="button" data-result-filter="prompt">Prompt</button>
+              <button class="tab" type="button" data-result-filter="image">图片</button>
+              <button class="tab" type="button" data-result-filter="video">视频</button>
+              <button class="tab" type="button" data-result-filter="kept">已保留</button>
+            </div>
+            <div class="result-empty" id="resultEmpty">Dify 批量完成后，所有原始 Prompt、改写 Prompt、图片和视频都会在这里查看。可把结果卡标为“保留”，再用“保留项再生成”组合编辑后的 Prompt 和保留图片。</div>
+            <div class="video-results" id="videoResults"></div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="inspector">
+        <section class="section" data-step="reverse">
+          <div class="section-head">
+            <div class="inspector-title">
+              <button class="icon-btn inspector-toggle" type="button" id="toggleInspectorBtn" title="收起字段编辑"><i data-lucide="chevrons-right"></i></button>
+              <h2>字段编辑</h2>
+            </div>
+            <span class="meta" id="selectedShotLabel">Shot 01</span>
+          </div>
+          <div class="field-stack">
+            <div class="field-pair">
+              <div class="field-pair-head"><label>主体</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="subject" placeholder="等待分析或手动填写主体、物体、人物、产品、画面焦点。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="subjectEn" placeholder="English subject / product focus."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>场景</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="environment" placeholder="等待分析或手动填写场景、空间、背景、时间、地点。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="environmentEn" placeholder="English environment / setting."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>动作</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="action" placeholder="等待分析或手动填写主体动作、事件变化、转场节奏。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="actionEn" placeholder="English action / transformation."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>镜头</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="camera" placeholder="等待分析或手动填写景别、机位、镜头运动、焦段、景深。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="cameraEn" placeholder="English camera / composition."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>光线</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="lighting" placeholder="等待分析或手动填写光线方向、明暗关系、色彩、材质反射。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="lightingEn" placeholder="English lighting / color."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>风格</label><span class="locale-tag">中文 / English</span></div>
+              <div class="chips" id="styleChips">
+                <button class="chip" type="button" data-style="电影级质感，高动态范围，浅景深，胶片颗粒感，戏剧化布光">电影感</button>
+                <button class="chip" type="button" data-style="纪实写实，自然光，真实材质，无修饰，轻微手持晃动">纪实</button>
+                <button class="chip" type="button" data-style="赛博朋克，霓虹光，高对比，未来都市，雨夜反光">赛博朋克</button>
+                <button class="chip" type="button" data-style="小清新，柔和高调光，低饱和，清新通透，自然色调">小清新</button>
+                <button class="chip" type="button" data-style="高端产品广告，干净背景，柔光箱布光，精致反射，质感特写">产品广告</button>
+                <button class="chip" type="button" data-style="3D 渲染，C4D 质感，柔和全局光照，干净材质，柔焦背景">3D 渲染</button>
+                <button class="chip" type="button" data-style="日系动漫风，赛璐璐上色，清晰线条，鲜明色彩">动漫</button>
+                <button class="chip" type="button" data-style="复古胶片，暖色调，颗粒感，褪色质感，70 年代风格">复古胶片</button>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="style" placeholder="等待分析、手动填写，或点上方风格模板一键套用。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="styleEn" placeholder="English style / finish."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>声音</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="audio" placeholder="等待分析或手动填写音乐、环境声、音效、对白。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="audioEn" placeholder="English audio / sound design."></textarea>
+              </div>
+            </div>
+            <div class="field-pair">
+              <div class="field-pair-head"><label>负面约束</label><span class="locale-tag">中文 / English</span></div>
+              <div class="field-locale">
+                <span class="locale-tag">中文</span>
+                <textarea id="negative" placeholder="等待填写需要避免的画面错误、风格偏移、主体畸变。"></textarea>
+              </div>
+              <div class="field-locale">
+                <span class="locale-tag">English</span>
+                <textarea id="negativeEn" placeholder="English negative prompt."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <video class="hidden-probe" id="probe" muted playsinline></video>
+  <canvas id="frameCanvas"></canvas>
+  <div class="toast" id="toast"></div>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    const APP_VERSION = "codex-flow-20260603-1548";
+    const DEFAULT_DIFY_ROUTES = [
+      { type: "text-to-video", label: "文生视频套件", outputType: "video" },
+      { type: "rewrite-text-to-video", label: "扩写文生视频", outputType: "video" },
+      { type: "text-image-to-video", label: "文生图生视频", outputType: "video" },
+      { type: "rewrite-text-image-to-video", label: "扩写文生图生视频", outputType: "video" },
+      { type: "image-to-video", label: "图生视频", outputType: "video" },
+      { type: "first-last-frame-video", label: "首尾帧视频套件", outputType: "video", needsImage: true },
+      { type: "text-to-image", label: "生图套件", outputType: "image" }
+    ];
+    const WORKFLOW_STEPS = [
+      { id: "source", title: "上传与配置", desc: "项目、模型、素材入口" },
+      { id: "reverse", title: "反推结果", desc: "AI 写入字段" },
+      { id: "prompt", title: "编辑 Prompt", desc: "人工修改或 AI 修改" },
+      { id: "dify", title: "进入 Dify", desc: "线路、循环、模型" },
+      { id: "result", title: "结果复用", desc: "保留项再次生成" }
+    ];
+
+    const state = {
+      fileName: "",
+      sourceMode: "",
+      sourceLabel: "",
+      videoUrl: "",
+      imageUrl: "",
+      sourceFileData: "",
+      sourceFileType: "",
+      referenceImageData: "",
+      referenceImageUrl: "",
+      referenceImageName: "",
+      referenceImagePreviewUrl: "",
+      referenceFrameIndex: -1,
+      duration: 4,
+      width: 0,
+      height: 0,
+      activeTab: "full",
+      activeShot: 0,
+      codexJobId: "",
+      downloadTaskName: "",
+      analysis: {},
+      difyRun: null,
+      difyRoutes: [],
+      difyModelChoices: [],
+      difyRouteConfig: buildDefaultRouteConfig(),
+      selectedRoute: "",
+      inspectorCollapsed: false,
+      resultFilter: "all",
+      frames: [],
+      shots: [
+        {
+          title: "待分析镜头",
+          start: 0,
+          end: 4,
+          subject: "",
+          subjectEn: "",
+          environment: "",
+          environmentEn: "",
+          action: "",
+          actionEn: "",
+          camera: "",
+          cameraEn: "",
+          lighting: "",
+          lightingEn: "",
+          style: "",
+          styleEn: "",
+          audio: "",
+          audioEn: "",
+          negative: "",
+          negativeEn: ""
+        }
+      ]
+    };
+
+    const els = {
+      videoInput: document.getElementById("videoInput"),
+      imageInput: document.getElementById("imageInput"),
+      referenceImageInput: document.getElementById("referenceImageInput"),
+      workspace: document.querySelector(".workspace"),
+      dropzone: document.getElementById("dropzone"),
+      imageDropzone: document.getElementById("imageDropzone"),
+      referenceDropzone: document.getElementById("referenceDropzone"),
+      viewer: document.querySelector(".viewer"),
+      preview: document.getElementById("preview"),
+      imagePreview: document.getElementById("imagePreview"),
+      referencePreview: document.getElementById("referencePreview"),
+      referenceImageMeta: document.getElementById("referenceImageMeta"),
+      clearReferenceBtn: document.getElementById("clearReferenceBtn"),
+      probe: document.getElementById("probe"),
+      canvas: document.getElementById("frameCanvas"),
+      emptyVideo: document.getElementById("emptyVideo"),
+      videoInfo: document.getElementById("videoInfo"),
+      sourceSummary: document.getElementById("sourceSummary"),
+      workflowList: document.getElementById("workflowList"),
+      workflowStatus: document.getElementById("workflowStatus"),
+      frameStrip: document.getElementById("frameStrip"),
+      shotList: document.getElementById("shotList"),
+      output: document.getElementById("output"),
+      translationPanel: document.getElementById("translationPanel"),
+      promptZh: document.getElementById("promptZh"),
+      promptEn: document.getElementById("promptEn"),
+      semanticPrompt: document.getElementById("semanticPrompt"),
+      analyzePrompt: document.getElementById("analyzePrompt"),
+      analyzeBtn: document.getElementById("analyzeBtn"),
+      analyzeInlineBtn: document.getElementById("analyzeInlineBtn"),
+      generateInlineBtn: document.getElementById("generateInlineBtn"),
+      generateBtn: document.getElementById("generateBtn"),
+      translateBtn: document.getElementById("translateBtn"),
+      semanticBuildBtn: document.getElementById("semanticBuildBtn"),
+      toggleInspectorBtn: document.getElementById("toggleInspectorBtn"),
+      copyBtn: document.getElementById("copyBtn"),
+      downloadBtn: document.getElementById("downloadBtn"),
+      addShotBtn: document.getElementById("addShotBtn"),
+      statusText: document.getElementById("statusText"),
+      statusDot: document.getElementById("statusDot"),
+      selectedShotLabel: document.getElementById("selectedShotLabel"),
+      frameCount: document.getElementById("frameCount"),
+      shotCount: document.getElementById("shotCount"),
+      signalCount: document.getElementById("signalCount"),
+      projectName: document.getElementById("projectName"),
+      aspect: document.getElementById("aspect"),
+      clipDuration: document.getElementById("clipDuration"),
+      promptMode: document.getElementById("promptMode"),
+      model: document.getElementById("model"),
+      routeStatus: document.getElementById("routeStatus"),
+      difyRoutes: document.getElementById("difyRoutes"),
+      subject: document.getElementById("subject"),
+      subjectEn: document.getElementById("subjectEn"),
+      environment: document.getElementById("environment"),
+      environmentEn: document.getElementById("environmentEn"),
+      action: document.getElementById("action"),
+      actionEn: document.getElementById("actionEn"),
+      camera: document.getElementById("camera"),
+      cameraEn: document.getElementById("cameraEn"),
+      lighting: document.getElementById("lighting"),
+      lightingEn: document.getElementById("lightingEn"),
+      style: document.getElementById("style"),
+      styleEn: document.getElementById("styleEn"),
+      audio: document.getElementById("audio"),
+      audioEn: document.getElementById("audioEn"),
+      negative: document.getElementById("negative"),
+      negativeEn: document.getElementById("negativeEn"),
+      difyStatus: document.getElementById("difyStatus"),
+      difyInputs: document.getElementById("difyInputs"),
+      batchSize: document.getElementById("batchSize"),
+      difyModelChoice: document.getElementById("difyModelChoice"),
+      difyModelOptions: document.getElementById("difyModelOptions"),
+      aiRewriteBtn: document.getElementById("aiRewriteBtn"),
+      runDifyBtn: document.getElementById("runDifyBtn"),
+      loadDifyBtn: document.getElementById("loadDifyBtn"),
+      saveSelectionBtn: document.getElementById("saveSelectionBtn"),
+      rerunPromptBtn: document.getElementById("rerunPromptBtn"),
+      rerunImageBtn: document.getElementById("rerunImageBtn"),
+      rerunKeptBtn: document.getElementById("rerunKeptBtn"),
+      resultSummary: document.getElementById("resultSummary"),
+      resultEmpty: document.getElementById("resultEmpty"),
+      resultToolbar: document.getElementById("resultToolbar"),
+      videoResults: document.getElementById("videoResults"),
+      projectSelect: document.getElementById("projectSelect"),
+      saveProjectBtn: document.getElementById("saveProjectBtn"),
+      deleteProjectBtn: document.getElementById("deleteProjectBtn"),
+      runHistorySelect: document.getElementById("runHistorySelect"),
+      deliveryBtn: document.getElementById("deliveryBtn"),
+      toast: document.getElementById("toast")
+    };
+
+    const editableFields = ["subject", "environment", "action", "camera", "lighting", "style", "audio", "negative"];
+    const englishFields = editableFields.map(field => `${field}En`);
+    const allEditableFields = [...editableFields, ...englishFields];
+
+    function boot() {
+      window.videoPromptWorkbench = {
+        version: APP_VERSION,
+        state,
+        runDifyGeneration,
+        renderDifyRoutes,
+        detectDifyRoute,
+        buildAnalysisPayload,
+        getSnapshot: () => ({
+          version: APP_VERSION,
+          fileName: state.fileName,
+          sourceMode: state.sourceMode,
+          frameCount: state.frames.length,
+          shotCount: state.shots.length,
+          codexJobId: state.codexJobId,
+          totalFrameChars: state.frames.reduce((sum, frame) => sum + frame.src.length, 0),
+          status: els.statusText.textContent
+        })
+      };
+      bindEvents();
+      clearTransientWorkingState();
+      loadProjectList();
+      loadRunHistoryList();
+      renderFrames();
+      renderShots();
+      renderSourceSummary();
+      renderDifyRoutes();
+      renderResultFilterState();
+      renderWorkflow();
+      renderReferenceImage();
+      renderInspectorCollapse();
+      generateOutput();
+      checkApiHealth();
+      checkDifyStatus();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function bindEvents() {
+      els.videoInput.addEventListener("change", event => {
+        const file = event.target.files && event.target.files[0];
+        if (file) loadVideo(file);
+      });
+
+      els.imageInput.addEventListener("change", event => {
+        const file = event.target.files && event.target.files[0];
+        if (file) loadImage(file);
+      });
+
+      els.referenceImageInput.addEventListener("change", event => {
+        const file = event.target.files && event.target.files[0];
+        if (file) loadReferenceImage(file);
+      });
+
+      bindDropzone(els.dropzone, file => {
+        if (file && file.type.startsWith("video/")) loadVideo(file);
+        else notify("请拖入视频文件。");
+      });
+      bindDropzone(els.imageDropzone, file => {
+        if (file && file.type.startsWith("image/")) loadImage(file);
+        else notify("请拖入图片文件。");
+      });
+      bindDropzone(els.referenceDropzone, file => {
+        if (file && file.type.startsWith("image/")) loadReferenceImage(file);
+        else notify("请拖入图片文件。");
+      });
+
+      els.clearReferenceBtn.addEventListener("click", clearReferenceImage);
+
+      if (els.analyzeBtn) {
+        els.analyzeBtn.addEventListener("click", analyzeVideo);
+      }
+      els.analyzeInlineBtn.addEventListener("click", analyzeVideo);
+      els.generateInlineBtn.addEventListener("click", () => {
+        syncCurrentShot();
+        generateOutput();
+        notify("已根据当前字段生成 prompt。");
+      });
+
+      els.generateBtn.addEventListener("click", () => {
+        syncCurrentShot();
+        generateOutput();
+        notify("已根据当前字段生成 prompt。");
+      });
+      els.translateBtn.addEventListener("click", runSmartTranslate);
+      els.semanticBuildBtn.addEventListener("click", generateSemanticPrompt);
+      els.toggleInspectorBtn.addEventListener("click", toggleInspector);
+      els.semanticPrompt.addEventListener("input", persistState);
+      els.analyzePrompt.addEventListener("input", persistState);
+      els.promptZh.addEventListener("input", syncTranslationPanelToOutput);
+      els.promptEn.addEventListener("input", syncTranslationPanelToOutput);
+
+      els.copyBtn.addEventListener("click", copyOutput);
+      els.downloadBtn.addEventListener("click", exportJson);
+      els.addShotBtn.addEventListener("click", addShot);
+      els.runDifyBtn.addEventListener("click", runDifyGeneration);
+      els.aiRewriteBtn.addEventListener("click", runDifyPromptRewrite);
+      els.loadDifyBtn.addEventListener("click", loadDifyRun);
+      els.saveSelectionBtn.addEventListener("click", saveDifySelection);
+      els.rerunPromptBtn.addEventListener("click", rerunCurrentPrompt);
+      els.rerunImageBtn.addEventListener("click", rerunCurrentReferenceImage);
+      els.rerunKeptBtn.addEventListener("click", rerunKeptResults);
+      els.deliveryBtn.addEventListener("click", exportDelivery);
+      els.saveProjectBtn.addEventListener("click", saveProject);
+      els.deleteProjectBtn.addEventListener("click", deleteSelectedProject);
+      els.projectSelect.addEventListener("change", () => {
+        if (els.projectSelect.value) loadProject(els.projectSelect.value);
+      });
+      els.runHistorySelect.addEventListener("change", () => {
+        if (els.runHistorySelect.value) loadRunFromHistory(els.runHistorySelect.value);
+      });
+      els.output.addEventListener("input", () => {
+        renderDifyRoutes();
+        if (!els.translationPanel.classList.contains("is-hidden")) {
+          updateTranslationPanelFromOutput();
+        }
+        persistState();
+      });
+      els.difyRoutes.addEventListener("click", event => {
+        const button = event.target.closest("[data-route-select]");
+        if (!button) return;
+        state.selectedRoute = button.dataset.routeSelect || "";
+        syncRouteShortcut(state.selectedRoute);
+        renderDifyRoutes();
+      });
+      els.difyRoutes.addEventListener("input", event => {
+        const loopInput = event.target.closest("[data-route-loop]");
+        const modelInput = event.target.closest("[data-route-model]");
+        if (loopInput) {
+          const routeType = loopInput.dataset.routeLoop;
+          ensureRouteConfig(routeType).loopCount = Math.max(0, Math.min(Number(loopInput.value) || 0, 20));
+          if (routeType === getActiveRoute()) els.batchSize.value = String(Math.max(1, ensureRouteConfig(routeType).loopCount || 1));
+        }
+        if (modelInput) {
+          const routeType = modelInput.dataset.routeModel;
+          ensureRouteConfig(routeType).modelChoice = modelInput.value.trim();
+          if (routeType === getActiveRoute()) els.difyModelChoice.value = modelInput.value.trim();
+        }
+      });
+      els.resultToolbar.querySelectorAll("[data-result-filter]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.resultFilter = button.dataset.resultFilter || "all";
+          renderResultFilterState();
+          if (state.difyRun) renderDifyRun(state.difyRun, { keepScroll: true });
+        });
+      });
+
+      document.querySelectorAll(".tab").forEach(tab => {
+        if (tab.dataset.resultFilter) return;
+        tab.addEventListener("click", () => {
+          syncCurrentShot();
+          state.activeTab = tab.dataset.tab;
+          document.querySelectorAll(".tab:not([data-result-filter])").forEach(item => item.classList.toggle("is-active", item === tab));
+          generateOutput();
+        });
+      });
+
+      document.querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+          document.querySelectorAll(".chip").forEach(item => item.classList.remove("is-active"));
+          chip.classList.add("is-active");
+          els.style.value = chip.dataset.style;
+          syncCurrentShot();
+          renderShots();
+          generateOutput();
+        });
+      });
+
+      [...allEditableFields, "projectName", "aspect", "clipDuration", "promptMode", "model", "batchSize", "difyModelChoice"].forEach(id => {
+        els[id].addEventListener("input", () => {
+          if (allEditableFields.includes(id)) {
+            syncCurrentShot();
+            renderShots();
+          }
+          if (!["batchSize", "difyModelChoice"].includes(id)) {
+            if (id === "promptMode") state.selectedRoute = "";
+            generateOutput();
+          } else {
+            updateRouteConfigFromShortcut();
+          }
+          renderDifyRoutes();
+        });
+      });
+    }
+
+    function bindDropzone(dropzone, onFile) {
+      ["dragenter", "dragover"].forEach(type => {
+        dropzone.addEventListener(type, event => {
+          event.preventDefault();
+          dropzone.classList.add("is-dragging");
+        });
+      });
+
+      ["dragleave", "drop"].forEach(type => {
+        dropzone.addEventListener(type, event => {
+          event.preventDefault();
+          dropzone.classList.remove("is-dragging");
+        });
+      });
+
+      dropzone.addEventListener("drop", event => {
+        const file = event.dataTransfer.files && event.dataTransfer.files[0];
+        onFile(file);
+      });
+    }
+
+    function toggleInspector() {
+      state.inspectorCollapsed = !state.inspectorCollapsed;
+      renderInspectorCollapse();
+    }
+
+    function renderInspectorCollapse() {
+      els.workspace.classList.toggle("inspector-collapsed", state.inspectorCollapsed);
+      els.toggleInspectorBtn.title = state.inspectorCollapsed ? "展开字段编辑" : "收起字段编辑";
+      els.toggleInspectorBtn.innerHTML = `<i data-lucide="${state.inspectorCollapsed ? "chevrons-left" : "chevrons-right"}"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function checkApiHealth() {
+      try {
+        const response = await fetch(apiUrl("/api/health"));
+        if (!response.ok) throw new Error("health check failed");
+        const data = await response.json();
+        renderAnalyzeModelOptions(data.analyzeModelOptions);
+        if (data.hasAutoAnalyzer || data.hasKey) {
+          setStatus("本地服务已连接，可保存分析包", true);
+        } else {
+          setStatus("本地服务已连接，可保存分析包", true);
+        }
+      } catch {
+        setStatus("本地服务未连接，请用 Node 服务启动", false);
+      }
+    }
+
+    function renderAnalyzeModelOptions(options = []) {
+      const current = els.model.value.trim();
+      const values = Array.isArray(options) && options.length ? options : ["qwen", "doubao"];
+      els.model.innerHTML = [
+        `<option value="">请选择反推模型</option>`,
+        ...values.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+      ].join("");
+      if (current && values.includes(current)) els.model.value = current;
+    }
+
+    async function checkDifyStatus() {
+      try {
+        const response = await fetch(apiUrl("/api/dify/status"));
+        const data = await response.json();
+        els.difyStatus.textContent = data.connected ? "已接通" : data.configured ? "未接通" : "未配置";
+        state.difyRoutes = mergeDifyRoutes(Array.isArray(data.routes) ? data.routes : []);
+        state.difyModelChoices = Array.isArray(data.modelChoices) ? data.modelChoices : [];
+        renderDifyRoutes();
+      } catch {
+        els.difyStatus.textContent = "服务未连接";
+      }
+    }
+
+    async function runDifyGeneration(options = {}) {
+      const prompt = extractPrimaryEnglishPrompt(options.promptOverride || els.output.value);
+      if (!prompt.trim() || prompt.includes("未生成 Prompt")) {
+        notify("请先载入或生成英文 Prompt。");
+        return;
+      }
+
+      const rewritePrompt = Boolean(options.rewritePrompt);
+      const taskIntent = options.taskIntent || (rewritePrompt ? "rewrite" : "generate");
+      const routeType = options.routeType || detectDifyRoute(rewritePrompt);
+      const routeMeta = state.difyRoutes.find(route => route.type === routeType);
+      if (routeMeta && routeMeta.configured === false) {
+        notify(`${routeLabel(routeType)} 未配置 API Key，不能进入 Dify。`);
+        return;
+      }
+      if (routeMeta && routeMeta.connected === false) {
+        notify(`${routeLabel(routeType)} 未接通：${routeMeta.connectDetail || "请先检查 Dify API 访问。"}`);
+        return;
+      }
+      const routeConfig = ensureRouteConfig(routeType);
+      const batchSize = Number(options.batchSize || routeConfig.loopCount || els.batchSize.value) || 1;
+      const modelChoice = options.modelChoice || routeConfig.modelChoice || els.difyModelChoice.value.trim();
+      els.runDifyBtn.disabled = true;
+      els.aiRewriteBtn.disabled = true;
+      els.difyStatus.textContent = "生成中";
+      renderDifyRoutes({ routeType, routes: buildRouteRows(routeType, batchSize) });
+      try {
+        const response = await fetch(apiUrl("/api/dify/run"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt,
+            originalPrompt: prompt,
+            editedPrompt: prompt,
+            semanticPrompt: els.semanticPrompt.value.trim(),
+            defaultVideoPrompt: prompt,
+            sourceMode: state.sourceMode || "text",
+            routeType,
+            taskIntent,
+            rewritePrompt,
+            batchSize,
+            aspect: els.aspect.value,
+            duration: els.clipDuration.value,
+            modelChoice,
+            routeConfig,
+            routeConfigs: state.difyRouteConfig,
+            referenceImage: shouldSendReferenceImage(routeType) ? primaryReferenceImageForRoute(routeType) : "",
+            referenceImageUrl: shouldSendReferenceImage(routeType) && !primaryReferenceImageForRoute(routeType) ? state.referenceImageUrl : "",
+            referenceImageName: referenceImageNameForRoute(routeType),
+            lastReferenceImage: lastReferenceImageForRoute(routeType),
+            lastReferenceImageName: "last-frame.jpg",
+            inputs: parseJsonField(els.difyInputs.value)
+          })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || data.error || "Dify 生成失败");
+        state.difyRun = data;
+        renderDifyRun(data);
+        renderWorkflow();
+        persistRunHistory();
+        els.difyStatus.textContent = `批次 ${data.runId}`;
+        const rewritten = findBestPrompt(data, "rewritten");
+        if (options.applyPrompt && rewritten) {
+          els.output.value = rewritten;
+          refreshTranslationPanelIfOpen();
+          notify("AI 修改后的 Prompt 已写回，可继续编辑或确认生成。");
+        } else {
+          const count = Array.isArray(data.assets) ? data.assets.length : (data.videos || []).length;
+          notify(`Dify 批次已完成：${count} 个结果`);
+        }
+      } catch (error) {
+        els.difyStatus.textContent = "生成失败";
+        notify(error.message || "Dify 生成失败。");
+      } finally {
+        els.runDifyBtn.disabled = false;
+        els.aiRewriteBtn.disabled = false;
+        renderDifyRoutes(state.difyRun?.workflow);
+      }
+    }
+
+    async function runDifyPromptRewrite() {
+      await runDifyGeneration({
+        rewritePrompt: true,
+        taskIntent: "rewrite",
+        batchSize: 1,
+        applyPrompt: true
+      });
+    }
+
+    async function rerunCurrentPrompt() {
+      const prompt = extractPrimaryEnglishPrompt(els.output.value);
+      if (!prompt.trim() || prompt.includes("未生成 Prompt")) {
+        notify("请先编辑或载入可生成的 Prompt。");
+        return;
+      }
+      await runDifyGeneration({
+        promptOverride: prompt,
+        routeType: getActiveRoute(),
+        taskIntent: "generate"
+      });
+    }
+
+    async function rerunCurrentReferenceImage() {
+      const prompt = extractPrimaryEnglishPrompt(els.output.value);
+      if (!state.referenceImageData && !state.referenceImageUrl) {
+        notify("请先上传图片，或在结果图片里点“用作参考图”。");
+        return;
+      }
+      const routeType = prompt.trim() && !prompt.includes("未生成 Prompt")
+        ? "text-image-to-video"
+        : "image-to-video";
+      state.selectedRoute = routeType;
+      syncRouteShortcut(routeType);
+      renderDifyRoutes();
+      await runDifyGeneration({
+        promptOverride: prompt.trim() && !prompt.includes("未生成 Prompt") ? prompt : "Use the reference image as the primary visual guide and generate a coherent video.",
+        routeType,
+        taskIntent: "generate"
+      });
+    }
+
+    async function rerunKeptResults() {
+      const kept = collectKeptResultCards();
+      if (!kept.prompt && !kept.imageCard) {
+        notify("请先在结果卡里把 Prompt 或图片标记为“保留”。");
+        return;
+      }
+
+      if (kept.imageCard) {
+        await useResultImage(kept.imageCard, { rerun: false, promptOverride: kept.prompt });
+      }
+
+      const prompt = kept.prompt || extractPrimaryEnglishPrompt(els.output.value);
+      const hasPrompt = Boolean(prompt.trim()) && !prompt.includes("未生成 Prompt");
+      const hasImage = Boolean(state.referenceImageData || state.referenceImageUrl);
+      const routeType = hasImage
+        ? (hasPrompt ? "text-image-to-video" : "image-to-video")
+        : "text-to-video";
+
+      state.selectedRoute = routeType;
+      syncRouteShortcut(routeType);
+      renderDifyRoutes();
+      await runDifyGeneration({
+        promptOverride: hasPrompt ? prompt : "Use the selected kept image as the primary visual guide and generate a coherent video.",
+        routeType,
+        taskIntent: "generate"
+      });
+    }
+
+    function collectKeptResultCards() {
+      const cards = [...els.videoResults.querySelectorAll("[data-id]")];
+      const keptCards = cards.filter(card => card.querySelector("[data-screen-decision]")?.value === "keep");
+      const promptCard = keptCards.find(card => card.querySelector("[data-result-prompt]"));
+      const imageCard = keptCards.find(card => card.querySelector("img"));
+      const prompt = promptCard?.querySelector("[data-result-prompt]")?.value
+        || imageCard?.querySelector("[data-image-rerun-prompt]")?.value
+        || "";
+      return { prompt: prompt.trim(), imageCard };
+    }
+
+    async function loadDifyRun() {
+      try {
+        const response = await fetch(apiUrl("/api/dify/latest"));
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || data.error || "没有 Dify 批次");
+        state.difyRun = data;
+        renderDifyRun(data);
+        renderWorkflow();
+        persistRunHistory();
+        els.difyStatus.textContent = `批次 ${data.runId}`;
+      } catch (error) {
+        notify(error.message || "没有可载入的 Dify 批次。");
+      }
+    }
+
+    async function saveDifySelection() {
+      if (!state.difyRun) {
+        notify("没有可保存的生成批次。");
+        return;
+      }
+      const items = [...els.videoResults.querySelectorAll("[data-id]")].map(card => ({
+        id: card.dataset.id,
+        decision: card.querySelector("[data-screen-decision]")?.value || "pending",
+        score: Number(card.querySelector("[data-screen-score]")?.value || 0),
+        prompt: card.querySelector("[data-result-prompt]")?.value || card.querySelector("[data-image-rerun-prompt]")?.value || "",
+        notes: card.querySelector("[data-screen-notes]")?.value || ""
+      }));
+
+      const response = await fetch(apiUrl("/api/dify/selection"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId: state.difyRun.runId, items })
+      });
+      if (response.ok) {
+        notify("筛选结果已保存。");
+      } else {
+        notify("筛选结果保存失败。");
+      }
+    }
+
+    function renderDifyRun(run, options = {}) {
+      renderDifyRoutes(run.workflow);
+      const assets = Array.isArray(run.assets) && run.assets.length
+        ? run.assets
+        : (Array.isArray(run.videos) ? run.videos.map(video => ({ ...video, type: "video" })) : []);
+      run.assets = assets;
+      updateResultSummary(run, assets);
+      renderResultFilterState();
+      if (!assets.length) {
+        els.videoResults.innerHTML = "";
+        setResultEmpty("这个 Dify 批次没有解析到可展示结果。请检查工作流 outputs 是否返回 prompt、图片 URL、视频 URL 或文件对象。", true);
+        return;
+      }
+
+      const filteredAssets = filterResultAssets(assets);
+      if (!filteredAssets.length) {
+        els.videoResults.innerHTML = "";
+        setResultEmpty(`当前筛选没有${resultFilterLabel(state.resultFilter)}结果。`, true);
+        return;
+      }
+
+      setResultEmpty("", false);
+      els.videoResults.innerHTML = filteredAssets.map(item => renderDifyAsset(item)).join("");
+      bindResultCardActions();
+      if (!options.keepScroll) scrollResultsIntoView();
+    }
+
+    function bindResultCardActions() {
+      els.videoResults.querySelectorAll("[data-use-prompt]").forEach(button => {
+        button.addEventListener("click", () => {
+          const card = button.closest("[data-id]");
+          const text = card?.querySelector("[data-result-prompt]")?.value || "";
+          if (!text.trim()) return;
+          els.output.value = text;
+          refreshTranslationPanelIfOpen();
+          renderDifyRoutes();
+          notify("已放入 Prompt 编辑框。");
+        });
+      });
+      els.videoResults.querySelectorAll("[data-rerun-prompt]").forEach(button => {
+        button.addEventListener("click", () => {
+          const card = button.closest("[data-id]");
+          const text = card?.querySelector("[data-result-prompt]")?.value || "";
+          if (!text.trim()) return;
+          runDifyGeneration({ promptOverride: text, taskIntent: "generate" });
+        });
+      });
+      els.videoResults.querySelectorAll("[data-use-image]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const card = button.closest("[data-id]");
+          await useResultImage(card, { rerun: false });
+        });
+      });
+      els.videoResults.querySelectorAll("[data-rerun-image]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const card = button.closest("[data-id]");
+          await useResultImage(card, { rerun: true });
+        });
+      });
+
+      els.videoResults.querySelectorAll("[data-id]").forEach(card => {
+        const asset = findRunAsset(card.dataset.id);
+        if (!asset) return;
+        const decision = card.querySelector("[data-screen-decision]");
+        const score = card.querySelector("[data-screen-score]");
+        const notes = card.querySelector("[data-screen-notes]");
+        const promptBox = card.querySelector("[data-result-prompt]");
+        const imgPromptBox = card.querySelector("[data-image-rerun-prompt]");
+        if (decision) decision.addEventListener("change", () => {
+          asset.decision = decision.value;
+          card.classList.toggle("is-kept", asset.decision === "keep");
+          updateResultSummary(state.difyRun, state.difyRun.assets);
+          persistRunHistory();
+        });
+        if (score) score.addEventListener("input", () => { asset.score = Number(score.value) || 0; persistRunHistory(); });
+        if (notes) notes.addEventListener("input", () => { asset.notes = notes.value; persistRunHistory(); });
+        if (promptBox) promptBox.addEventListener("input", () => { asset.text = promptBox.value; persistRunHistory(); });
+        if (imgPromptBox) imgPromptBox.addEventListener("input", () => { asset.rerunPrompt = imgPromptBox.value; persistRunHistory(); });
+      });
+    }
+
+    function findRunAsset(id) {
+      return (state.difyRun?.assets || []).find(asset => asset.id === id);
+    }
+
+    async function useResultImage(card, options = {}) {
+      const image = card?.querySelector("img");
+      if (!image?.src) {
+        notify("没有可用图片。");
+        return;
+      }
+      const prompt = options.promptOverride || card.querySelector("[data-image-rerun-prompt]")?.value || extractPrimaryEnglishPrompt(els.output.value);
+      try {
+        const dataUrl = await imageUrlToDataUrl(image.src);
+        state.referenceImageData = dataUrl;
+        state.referenceImageUrl = "";
+        state.referenceImagePreviewUrl = dataUrl;
+      } catch {
+        state.referenceImageData = "";
+        state.referenceImageUrl = image.src;
+        state.referenceImagePreviewUrl = image.src;
+      }
+      state.referenceImageName = image.alt || "dify-result-image";
+      state.referenceFrameIndex = -1;
+      els.promptMode.value = "image-video";
+      els.output.value = prompt;
+      refreshTranslationPanelIfOpen();
+      state.selectedRoute = prompt.trim() ? "text-image-to-video" : "image-to-video";
+      syncRouteShortcut(state.selectedRoute);
+      renderVideoInfo();
+      renderReferenceImage();
+      renderSourceSummary();
+      renderDifyRoutes();
+      notify(options.rerun ? "已使用结果图片，正在再次进入 Dify。" : "已把结果图片设为参考图。");
+      if (options.rerun) {
+        await runDifyGeneration({
+          promptOverride: prompt,
+          routeType: state.selectedRoute,
+          taskIntent: "generate"
+        });
+      }
+    }
+
+    async function imageUrlToDataUrl(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("image fetch failed");
+      const blob = await response.blob();
+      return await blobToDataUrl(blob);
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(new Error("blob read error"));
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function filterResultAssets(assets) {
+      if (state.resultFilter === "all") return assets;
+      if (state.resultFilter === "kept") return assets.filter(item => item.decision === "keep");
+      return assets.filter(item => item.type === state.resultFilter);
+    }
+
+    function updateResultSummary(run, assets) {
+      const counts = resultCounts(assets);
+      const kept = assets.filter(item => item.decision === "keep").length;
+      const route = run.workflow?.routeLabel || routeLabel(run.routeType);
+      els.resultSummary.textContent = [
+        run.runId || "未命名批次",
+        route,
+        `Prompt ${counts.prompt}`,
+        `图片 ${counts.image}`,
+        `视频 ${counts.video}`,
+        `保留 ${kept}`
+      ].filter(Boolean).join(" · ");
+    }
+
+    function resultCounts(assets) {
+      return assets.reduce((counts, item) => {
+        if (item.type === "prompt") counts.prompt += 1;
+        else if (item.type === "image") counts.image += 1;
+        else if (item.type === "video") counts.video += 1;
+        return counts;
+      }, { prompt: 0, image: 0, video: 0 });
+    }
+
+    function renderResultFilterState() {
+      els.resultToolbar.querySelectorAll("[data-result-filter]").forEach(button => {
+        button.classList.toggle("is-active", (button.dataset.resultFilter || "all") === state.resultFilter);
+      });
+    }
+
+    function resultFilterLabel(filter) {
+      const map = { prompt: "Prompt", image: "图片", video: "视频", all: "全部", kept: "已保留" };
+      return map[filter] || "结果";
+    }
+
+    function setResultEmpty(text, visible) {
+      els.resultEmpty.textContent = text;
+      els.resultEmpty.classList.toggle("is-hidden", !visible);
+    }
+
+    function scrollResultsIntoView() {
+      const viewer = els.resultSummary.closest(".result-viewer");
+      if (viewer) viewer.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    function decisionSelect(decision) {
+      const options = [
+        ["pending", "待定"],
+        ["keep", "保留"],
+        ["reject", "淘汰"],
+        ["revise", "需重做"]
+      ];
+      const current = decision || "pending";
+      return `<select data-screen-decision>${options.map(([value, label]) => (
+        `<option value="${value}"${value === current ? " selected" : ""}>${label}</option>`
+      )).join("")}</select>`;
+    }
+
+    function renderDifyAsset(item) {
+      const keptClass = item.decision === "keep" ? " is-kept" : "";
+      if (item.type === "prompt") {
+        return `<div class="asset-card${keptClass}" data-id="${escapeHtml(item.id)}">
+          <div class="video-card-title">${escapeHtml(item.title || "Prompt")} · ${escapeHtml(item.promptType || "")}</div>
+          <textarea data-result-prompt spellcheck="false">${escapeHtml(item.text || "")}</textarea>
+          <div class="screening-row">
+            <button class="btn" type="button" data-use-prompt>使用</button>
+            <button class="btn primary" type="button" data-rerun-prompt>再生成</button>
+            ${decisionSelect(item.decision)}
+          </div>
+          <textarea data-screen-notes placeholder="筛选备注">${escapeHtml(item.notes || "")}</textarea>
+        </div>`;
+      }
+
+      const src = item.localUrl || item.url || "";
+      if (item.type === "image") {
+        const imagePrompt = item.rerunPrompt || extractPrimaryEnglishPrompt(els.output.value) || state.difyRun?.prompt || "";
+        return `<div class="asset-card${keptClass}" data-id="${escapeHtml(item.id)}">
+          <img src="${escapeHtml(src)}" alt="${escapeHtml(item.title || item.id)}">
+          <div class="video-card-title">${escapeHtml(item.title || item.id)} · ${escapeHtml(item.status || "")}</div>
+          <textarea data-image-rerun-prompt spellcheck="false" placeholder="修改 Prompt 后，可用这张图片再次进入 Dify。">${escapeHtml(imagePrompt)}</textarea>
+          <div class="screening-row">
+            <button class="btn" type="button" data-use-image>用作参考图</button>
+            <button class="btn primary" type="button" data-rerun-image>用图再生成</button>
+            ${decisionSelect(item.decision)}
+          </div>
+          <textarea data-screen-notes placeholder="筛选备注">${escapeHtml(item.notes || "")}</textarea>
+        </div>`;
+      }
+      const media = `<video src="${escapeHtml(src)}" controls playsinline></video>`;
+      return `<div class="video-card${keptClass}" data-id="${escapeHtml(item.id)}">
+          ${media}
+          <div class="video-card-title">${escapeHtml(item.title || item.id)} · ${escapeHtml(item.status || "")}</div>
+          <div class="screening-row">
+            ${decisionSelect(item.decision)}
+            <input class="score-input" data-screen-score type="number" min="0" max="10" value="${Number(item.score || 0)}" title="评分">
+            <a class="btn" href="${escapeHtml(src)}" target="_blank" rel="noreferrer">打开</a>
+          </div>
+          <textarea data-screen-notes placeholder="筛选备注">${escapeHtml(item.notes || "")}</textarea>
+        </div>`;
+    }
+
+    function extractPrimaryEnglishPrompt(text) {
+      const source = String(text || "");
+      const zhIndex = source.indexOf("中文参考");
+      if (source.includes("ENGLISH PROMPT (PRIMARY)") && zhIndex !== -1) {
+        return source.slice(0, zhIndex).trim();
+      }
+      return source.trim();
+    }
+
+    function parseJsonField(text) {
+      const source = String(text || "").trim();
+      if (!source) return {};
+      try {
+        return JSON.parse(source);
+      } catch {
+        throw new Error("附加变量 JSON 格式不正确。");
+      }
+    }
+
+    function runSmartTranslate() {
+      syncCurrentShot();
+      generateOutput();
+      updateTranslationPanelFromOutput();
+      els.translationPanel.classList.remove("is-hidden");
+      const missingEnglish = state.shots.some(shot => (
+        editableFields.some(field => semanticClean(shot?.[field]) && !semanticClean(shot?.[`${field}En`]))
+      ));
+      persistState();
+      notify(missingEnglish
+        ? "已打开中英文独立编辑框；部分英文译文缺失，后续接 Dify 翻译线路后可自动补齐。"
+        : "已把中英文 Prompt 拆到独立编辑框，可同步修改。");
+    }
+
+    function updateTranslationPanelFromOutput() {
+      const { zh, en } = splitPromptLanguages(els.output.value);
+      els.promptZh.value = zh;
+      els.promptEn.value = en;
+    }
+
+    function refreshTranslationPanelIfOpen() {
+      if (!els.translationPanel.classList.contains("is-hidden")) {
+        updateTranslationPanelFromOutput();
+      }
+    }
+
+    function splitPromptLanguages(value) {
+      const source = String(value || "").trim();
+      const englishMarker = "ENGLISH PROMPT (PRIMARY)";
+      const zhMarker = "中文参考";
+      const enIndex = source.indexOf(englishMarker);
+      const zhIndex = source.indexOf(zhMarker);
+      if (enIndex !== -1 && zhIndex !== -1 && zhIndex > enIndex) {
+        return {
+          en: source.slice(enIndex + englishMarker.length, zhIndex).trim(),
+          zh: source.slice(zhIndex + zhMarker.length).trim()
+        };
+      }
+      if (zhIndex !== -1) {
+        return { en: source.slice(0, zhIndex).trim(), zh: source.slice(zhIndex + zhMarker.length).trim() };
+      }
+      return { en: "", zh: source };
+    }
+
+    function syncTranslationPanelToOutput() {
+      const zh = els.promptZh.value.trim();
+      const en = els.promptEn.value.trim();
+      const sections = [];
+      if (en) sections.push(`ENGLISH PROMPT (PRIMARY)\n${en}`);
+      if (zh) sections.push(`${en ? "中文参考\n" : ""}${zh}`);
+      if (sections.length) {
+        els.output.value = sections.join("\n\n");
+        state.activeTab = "full";
+        document.querySelectorAll(".tab:not([data-result-filter])").forEach(item => {
+          item.classList.toggle("is-active", item.dataset.tab === "full");
+        });
+        renderDifyRoutes();
+        persistState();
+      }
+    }
+
+    function generateSemanticPrompt() {
+      syncCurrentShot();
+      const fullPrompt = state.activeTab === "full" ? els.output.value : buildFullPrompt();
+      const semantic = buildSemanticPrompt(fullPrompt);
+      if (!semantic) {
+        notify("没有可语译的整体 Prompt。");
+        return;
+      }
+      els.semanticPrompt.value = semantic;
+      persistState();
+      notify("已生成语译段落，可继续编辑。");
+    }
+
+    function buildSemanticPrompt(fullPrompt) {
+      return buildSemanticPromptFromShots() || buildSemanticPromptFromText(fullPrompt);
+    }
+
+    function buildSemanticPromptFromShots() {
+      if (!state.shots.some(hasPromptContent)) return "";
+      const main = state.shots[0] || {};
+      const parts = [];
+      const push = (label, value) => {
+        const text = semanticClean(value);
+        if (text) parts.push(`${label}：${text}`);
+      };
+
+      push("主体", firstSemanticValue("subject"));
+      push("场景", firstSemanticValue("environment"));
+      push("动作", firstSemanticValue("action"));
+      push("镜头", firstSemanticValue("camera"));
+      push("光线", firstSemanticValue("lighting"));
+      push("风格", firstSemanticValue("style"));
+
+      const shotFlow = state.shots
+        .filter(hasPromptContent)
+        .slice(0, 3)
+        .map((shot, index) => semanticClean(`${index + 1}. ${shot.subject || ""}${shot.action ? `，${shot.action}` : ""}`, 46))
+        .filter(Boolean)
+        .join("；");
+      push("节奏", shotFlow);
+      push("规格", [els.aspect.value, els.clipDuration.value.trim()].filter(Boolean).join("，"));
+      push("避免", main.negative || state.analysis.negative);
+
+      return finishSemanticParagraph(parts.join("；"));
+    }
+
+    function firstSemanticValue(...fields) {
+      const values = [];
+      state.shots.forEach(shot => {
+        fields.forEach(field => {
+          const value = semanticClean(shot?.[field], 42);
+          if (value && !values.includes(value)) values.push(value);
+        });
+      });
+      return values.slice(0, 1).join("；");
+    }
+
+    function buildSemanticPromptFromText(fullPrompt) {
+      const source = semanticTextSource(fullPrompt);
+      if (!source || /未生成\s*Prompt/i.test(source)) return "";
+      const parts = [];
+      const push = (label, value) => {
+        const text = semanticClean(value);
+        if (text) parts.push(`${label}：${text}`);
+      };
+
+      push("主体与场景", sectionAfterLabels(source, ["整体画面提示词", "Overall video prompt"]));
+      push("分镜节奏", sectionAfterLabels(source, ["分镜结构", "Shot structure"]));
+      push("声音", lineAfterLabels(source, ["声音", "Audio"]));
+      push("避免", lineAfterLabels(source, ["负面约束", "Negative prompt", "Negative Prompt"]));
+
+      const paragraph = parts.length
+        ? parts.join("；")
+        : semanticClean(source.split(/\n+/).filter(Boolean).slice(0, 5).join("；"));
+      return finishSemanticParagraph(paragraph);
+    }
+
+    function semanticTextSource(fullPrompt) {
+      const text = String(fullPrompt || "").trim();
+      const zhIndex = text.indexOf("中文参考");
+      if (zhIndex !== -1) return text.slice(zhIndex + "中文参考".length).trim();
+      return text;
+    }
+
+    function sectionAfterLabels(source, labels) {
+      const lines = String(source || "").split(/\r?\n/);
+      const start = lines.findIndex(line => labels.some(label => line.trim().toLowerCase().startsWith(label.toLowerCase())));
+      if (start === -1) return "";
+      const collected = [];
+      for (let index = start + 1; index < lines.length; index += 1) {
+        const line = lines[index].trim();
+        if (!line) {
+          if (collected.length) break;
+          continue;
+        }
+        if (/^(项目|类型|声音|负面约束|Project|Type|Audio|Negative|ENGLISH|中文参考)/i.test(line)) break;
+        collected.push(line);
+      }
+      return collected.join("；");
+    }
+
+    function lineAfterLabels(source, labels) {
+      const lines = String(source || "").split(/\r?\n/);
+      for (const line of lines) {
+        const trimmed = line.trim();
+        const label = labels.find(item => trimmed.toLowerCase().startsWith(item.toLowerCase()));
+        if (label) return trimmed.slice(label.length).replace(/^[:：]\s*/, "");
+      }
+      return "";
+    }
+
+    function semanticClean(value, maxLength = 90) {
+      const cleaned = String(value || "")
+        .replace(/^(主体|场景|动作|镜头|光线|风格|声音|负面约束|整体画面提示词|分镜结构|Audio|Negative prompt)\s*[:：]/i, "")
+        .replace(/待分析|待填写|待补充|Pending analysis\.?|To be supplemented\.?/gi, "")
+        .replace(/\s+/g, " ")
+        .replace(/[。；;,\s]+$/g, "")
+        .trim();
+      if (cleaned.length <= maxLength) return cleaned;
+      return `${cleaned.slice(0, maxLength).replace(/[，、和或及与的在为是了,;；:：\s]+$/g, "")}...`;
+    }
+
+    function finishSemanticParagraph(value) {
+      const text = String(value || "").replace(/；{2,}/g, "；").replace(/^；|；$/g, "").trim();
+      if (!text) return "";
+      return /[。.!?？]$/.test(text) ? text : `${text}。`;
+    }
+
+    function buildDefaultRouteConfig() {
+      return Object.fromEntries(DEFAULT_DIFY_ROUTES.map((route, index) => [
+        route.type,
+        {
+          label: route.label,
+          loopCount: index === 0 ? 1 : 0,
+          modelChoice: ""
+        }
+      ]));
+    }
+
+    function mergeDifyRoutes(routes) {
+      const merged = routes.length ? routes : DEFAULT_DIFY_ROUTES;
+      merged.forEach(route => {
+        const config = ensureRouteConfig(route.type);
+        const preferredModel = pickPreferredDifyModel(route.modelChoices, route.model);
+        config.label = route.label || config.label || route.type;
+        if (preferredModel && (!config.modelChoice || config.modelChoice === "klingv3")) config.modelChoice = preferredModel;
+        if (route.loopCount && !config.loopCount) config.loopCount = Number(route.loopCount) || 0;
+      });
+      return merged.map(route => ({ ...route, label: route.label || routeLabel(route.type) }));
+    }
+
+    function pickPreferredDifyModel(modelChoices = [], fallback = "") {
+      const values = [
+        ...modelChoices.map(item => item.value || item),
+        fallback
+      ].filter(Boolean);
+      const unique = [...new Set(values)];
+      const preferred = ["seedance2.0fast", "hailuo2.3fast", "seedance1.5", "klingv2.6", "klingv3"];
+      return preferred.find(value => unique.includes(value)) || unique[0] || "";
+    }
+
+    function ensureRouteConfig(routeType) {
+      const route = DEFAULT_DIFY_ROUTES.find(item => item.type === routeType);
+      if (!state.difyRouteConfig[routeType]) {
+        state.difyRouteConfig[routeType] = {
+          label: route?.label || routeType,
+          loopCount: 0,
+          modelChoice: ""
+        };
+      }
+      return state.difyRouteConfig[routeType];
+    }
+
+    function getActiveRoute() {
+      return state.selectedRoute || detectDifyRoute(false, { ignoreSelected: true });
+    }
+
+    function updateRouteConfigFromShortcut() {
+      const routeType = getActiveRoute();
+      const config = ensureRouteConfig(routeType);
+      config.loopCount = Math.max(1, Math.min(Number(els.batchSize.value) || 1, 20));
+      config.modelChoice = els.difyModelChoice.value.trim();
+      state.selectedRoute = routeType;
+    }
+
+    function syncRouteShortcut(routeType) {
+      const config = ensureRouteConfig(routeType);
+      els.batchSize.value = String(Math.max(1, Number(config.loopCount) || 1));
+      els.difyModelChoice.value = config.modelChoice || "";
+    }
+
+    function detectDifyRoute(rewritePrompt = false) {
+      if (state.selectedRoute) {
+        return rewritePrompt ? rewriteCounterpart(state.selectedRoute) : state.selectedRoute;
+      }
+      return detectDifyRouteFromSource(rewritePrompt);
+    }
+
+    function detectDifyRouteFromSource(rewritePrompt = false) {
+      const hasReferenceImage = Boolean(state.referenceImageData || state.referenceImageUrl);
+      if (els.promptMode.value === "image") {
+        return "text-to-image";
+      }
+      if (state.sourceMode === "image") {
+        return rewritePrompt ? "rewrite-text-image-to-video" : "image-to-video";
+      }
+      if (hasReferenceImage && els.promptMode.value === "image-video") {
+        return rewritePrompt ? "rewrite-text-image-to-video" : "text-image-to-video";
+      }
+      return rewritePrompt ? "rewrite-text-to-video" : "text-to-video";
+    }
+
+    function rewriteCounterpart(routeType) {
+      const map = {
+        "text-to-video": "rewrite-text-to-video",
+        "text-image-to-video": "rewrite-text-image-to-video",
+        "image-to-video": "rewrite-text-image-to-video",
+        "first-last-frame-video": "rewrite-text-image-to-video"
+      };
+      return map[routeType] || routeType;
+    }
+
+    function shouldSendReferenceImage(routeType) {
+      if (routeType === "first-last-frame-video") {
+        return Boolean(state.frames[0]?.src || state.referenceImageData || state.referenceImageUrl);
+      }
+      return Boolean(state.referenceImageData || state.referenceImageUrl) && /image-to-video|text-image-to-video/.test(routeType);
+    }
+
+    function primaryReferenceImageForRoute(routeType) {
+      if (routeType === "first-last-frame-video" && state.frames[0]?.src) {
+        return state.frames[0].src;
+      }
+      return state.referenceImageData;
+    }
+
+    function referenceImageNameForRoute(routeType) {
+      if (routeType === "first-last-frame-video" && state.frames[0]?.src) {
+        return "first-frame.jpg";
+      }
+      return state.referenceImageName || (state.sourceMode === "image" ? state.fileName : "") || "reference-image.jpg";
+    }
+
+    function lastReferenceImageForRoute(routeType) {
+      if (routeType !== "first-last-frame-video") return "";
+      if (state.frames.length > 1) return state.frames[state.frames.length - 1].src || "";
+      return "";
+    }
+
+    function buildRouteRows(activeRoute = detectDifyRoute(false), loopCount = Number(els.batchSize.value) || 1, workflow = null) {
+      const routes = workflow?.routes || (state.difyRoutes.length ? state.difyRoutes : DEFAULT_DIFY_ROUTES);
+      const detectedModel = pickPreferredDifyModel(workflow?.modelChoices || []);
+      return routes.map(route => ({
+        ...route,
+        label: route.label || routeLabel(route.type),
+        active: route.type === activeRoute,
+        loopCount: route.type === activeRoute
+          ? Math.max(1, Number(ensureRouteConfig(route.type).loopCount || loopCount || 1))
+          : Number(ensureRouteConfig(route.type).loopCount || route.loopCount || 0),
+        configured: route.configured,
+        connected: route.connected,
+        connectDetail: route.connectDetail || "",
+        modelChoices: route.modelChoices || [],
+        outputType: route.outputType || "video",
+        model: ensureRouteConfig(route.type).modelChoice || pickPreferredDifyModel(route.modelChoices, route.model) || detectedModel || "",
+        description: route.description || ""
+      }));
+    }
+
+    function renderDifyRoutes(workflow = null) {
+      const activeRoute = workflow?.routeType || detectDifyRoute(false);
+      const rows = workflow?.routes || buildRouteRows(activeRoute, Number(els.batchSize.value) || 1, workflow);
+      els.routeStatus.textContent = routeLabel(activeRoute);
+      renderDifyModelOptions(workflow, rows);
+      els.difyRoutes.innerHTML = rows.map(route => (
+        `<div class="route-row${route.active ? " is-active" : ""}${route.configured === false || route.connected === false ? " is-unconfigured" : ""}" title="${escapeHtml([route.description, route.connectDetail].filter(Boolean).join(" / "))}">
+          <button class="route-select" type="button" data-route-select="${escapeHtml(route.type)}"><strong>${escapeHtml(route.label || routeLabel(route.type))}</strong></button>
+          <input data-route-loop="${escapeHtml(route.type)}" type="number" min="0" max="20" value="${Number(route.loopCount || 0)}" title="循环次数">
+          <input data-route-model="${escapeHtml(route.type)}" type="text" list="difyModelOptions" value="${escapeHtml(route.model || "")}" placeholder="模型选择">
+          <span class="route-state">${route.active ? "当前" : route.configured === false ? "未配置" : route.connected === false ? "未接通" : route.outputType === "image" ? "图片" : "视频"}</span>
+        </div>`
+      )).join("");
+      const detectedModel = pickPreferredDifyModel(workflow?.modelChoices || [], rows.find(row => row.model)?.model || "");
+      if (detectedModel && !els.difyModelChoice.value.trim()) {
+        els.difyModelChoice.value = detectedModel;
+      }
+    }
+
+    function renderDifyModelOptions(workflow = null, rows = []) {
+      const values = [
+        ...(workflow?.modelChoices || []).map(item => item.value),
+        ...state.difyModelChoices.map(item => item.value || item),
+        ...rows.flatMap(row => (row.modelChoices || []).map(item => item.value || item)),
+        ...rows.map(row => row.model),
+        els.difyModelChoice.value.trim()
+      ].filter(Boolean);
+      const unique = [...new Set(values)];
+      els.difyModelOptions.innerHTML = unique.length
+        ? unique.map(value => `<option value="${escapeHtml(value)}"></option>`).join("")
+        : `<option value="等待 Dify 返回模型列表"></option>`;
+    }
+
+    function routeLabel(type) {
+      const map = {
+        "text-to-video": "文生视频套件",
+        "rewrite-text-to-video": "扩写文生视频",
+        "text-image-to-video": "文生图生视频",
+        "rewrite-text-image-to-video": "扩写文生图生视频",
+        "image-to-video": "图生视频",
+        "first-last-frame-video": "首尾帧视频套件",
+        "text-to-image": "生图套件"
+      };
+      return map[type] || "未识别线路";
+    }
+
+    function findBestPrompt(run, preferredType = "") {
+      const prompts = Array.isArray(run?.prompts) ? run.prompts : [];
+      const preferred = preferredType ? prompts.find(item => item.promptType === preferredType && item.text) : null;
+      return (preferred || prompts.find(item => item.text))?.text || "";
+    }
+
+    async function analyzeVideo() {
+      if (!state.frames.length) {
+        notify("请先上传视频或图片，并确认素材已识别。");
+        return;
+      }
+      if (!els.model.value.trim()) {
+        notify("请先选择反推模型。");
+        return;
+      }
+
+      syncCurrentShot();
+      if (els.analyzeBtn) els.analyzeBtn.disabled = true;
+      setStatus("Dify 千问正在分析视频", false);
+
+      try {
+        const response = await fetch(apiUrl("/api/analyze"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(await buildAnalysisPayload({ compactFrames: true, includeSourceFile: true }))
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.detail || data.error || "自动分析失败");
+        }
+
+        applyAnalysis(data.analysis);
+        generateOutput();
+        setStatus("自动分析已完成", true);
+        notify("自动分析已写入右侧字段。");
+      } catch (error) {
+        setStatus("自动分析不可用", false);
+        notify(error.message || "自动分析不可用，请改用保存分析包。");
+      } finally {
+        if (els.analyzeBtn) els.analyzeBtn.disabled = false;
+      }
+    }
+
+    async function buildAnalysisPayload(options = {}) {
+      const frames = options.compactFrames
+        ? await compactFramesForSubmit()
+        : state.frames.map(frame => ({
+            timeSec: Number(formatTime(frame.time)),
+            image: frame.src
+          }));
+      const contactSheet = options.compactFrames ? await buildContactSheetForSubmit() : "";
+
+      return {
+        project: els.projectName.value.trim(),
+        sourceMode: state.sourceMode || "video",
+        sourceFileName: state.fileName || null,
+        sourceFile: options.includeSourceFile ? (state.sourceFileData || "") : "",
+        sourceFileType: options.includeSourceFile ? (state.sourceFileType || "") : "",
+        analyzePrompt: els.analyzePrompt.value.trim(),
+        outputMode: els.promptMode.value,
+        userPrompt: els.semanticPrompt.value.trim(),
+        model: els.model.value.trim(),
+        aspect: els.aspect.value,
+        durationSec: Number(formatTime(state.duration)),
+        resolution: state.width && state.height ? `${state.width}x${state.height}` : null,
+        contactSheet,
+        frames,
+        shots: state.shots.map((shot, index) => ({
+          id: `shot_${String(index + 1).padStart(2, "0")}`,
+          timeRange: `${formatTime(shot.start)}-${formatTime(shot.end)}s`
+        }))
+      };
+    }
+
+    async function compactFramesForSubmit() {
+      const maxFrames = 8;
+      const selected = state.frames.slice(0, maxFrames);
+      return Promise.all(selected.map(async frame => ({
+        timeSec: Number(formatTime(frame.time)),
+        image: await resizeDataUrl(frame.src, 520, .62)
+      })));
+    }
+
+    async function buildContactSheetForSubmit() {
+      const selected = state.frames.slice(0, 8);
+      if (!selected.length) return "";
+      try {
+        const cols = Math.min(4, selected.length);
+        const rows = Math.ceil(selected.length / cols);
+        const thumbW = 260;
+        const thumbH = 347;
+        const labelH = 26;
+        const gap = 12;
+        const canvas = document.createElement("canvas");
+        canvas.width = cols * thumbW + (cols + 1) * gap;
+        canvas.height = rows * (thumbH + labelH) + (rows + 1) * gap;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#121416";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "14px system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+        ctx.textBaseline = "top";
+
+        const images = await Promise.all(selected.map(frame => loadImageElement(frame.src)));
+        images.forEach((image, index) => {
+          const x = gap + (index % cols) * (thumbW + gap);
+          const y = gap + Math.floor(index / cols) * (thumbH + labelH + gap);
+          ctx.fillStyle = "#050607";
+          ctx.fillRect(x, y, thumbW, thumbH);
+          const scale = Math.min(thumbW / image.naturalWidth, thumbH / image.naturalHeight);
+          const w = Math.round(image.naturalWidth * scale);
+          const h = Math.round(image.naturalHeight * scale);
+          ctx.drawImage(image, x + Math.round((thumbW - w) / 2), y + Math.round((thumbH - h) / 2), w, h);
+          ctx.fillStyle = "#e6ecef";
+          ctx.fillText(`${String(index + 1).padStart(2, "0")}  ${formatTime(selected[index].time)}s`, x, y + thumbH + 7);
+        });
+        return canvas.toDataURL("image/jpeg", .82);
+      } catch (error) {
+        console.warn("contact sheet build failed", error);
+        return "";
+      }
+    }
+
+    function loadImageElement(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("frame image load failed"));
+        image.src = src;
+      });
+    }
+
+    function resizeDataUrl(src, maxWidth, quality) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => {
+          const scale = Math.min(1, maxWidth / image.naturalWidth);
+          const width = Math.max(1, Math.round(image.naturalWidth * scale));
+          const height = Math.max(1, Math.round(image.naturalHeight * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        image.onerror = () => reject(new Error("关键帧压缩失败"));
+        image.src = src;
+      });
+    }
+
+    function estimateJsonBytes(value) {
+      return new Blob([JSON.stringify(value)]).size;
+    }
+
+    function applyAnalysis(analysis) {
+      if (!analysis || !Array.isArray(analysis.shots) || !analysis.shots.length) {
+        throw new Error("分析结果缺少分镜字段");
+      }
+
+      if (analysis.projectTitle && els.projectName.value.trim() === "新建视频反推项目") {
+        els.projectName.value = analysis.projectTitle;
+      }
+      if (analysis.aspect && [...els.aspect.options].some(option => option.value === analysis.aspect)) {
+        els.aspect.value = analysis.aspect;
+      }
+
+      state.analysis = {
+        projectTitle: analysis.projectTitle || "",
+        projectTitleEn: analysis.projectTitleEn || "",
+        overallSummary: analysis.overallSummary || "",
+        overallSummaryEn: analysis.overallSummaryEn || "",
+        detectedStyle: analysis.detectedStyle || "",
+        detectedStyleEn: analysis.detectedStyleEn || "",
+        negative: analysis.negative || "",
+        negativeEn: analysis.negativeEn || ""
+      };
+
+      const inferredDuration = Math.max(...analysis.shots.map(shot => Number(shot.endSec) || 0));
+      if (Number.isFinite(inferredDuration) && inferredDuration > 0) {
+        state.duration = inferredDuration;
+        els.clipDuration.value = `${formatTime(inferredDuration)} 秒`;
+      }
+
+      state.shots = analysis.shots.map((shot, index) => ({
+        title: shot.title || `分析镜头 ${String(index + 1).padStart(2, "0")}`,
+        titleEn: shot.titleEn || "",
+        start: Number.isFinite(shot.startSec) ? shot.startSec : index * Math.max(1, state.duration / analysis.shots.length),
+        end: Number.isFinite(shot.endSec) ? shot.endSec : (index + 1) * Math.max(1, state.duration / analysis.shots.length),
+        subject: shot.subject || "",
+        subjectEn: shot.subjectEn || "",
+        environment: shot.environment || "",
+        environmentEn: shot.environmentEn || "",
+        action: shot.action || "",
+        actionEn: shot.actionEn || "",
+        camera: shot.camera || "",
+        cameraEn: shot.cameraEn || "",
+        lighting: shot.lighting || "",
+        lightingEn: shot.lightingEn || "",
+        style: shot.style || analysis.detectedStyle || "",
+        styleEn: shot.styleEn || analysis.detectedStyleEn || "",
+        audio: shot.audio || "关键帧无法判断，待补充",
+        audioEn: shot.audioEn || "",
+        negative: shot.negative || analysis.negative || "",
+        negativeEn: shot.negativeEn || analysis.negativeEn || ""
+      }));
+      state.activeShot = 0;
+      loadShotToInspector();
+      renderShots();
+    }
+
+    async function loadVideo(file) {
+      if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
+      if (state.imageUrl) URL.revokeObjectURL(state.imageUrl);
+      state.sourceMode = "video";
+      state.sourceLabel = "视频素材";
+      state.videoUrl = URL.createObjectURL(file);
+      state.imageUrl = "";
+      state.sourceFileData = "";
+      state.sourceFileType = file.type || "video/mp4";
+      state.referenceImageData = "";
+      state.referenceImageUrl = "";
+      state.referenceImageName = "";
+      state.referenceImagePreviewUrl = "";
+      state.referenceFrameIndex = -1;
+      state.selectedRoute = "";
+      state.fileName = file.name;
+      state.frames = [];
+      els.preview.src = state.videoUrl;
+      els.preview.style.display = "block";
+      els.imagePreview.style.display = "none";
+      els.imagePreview.removeAttribute("src");
+      els.probe.src = state.videoUrl;
+      els.emptyVideo.style.display = "none";
+      setStatus("已识别为视频，正在读取信息", false);
+      renderFrames(true);
+      renderReferenceImage();
+      renderSourceSummary();
+      const sourceDataPromise = fileToDataUrl(file);
+
+      try {
+        await waitForMetadata(els.probe);
+        state.duration = Number.isFinite(els.probe.duration) ? els.probe.duration : 4;
+        state.width = els.probe.videoWidth || 0;
+        state.height = els.probe.videoHeight || 0;
+        els.clipDuration.value = `${formatTime(state.duration)} 秒`;
+        detectAspect();
+        updatePreviewLayout();
+        seedShotsFromDuration();
+        renderVideoInfo();
+        await extractFrames(8);
+        state.sourceFileData = await sourceDataPromise;
+        setStatus("视频已识别，请确认是否反推", true);
+        renderSourceSummary();
+        renderDifyRoutes();
+        notify("视频已载入，确认后可反推 Prompt。");
+      } catch (error) {
+        console.error(error);
+        setStatus("视频读取失败", false);
+        notify("视频读取失败，请换一个文件重试。");
+      }
+    }
+
+    async function loadImage(file) {
+      if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
+      if (state.imageUrl) URL.revokeObjectURL(state.imageUrl);
+      state.sourceMode = "image";
+      state.sourceLabel = "图片素材";
+      state.videoUrl = "";
+      state.imageUrl = URL.createObjectURL(file);
+      state.sourceFileData = "";
+      state.sourceFileType = file.type || "image/jpeg";
+      state.fileName = file.name;
+      state.frames = [];
+      state.referenceImageData = "";
+      state.referenceImageUrl = "";
+      state.referenceImageName = "";
+      state.referenceImagePreviewUrl = "";
+      state.referenceFrameIndex = -1;
+      state.selectedRoute = "";
+      els.preview.pause();
+      els.preview.removeAttribute("src");
+      els.preview.style.display = "none";
+      els.probe.removeAttribute("src");
+      els.emptyVideo.style.display = "none";
+      els.imagePreview.src = state.imageUrl;
+      els.imagePreview.style.display = "block";
+      setStatus("已识别为图片，正在读取信息", false);
+      renderFrames(true);
+      renderSourceSummary();
+
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        const size = await readImageSize(dataUrl);
+        state.sourceFileData = dataUrl;
+        state.referenceImageData = dataUrl;
+        state.referenceImageName = file.name || "reference-image.jpg";
+        state.referenceImagePreviewUrl = dataUrl;
+        state.width = size.width;
+        state.height = size.height;
+        state.duration = Number.parseFloat(els.clipDuration.value) || 4;
+        state.frames = [{ time: 0, src: dataUrl }];
+        els.promptMode.value = "image-video";
+        detectAspect();
+        updatePreviewLayout();
+        seedShotsFromDuration();
+        renderVideoInfo();
+        renderFrames();
+        renderReferenceImage({ width: size.width, height: size.height });
+        generateOutput();
+        renderDifyRoutes();
+        setStatus("图片已识别，请确认是否反推", true);
+        renderSourceSummary();
+        notify("图片已载入，确认后可反推 Prompt。");
+      } catch (error) {
+        console.error(error);
+        setStatus("图片读取失败", false);
+        notify("图片读取失败，请换一个文件重试。");
+      }
+    }
+
+    async function loadReferenceImage(file) {
+      if (!file || !file.type.startsWith("image/")) {
+        notify("请上传图片文件。");
+        return;
+      }
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        const size = await readImageSize(dataUrl);
+        state.referenceImageData = dataUrl;
+        state.referenceImageUrl = "";
+        state.referenceImageName = file.name || "reference-image.jpg";
+        state.referenceImagePreviewUrl = dataUrl;
+        state.referenceFrameIndex = -1;
+        els.promptMode.value = "image-video";
+        state.selectedRoute = hasUsablePrompt() ? "text-image-to-video" : "image-to-video";
+        syncRouteShortcut(state.selectedRoute);
+        renderReferenceImage({ width: size.width, height: size.height });
+        renderSourceSummary();
+        renderDifyRoutes();
+        persistState();
+        notify("用户参考图已上传，会随 Prompt 一起进入 Dify。");
+      } catch (error) {
+        console.error(error);
+        notify("参考图读取失败，请换一张图片重试。");
+      } finally {
+        if (els.referenceImageInput) els.referenceImageInput.value = "";
+      }
+    }
+
+    function clearReferenceImage() {
+      state.referenceImageData = "";
+      state.referenceImageUrl = "";
+      state.referenceImageName = "";
+      state.referenceImagePreviewUrl = "";
+      state.referenceFrameIndex = -1;
+      state.selectedRoute = "";
+      renderFrames();
+      renderReferenceImage();
+      renderSourceSummary();
+      renderDifyRoutes();
+      persistState();
+      notify("已清除用户参考图。");
+    }
+
+    function renderReferenceImage(meta = {}) {
+      const src = state.referenceImagePreviewUrl || state.referenceImageData || state.referenceImageUrl;
+      const name = state.referenceImageName || (state.referenceFrameIndex >= 0 ? `关键帧 ${state.referenceFrameIndex + 1}` : "");
+      if (src) {
+        els.referencePreview.src = src;
+        els.referencePreview.style.opacity = "1";
+        els.referenceImageMeta.textContent = [
+          name || "已设置参考图",
+          meta.width && meta.height ? `${meta.width}x${meta.height}` : ""
+        ].filter(Boolean).join(" · ");
+        els.clearReferenceBtn.disabled = false;
+      } else {
+        els.referencePreview.removeAttribute("src");
+        els.referencePreview.style.opacity = ".38";
+        els.referenceImageMeta.textContent = "未设置参考图";
+        els.clearReferenceBtn.disabled = true;
+      }
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(new Error("file read error"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function readImageSize(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve({ width: image.naturalWidth || 0, height: image.naturalHeight || 0 });
+        image.onerror = () => reject(new Error("image metadata error"));
+        image.src = src;
+      });
+    }
+
+    function waitForMetadata(video) {
+      return new Promise((resolve, reject) => {
+        if (video.readyState >= 1) {
+          resolve();
+          return;
+        }
+        video.onloadedmetadata = () => resolve();
+        video.onerror = () => reject(new Error("metadata error"));
+      });
+    }
+
+    function seekTo(video, time) {
+      return new Promise((resolve, reject) => {
+        const onSeeked = () => {
+          video.removeEventListener("seeked", onSeeked);
+          video.removeEventListener("error", onError);
+          resolve();
+        };
+        const onError = () => {
+          video.removeEventListener("seeked", onSeeked);
+          video.removeEventListener("error", onError);
+          reject(new Error("seek error"));
+        };
+        video.addEventListener("seeked", onSeeked);
+        video.addEventListener("error", onError);
+        video.currentTime = Math.max(0, Math.min(time, Math.max(0, state.duration - .05)));
+      });
+    }
+
+    async function extractFrames(count) {
+      const video = els.probe;
+      const canvas = els.canvas;
+      const ctx = canvas.getContext("2d");
+      const width = Math.min(640, video.videoWidth || 640);
+      const ratio = width / (video.videoWidth || width);
+      const height = Math.round((video.videoHeight || 360) * ratio);
+      canvas.width = width;
+      canvas.height = height;
+
+      const safeDuration = Math.max(.1, state.duration);
+      const times = Array.from({ length: count }, (_, index) => {
+        if (count === 1) return safeDuration / 2;
+        return (safeDuration * index) / (count - 1);
+      });
+
+      state.frames = [];
+      for (const time of times) {
+        await seekTo(video, time);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        state.frames.push({
+          time,
+          src: canvas.toDataURL("image/jpeg", .72)
+        });
+      }
+      renderFrames();
+      generateOutput();
+    }
+
+    function baseNameFromFile() {
+      const name = (state.fileName || "").trim();
+      if (!name) return "";
+      return name.replace(/\.[^.]+$/, "").trim();
+    }
+
+    function defaultShotTitle(index) {
+      const base = baseNameFromFile();
+      const num = String(index + 1).padStart(2, "0");
+      return base ? `${base} ${num}` : `待分析镜头 ${num}`;
+    }
+
+    function seedShotsFromDuration() {
+      syncCurrentShot();
+      const shotTotal = Math.min(6, Math.max(1, Math.ceil(state.duration / 6)));
+      const segment = state.duration / shotTotal;
+      const base = state.shots[0] || {};
+      state.shots = Array.from({ length: shotTotal }, (_, index) => ({
+        title: hasPromptContent(base) && index === 0 ? base.title : defaultShotTitle(index),
+        start: segment * index,
+        end: segment * (index + 1),
+        subject: base.subject || els.subject.value,
+        environment: base.environment || els.environment.value,
+        action: base.action || els.action.value,
+        camera: base.camera || els.camera.value,
+        lighting: base.lighting || els.lighting.value,
+        style: base.style || els.style.value,
+        audio: base.audio || els.audio.value,
+        negative: base.negative || els.negative.value
+      }));
+      state.activeShot = 0;
+      loadShotToInspector();
+      renderShots();
+    }
+
+    function detectAspect() {
+      if (!state.width || !state.height) return;
+      const ratio = state.width / state.height;
+      if (ratio < .7) els.aspect.value = "9:16";
+      else if (ratio < 1.12) els.aspect.value = "1:1";
+      else if (ratio < 1.45) els.aspect.value = "4:3";
+      else els.aspect.value = "16:9";
+    }
+
+    function updatePreviewLayout() {
+      if (!els.viewer) return;
+      els.viewer.classList.remove("is-portrait", "is-landscape", "is-square");
+      if (!state.width || !state.height) return;
+      const ratio = state.width / state.height;
+      if (ratio < .82) {
+        els.viewer.classList.add("is-portrait");
+      } else if (ratio < 1.18) {
+        els.viewer.classList.add("is-square");
+      } else {
+        els.viewer.classList.add("is-landscape");
+      }
+    }
+
+    function renderVideoInfo() {
+      const items = [
+        { text: state.sourceLabel || "", title: state.sourceLabel || "" },
+        {
+          text: sourceDisplayName(),
+          title: state.fileName || sourceDisplayName(),
+          className: "is-name"
+        },
+        { text: state.width && state.height ? `${state.width}x${state.height}` : "" },
+        { text: state.sourceMode === "video" ? `${formatTime(state.duration)}s` : "" },
+        { text: els.aspect.value },
+        {
+          text: state.referenceImageName ? `参考图：${compactFileName(state.referenceImageName, 18)}` : "",
+          title: state.referenceImageName || ""
+        }
+      ].filter(item => item.text);
+      els.videoInfo.innerHTML = items.map(item => (
+        `<span class="badge${item.className ? ` ${escapeHtml(item.className)}` : ""}" title="${escapeHtml(item.title || item.text)}">${escapeHtml(item.text)}</span>`
+      )).join("");
+    }
+
+    function sourceDisplayName() {
+      const title = state.analysis.projectTitle || els.projectName.value.trim();
+      if (title && title !== "新建视频反推项目") return title;
+      if (!state.fileName) return "";
+      if (looksLikeHashedFileName(state.fileName)) return state.sourceMode === "image" ? "参考图片素材" : "原视频素材";
+      return compactFileName(state.fileName, 28);
+    }
+
+    function looksLikeHashedFileName(name) {
+      const base = String(name || "").replace(/\.[^.]+$/, "");
+      return /^[a-f0-9]{32,}$/i.test(base);
+    }
+
+    function compactFileName(name, maxChars = 28) {
+      const text = String(name || "").trim();
+      if (text.length <= maxChars) return text;
+      const dot = text.lastIndexOf(".");
+      const ext = dot > 0 && text.length - dot <= 8 ? text.slice(dot) : "";
+      const stem = ext ? text.slice(0, dot) : text;
+      const head = Math.max(6, Math.floor((maxChars - ext.length - 1) * .62));
+      const tail = Math.max(4, maxChars - ext.length - head - 1);
+      return `${stem.slice(0, head)}…${stem.slice(-tail)}${ext}`;
+    }
+
+    function renderSourceSummary() {
+      if (!state.sourceMode) {
+        els.sourceSummary.textContent = "未上传素材。上传后会先识别视频/图片模式，再由人工确认是否反推。";
+        renderWorkflow();
+        return;
+      }
+      const details = [
+        `模式：${state.sourceMode === "image" ? "图片上传" : "视频上传"}`,
+        state.fileName ? `文件：${state.fileName}` : "",
+        state.width && state.height ? `尺寸：${state.width}x${state.height}` : "",
+        state.sourceMode === "video" ? `时长：${formatTime(state.duration)}s` : "",
+        state.referenceImageName ? `Dify 参考图：${state.referenceImageName}` : "",
+        "下一步：点击 AI 自动反推，或直接在 Prompt 区手动编辑。"
+      ].filter(Boolean);
+      els.sourceSummary.textContent = details.join("\n");
+      renderWorkflow();
+    }
+
+    const WORKFLOW_AREAS = {
+      source: "对应：STEP 1「上传与配置」+ 素材预览/关键帧",
+      reverse: "对应：中部「反推结果」+ 右栏「字段编辑」",
+      prompt: "对应：中部「Prompt 输出」区",
+      dify: "对应：中部「Dify 线路与生成」区",
+      result: "对应：底部「结果查看」区"
+    };
+
+    function renderWorkflow() {
+      const stages = getWorkflowStages();
+      const active = stages.find(stage => stage.active) || stages[0];
+      els.workflowStatus.textContent = active.status;
+      els.workflowList.innerHTML = stages.map((stage, index) => (
+        `<div class="workflow-step${stage.active ? " is-active" : ""}${stage.done ? " is-done" : ""}" data-step-link="${stage.id}" role="button" tabindex="0" title="点击定位到对应区域">
+          <span class="workflow-index">${String(index + 1).padStart(2, "0")}</span>
+          <span>
+            <span class="workflow-title">STEP ${index + 1} · ${escapeHtml(stage.title)}</span>
+            <span class="workflow-desc">${escapeHtml(stage.desc)}</span>
+            <span class="workflow-area">${escapeHtml(WORKFLOW_AREAS[stage.id] || "")}</span>
+          </span>
+          <span class="workflow-state">${escapeHtml(stage.status)}</span>
+        </div>`
+      )).join("");
+
+      els.workflowList.querySelectorAll("[data-step-link]").forEach(item => {
+        const focusStep = () => focusStepRegion(item.dataset.stepLink);
+        item.addEventListener("click", focusStep);
+        item.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); focusStep(); }
+        });
+      });
+    }
+
+    function focusStepRegion(stepId) {
+      const targets = [...document.querySelectorAll(`[data-step="${stepId}"]`)];
+      if (!targets.length) return;
+      targets[0].scrollIntoView({ behavior: "smooth", block: "center" });
+      targets.forEach(target => {
+        target.classList.remove("step-flash");
+        void target.offsetWidth;
+        target.classList.add("step-flash");
+        setTimeout(() => target.classList.remove("step-flash"), 1300);
+      });
+    }
+
+    function getWorkflowStages() {
+      const hasSource = Boolean(state.sourceMode && state.frames.length);
+      const hasReverseJob = Boolean(state.codexJobId || state.downloadTaskName);
+      const hasAnalysis = Boolean(state.analysis && Object.keys(state.analysis).length);
+      const hasPrompt = hasUsablePrompt();
+      const hasDifyRun = Boolean(state.difyRun);
+      const hasResultAssets = hasDifyRun && Array.isArray(state.difyRun.assets) && state.difyRun.assets.length > 0;
+      const activeId = !hasSource
+        ? "source"
+        : !hasAnalysis && !hasReverseJob
+          ? "reverse"
+          : !hasPrompt
+            ? "prompt"
+            : !hasDifyRun
+              ? "dify"
+              : "result";
+      return WORKFLOW_STEPS.map(step => ({
+        ...step,
+        active: step.id === activeId,
+        done: (
+          (step.id === "source" && hasSource) ||
+          (step.id === "reverse" && (hasAnalysis || hasReverseJob)) ||
+          (step.id === "prompt" && hasPrompt) ||
+          (step.id === "dify" && hasDifyRun) ||
+          (step.id === "result" && hasResultAssets)
+        ),
+        status: workflowStepStatus(step.id, {
+          hasSource,
+          hasReverseJob,
+          hasAnalysis,
+          hasPrompt,
+          hasDifyRun,
+          hasResultAssets
+        })
+      }));
+    }
+
+    function workflowStepStatus(id, flags) {
+      if (id === "source") return flags.hasSource ? "已识别" : "待上传";
+      if (id === "reverse") return flags.hasAnalysis ? "已载入" : flags.hasReverseJob ? "待载入" : "待确认";
+      if (id === "prompt") return flags.hasPrompt ? "可生成" : "待编辑";
+      if (id === "dify") return flags.hasDifyRun ? "已生成" : "待发送";
+      if (id === "result") return flags.hasResultAssets ? "可复用" : "待结果";
+      return "";
+    }
+
+    function hasUsablePrompt() {
+      const prompt = extractPrimaryEnglishPrompt(els.output?.value || "");
+      return Boolean(prompt.trim()) && !prompt.includes("未生成 Prompt");
+    }
+
+    function renderFrames(loading = false) {
+      els.frameCount.textContent = String(state.frames.length);
+      if (loading) {
+        els.frameStrip.innerHTML = Array.from({ length: 8 }, (_, index) => (
+          `<div class="frame placeholder">抽帧中<br>${index + 1}/8</div>`
+        )).join("");
+        return;
+      }
+      if (!state.frames.length) {
+        els.frameStrip.innerHTML = Array.from({ length: 8 }, (_, index) => (
+          `<div class="frame placeholder">关键帧<br>${index + 1}</div>`
+        )).join("");
+        return;
+      }
+      els.frameStrip.innerHTML = state.frames.map((frame, index) => (
+        `<div class="frame${index === 0 ? " is-active" : ""}${index === state.referenceFrameIndex ? " is-ref" : ""}" role="button" tabindex="0" data-frame="${index}">
+          <img alt="关键帧 ${index + 1}" src="${frame.src}">
+          <span>${formatTime(frame.time)}s</span>
+          <button class="frame-ref" type="button" data-frame-ref="${index}" title="设为参考图">参考</button>
+        </div>`
+      )).join("");
+
+      els.frameStrip.querySelectorAll(".frame").forEach(frame => {
+        frame.addEventListener("click", event => {
+          if (event.target.closest("[data-frame-ref]")) return;
+          const index = Number(frame.dataset.frame);
+          const data = state.frames[index];
+          if (!data) return;
+          if (state.sourceMode === "video") els.preview.currentTime = data.time;
+          els.frameStrip.querySelectorAll(".frame").forEach(item => item.classList.toggle("is-active", item === frame));
+        });
+      });
+
+      els.frameStrip.querySelectorAll("[data-frame-ref]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          setReferenceFromFrame(Number(button.dataset.frameRef));
+        });
+      });
+    }
+
+    function setReferenceFromFrame(index) {
+      const frame = state.frames[index];
+      if (!frame || !frame.src) {
+        notify("没有可用的关键帧。");
+        return;
+      }
+      state.referenceImageData = frame.src;
+      state.referenceImageUrl = "";
+      state.referenceImageName = `keyframe-${index + 1}.jpg`;
+      state.referenceImagePreviewUrl = frame.src;
+      state.referenceFrameIndex = index;
+      els.promptMode.value = "image-video";
+      state.selectedRoute = hasUsablePrompt() ? "text-image-to-video" : "image-to-video";
+      syncRouteShortcut(state.selectedRoute);
+      renderFrames();
+      renderReferenceImage();
+      renderVideoInfo();
+      renderDifyRoutes();
+      notify(`已把关键帧 ${index + 1} 设为参考图，可用“参考图再生成”或图生视频线路。`);
+    }
+
+    function renderShots() {
+      els.shotCount.textContent = String(state.shots.length);
+      const allowRemove = state.shots.length > 1;
+      els.shotList.innerHTML = state.shots.map((shot, index) => {
+        const title = shot.title || `Shot ${String(index + 1).padStart(2, "0")}`;
+        const range = `${formatTime(shot.start)}-${formatTime(shot.end)}s`;
+        const desc = compactText(shot.action || shot.subject || "等待补充画面描述。", 82);
+        return `<div class="shot${index === state.activeShot ? " is-active" : ""}" data-shot="${index}">
+          <span class="shot-index">${String(index + 1).padStart(2, "0")}</span>
+          <span>
+            <span class="shot-title"><span>${escapeHtml(title)}</span><span class="meta">${range}</span></span>
+            <span class="shot-desc">${escapeHtml(desc)}</span>
+          </span>
+          ${allowRemove ? `<button class="shot-remove" type="button" data-shot-remove="${index}" title="删除分镜">&times;</button>` : ""}
+        </div>`;
+      }).join("");
+
+      els.shotList.querySelectorAll(".shot").forEach(button => {
+        button.addEventListener("click", event => {
+          if (event.target.closest("[data-shot-remove]")) return;
+          syncCurrentShot();
+          state.activeShot = Number(button.dataset.shot);
+          loadShotToInspector();
+          renderShots();
+          generateOutput();
+        });
+      });
+
+      els.shotList.querySelectorAll("[data-shot-remove]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          removeShot(Number(button.dataset.shotRemove));
+        });
+      });
+    }
+
+    function removeShot(index) {
+      if (state.shots.length <= 1 || index < 0 || index >= state.shots.length) return;
+      if (index === state.activeShot) syncCurrentShot();
+      state.shots.splice(index, 1);
+      if (state.activeShot >= state.shots.length) state.activeShot = state.shots.length - 1;
+      else if (index < state.activeShot) state.activeShot -= 1;
+      loadShotToInspector();
+      renderShots();
+      generateOutput();
+      persistState();
+    }
+
+    function addShot() {
+      syncCurrentShot();
+      const last = state.shots[state.shots.length - 1] || state.shots[0];
+      const start = last ? last.end : 0;
+      const length = Math.max(2, Math.min(5, state.duration / Math.max(1, state.shots.length)));
+      state.shots.push({
+        title: `新增镜头 ${String(state.shots.length + 1).padStart(2, "0")}`,
+        start,
+        end: start + length,
+        subject: last.subject,
+        subjectEn: last.subjectEn || "",
+        environment: last.environment,
+        environmentEn: last.environmentEn || "",
+        action: "补充这个镜头中的主体动作、变化或转场。",
+        actionEn: "",
+        camera: last.camera,
+        cameraEn: last.cameraEn || "",
+        lighting: last.lighting,
+        lightingEn: last.lightingEn || "",
+        style: last.style,
+        styleEn: last.styleEn || "",
+        audio: last.audio,
+        audioEn: last.audioEn || "",
+        negative: last.negative,
+        negativeEn: last.negativeEn || ""
+      });
+      state.activeShot = state.shots.length - 1;
+      loadShotToInspector();
+      renderShots();
+      generateOutput();
+    }
+
+    function syncCurrentShot() {
+      const shot = state.shots[state.activeShot];
+      if (!shot) return;
+      allEditableFields.forEach(field => {
+        shot[field] = els[field].value.trim();
+      });
+      shot.title = titleFromShot(shot, state.activeShot);
+      updateSignalCount();
+    }
+
+    function loadShotToInspector() {
+      const shot = state.shots[state.activeShot];
+      if (!shot) return;
+      allEditableFields.forEach(field => {
+        els[field].value = shot[field] || "";
+      });
+      els.selectedShotLabel.textContent = `Shot ${String(state.activeShot + 1).padStart(2, "0")}`;
+      updateSignalCount();
+    }
+
+    function titleFromShot(shot, index) {
+      const source = shot.subject || shot.action || "";
+      const cleaned = source.replace(/[，。,.]/g, " ").trim();
+      if (!cleaned) return `待分析镜头 ${String(index + 1).padStart(2, "0")}`;
+      return compactText(cleaned, 18);
+    }
+
+    function hasPromptContent(shot) {
+      return editableFields.some(field => Boolean((shot && shot[field] || "").trim()));
+    }
+
+    function hasEnglishContent(shot) {
+      return ["subject", "environment", "action", "camera", "lighting", "style", "audio", "negative"]
+        .some(field => Boolean((shot && shot[`${field}En`] || "").trim()));
+    }
+
+    function updateSignalCount() {
+      const shot = state.shots[state.activeShot] || {};
+      els.signalCount.textContent = String(editableFields.filter(field => Boolean((shot[field] || "").trim())).length);
+    }
+
+    function generateOutput() {
+      syncCurrentShot();
+      if (state.activeTab === "json") {
+        els.output.value = JSON.stringify(buildSpec(), null, 2);
+      } else if (state.activeTab === "shots") {
+        els.output.value = buildShotPrompt();
+      } else {
+        els.output.value = buildFullPrompt();
+      }
+      refreshTranslationPanelIfOpen();
+      renderWorkflow();
+      persistState();
+    }
+
+    function buildSpec() {
+      return {
+        project: els.projectName.value.trim(),
+        source: {
+          mode: state.sourceMode || null,
+          fileName: state.fileName || null,
+          durationSec: Number(formatTime(state.duration)),
+          resolution: state.width && state.height ? `${state.width}x${state.height}` : null,
+          aspect: els.aspect.value,
+          extractedFrames: state.frames.map(frame => ({ timeSec: Number(formatTime(frame.time)) }))
+        },
+        referenceImage: {
+          name: state.referenceImageName || null,
+          source: state.referenceFrameIndex >= 0 ? "keyframe" : (state.referenceImageUrl ? "url" : (state.referenceImageData ? "upload" : null)),
+          frameIndex: state.referenceFrameIndex >= 0 ? state.referenceFrameIndex : null,
+          hasImage: Boolean(state.referenceImageData || state.referenceImageUrl)
+        },
+        outputMode: els.promptMode.value,
+        model: els.model.value.trim(),
+        analysis: state.analysis,
+        shots: state.shots.map((shot, index) => ({
+          id: `shot_${String(index + 1).padStart(2, "0")}`,
+          timeRange: `${formatTime(shot.start)}-${formatTime(shot.end)}s`,
+          title: shot.title,
+          titleEn: shot.titleEn || "",
+          subject: shot.subject,
+          subjectEn: shot.subjectEn || "",
+          environment: shot.environment,
+          environmentEn: shot.environmentEn || "",
+          action: shot.action,
+          actionEn: shot.actionEn || "",
+          camera: shot.camera,
+          cameraEn: shot.cameraEn || "",
+          lighting: shot.lighting,
+          lightingEn: shot.lightingEn || "",
+          style: shot.style,
+          styleEn: shot.styleEn || "",
+          audio: shot.audio,
+          audioEn: shot.audioEn || "",
+          negative: shot.negative,
+          negativeEn: shot.negativeEn || ""
+        }))
+      };
+    }
+
+    function buildFullPrompt() {
+      const main = state.shots[0] || {};
+      if (!state.shots.some(hasPromptContent)) {
+        return [
+          "未生成 Prompt",
+          "",
+          "当前项目没有可用的视频理解结果，也没有手动填写的反推字段。",
+          "这个原型现在只负责本地抽取关键帧和整理字段，不会使用旧案例内容自动冒充分析。",
+          "",
+          "下一步请点击“AI 自动反推”，Dify 千问会根据视频或关键帧分析主体、场景、动作、镜头、光线和风格。"
+        ].join("\n");
+      }
+
+      if (state.shots.some(hasEnglishContent)) {
+        return buildBilingualFullPrompt();
+      }
+
+      const shotSummary = state.shots.map((shot, index) => (
+        `Shot ${String(index + 1).padStart(2, "0")}（${formatTime(shot.start)}-${formatTime(shot.end)}s）：${[shot.subject, shot.action, shot.camera].filter(Boolean).map(sentence).join("") || "待分析"}`
+      )).join("\n");
+
+      return [
+        `项目：${els.projectName.value.trim() || "未命名视频"}`,
+        `类型：${modeLabel(els.promptMode.value)}，画幅 ${els.aspect.value}，时长 ${els.clipDuration.value.trim() || `${formatTime(state.duration)} 秒`}`,
+        "",
+        "整体画面提示词：",
+        [
+          main.subject,
+          main.environment,
+          main.action,
+          main.camera,
+          main.lighting,
+          main.style
+        ].filter(Boolean).map(sentence).join(""),
+        "",
+        "分镜结构：",
+        shotSummary,
+        "",
+        `声音：${main.audio || "待分析"}`,
+        `负面约束：${main.negative || "待填写"}`
+      ].join("\n");
+    }
+
+    function buildBilingualFullPrompt() {
+      const main = state.shots[0] || {};
+      const projectEn = state.analysis.projectTitleEn || els.projectName.value.trim() || "Untitled video";
+      const projectZh = state.analysis.projectTitle || els.projectName.value.trim() || "未命名视频";
+      const enShotSummary = state.shots.map((shot, index) => (
+        `Shot ${String(index + 1).padStart(2, "0")} (${formatTime(shot.start)}-${formatTime(shot.end)}s): ${[
+          shot.subjectEn,
+          shot.actionEn,
+          shot.cameraEn
+        ].filter(Boolean).map(sentenceEn).join(" ") || "Pending analysis."}`
+      )).join("\n");
+      const zhShotSummary = state.shots.map((shot, index) => (
+        `镜头 ${String(index + 1).padStart(2, "0")}（${formatTime(shot.start)}-${formatTime(shot.end)}s）：${[
+          shot.subject,
+          shot.action,
+          shot.camera
+        ].filter(Boolean).map(sentence).join("") || "待分析"}`
+      )).join("\n");
+
+      return [
+        "ENGLISH PROMPT (PRIMARY)",
+        `Project: ${projectEn}`,
+        `Type: ${modeLabelEn(els.promptMode.value)}, aspect ratio ${els.aspect.value}, duration ${els.clipDuration.value.trim() || `${formatTime(state.duration)} seconds`}`,
+        "",
+        "Overall video prompt:",
+        [
+          main.subjectEn,
+          main.environmentEn,
+          main.actionEn,
+          main.cameraEn,
+          main.lightingEn,
+          main.styleEn
+        ].filter(Boolean).map(sentenceEn).join(" "),
+        "",
+        "Shot structure:",
+        enShotSummary,
+        "",
+        `Audio: ${main.audioEn || "Cannot be determined from keyframes; to be supplemented."}`,
+        `Negative prompt: ${main.negativeEn || state.analysis.negativeEn || "Avoid visual distortion, incorrect anatomy, inconsistent perspective, and scene drift."}`,
+        "",
+        "中文参考",
+        `项目：${projectZh}`,
+        `类型：${modeLabel(els.promptMode.value)}，画幅 ${els.aspect.value}，时长 ${els.clipDuration.value.trim() || `${formatTime(state.duration)} 秒`}`,
+        "",
+        "整体画面提示词：",
+        [
+          main.subject,
+          main.environment,
+          main.action,
+          main.camera,
+          main.lighting,
+          main.style
+        ].filter(Boolean).map(sentence).join(""),
+        "",
+        "分镜结构：",
+        zhShotSummary,
+        "",
+        `声音：${main.audio || "待分析"}`,
+        `负面约束：${main.negative || state.analysis.negative || "待填写"}`
+      ].join("\n");
+    }
+
+    function buildShotPrompt() {
+      if (!state.shots.some(hasPromptContent)) {
+        return [
+          "未生成分镜 Prompt",
+          "",
+          "当前只有分镜时间段，没有真实画面分析字段。"
+        ].join("\n");
+      }
+
+      if (state.shots.some(hasEnglishContent)) {
+        return state.shots.map((shot, index) => (
+          [
+            `## Shot ${String(index + 1).padStart(2, "0")} | ${formatTime(shot.start)}-${formatTime(shot.end)}s`,
+            "### English Prompt (Primary)",
+            `Composition / Subject: ${shot.subjectEn || "Pending analysis."}`,
+            `Environment: ${shot.environmentEn || "Pending analysis."}`,
+            `Action: ${shot.actionEn || "Pending analysis."}`,
+            `Camera: ${shot.cameraEn || "Pending analysis."}`,
+            `Lighting / Color: ${shot.lightingEn || "Pending analysis."}`,
+            `Style: ${shot.styleEn || "Pending analysis."}`,
+            `Audio: ${shot.audioEn || "Cannot be determined from keyframes; to be supplemented."}`,
+            `Negative Prompt: ${shot.negativeEn || "To be supplemented."}`,
+            "",
+            "### 中文参考",
+            `画面构图：${shot.subject || "待分析"}`,
+            `场景环境：${shot.environment || "待分析"}`,
+            `动作变化：${shot.action || "待分析"}`,
+            `镜头运动：${shot.camera || "待分析"}`,
+            `光线色彩：${shot.lighting || "待分析"}`,
+            `质感风格：${shot.style || "待分析"}`,
+            `声音：${shot.audio || "待分析"}`,
+            `负面约束：${shot.negative || "待填写"}`
+          ].join("\n")
+        )).join("\n\n");
+      }
+
+      return state.shots.map((shot, index) => (
+        [
+          `## Shot ${String(index + 1).padStart(2, "0")}｜${formatTime(shot.start)}-${formatTime(shot.end)}s`,
+          `画面构图：${shot.subject || "待分析"}`,
+          `场景环境：${shot.environment || "待分析"}`,
+          `动作变化：${shot.action || "待分析"}`,
+          `镜头运动：${shot.camera || "待分析"}`,
+          `光线色彩：${shot.lighting || "待分析"}`,
+          `质感风格：${shot.style || "待分析"}`,
+          `声音：${shot.audio || "待分析"}`,
+          `负面约束：${shot.negative || "待填写"}`
+        ].join("\n")
+      )).join("\n\n");
+    }
+
+    function modeLabel(mode) {
+      const map = {
+        video: "文生视频 prompt",
+        "image-video": "图生视频 prompt",
+        image: "生图 prompt",
+        storyboard: "分镜脚本"
+      };
+      return map[mode] || "视频 prompt";
+    }
+
+    function modeLabelEn(mode) {
+      const map = {
+        video: "text-to-video prompt",
+        "image-video": "image-to-video prompt",
+        image: "text-to-image prompt",
+        storyboard: "storyboard prompt"
+      };
+      return map[mode] || "video prompt";
+    }
+
+    async function copyOutput() {
+      generateOutput();
+      try {
+        await navigator.clipboard.writeText(els.output.value);
+        notify("Prompt 已复制。");
+      } catch (error) {
+        els.output.focus();
+        els.output.select();
+        document.execCommand("copy");
+        notify("已选中并复制当前输出。");
+      }
+    }
+
+    function exportJson() {
+      syncCurrentShot();
+      const payload = JSON.stringify(buildSpec(), null, 2);
+      const blob = new Blob([payload], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${safeFileName(els.projectName.value || "video-prompt-spec")}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      notify("JSON 规格已导出。");
+    }
+
+    function setStatus(text, ready) {
+      els.statusText.textContent = text;
+      els.statusDot.classList.toggle("ready", ready);
+    }
+
+    function notify(text) {
+      els.toast.textContent = text;
+      els.toast.classList.add("show");
+      clearTimeout(notify.timer);
+      notify.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
+    }
+
+    function formatTime(value) {
+      const number = Number(value) || 0;
+      return number.toFixed(number >= 10 ? 1 : 2).replace(/\.?0+$/, "");
+    }
+
+    function formatBytes(bytes) {
+      const value = Number(bytes) || 0;
+      if (value < 1024) return `${value}B`;
+      if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)}KB`;
+      return `${(value / 1024 / 1024).toFixed(1)}MB`;
+    }
+
+    function sentence(value) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      return /[。.!?？]$/.test(text) ? text : `${text}。`;
+    }
+
+    function sentenceEn(value) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      return /[.!?]$/.test(text) ? text : `${text}.`;
+    }
+
+    function compactText(value, limit) {
+      const text = String(value || "").replace(/\s+/g, "");
+      return text.length > limit ? `${text.slice(0, limit)}...` : text;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function safeFileName(value) {
+      return String(value || "video-prompt-spec").trim().replace(/[\\/:*?"<>|]+/g, "-").slice(0, 80) || "video-prompt-spec";
+    }
+
+    const STORE = {
+      working: "vpw:working:v1",
+      projects: "vpw:projects:v1",
+      runs: "vpw:runs:v1"
+    };
+
+    function clearTransientWorkingState() {
+      try { localStorage.removeItem(STORE.working); } catch (error) { /* ignore storage access */ }
+    }
+
+    let persistTimer = null;
+    function persistState() {
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(() => {
+        try {
+          localStorage.setItem(STORE.working, JSON.stringify(buildPersistSnapshot()));
+        } catch (error) {
+          /* localStorage quota or unavailable: ignore */
+        }
+      }, 400);
+    }
+
+    function buildPersistSnapshot() {
+      syncCurrentShot();
+      const refData = state.referenceImageData && state.referenceImageData.length < 1500000 ? state.referenceImageData : "";
+      return {
+        version: APP_VERSION,
+        savedAt: new Date().toISOString(),
+        projectName: els.projectName.value,
+        aspect: els.aspect.value,
+        clipDuration: els.clipDuration.value,
+        promptMode: els.promptMode.value,
+        model: els.model.value,
+        duration: state.duration,
+        width: state.width,
+        height: state.height,
+        sourceMode: state.sourceMode,
+        sourceLabel: state.sourceLabel,
+        fileName: state.fileName,
+        activeShot: state.activeShot,
+        activeTab: state.activeTab,
+        shots: state.shots,
+        analysis: state.analysis,
+        difyRouteConfig: state.difyRouteConfig,
+        selectedRoute: state.selectedRoute,
+        difyInputs: els.difyInputs.value,
+        batchSize: els.batchSize.value,
+        difyModelChoice: els.difyModelChoice.value,
+        output: els.output.value,
+        translationPanelOpen: !els.translationPanel.classList.contains("is-hidden"),
+        promptZh: els.promptZh.value,
+        promptEn: els.promptEn.value,
+        semanticPrompt: els.semanticPrompt.value,
+        analyzePrompt: els.analyzePrompt.value,
+        referenceImageData: refData,
+        referenceImageUrl: state.referenceImageUrl,
+        referenceImageName: state.referenceImageName,
+        referenceFrameIndex: state.referenceFrameIndex
+      };
+    }
+
+    function applyPersistSnapshot(snap) {
+      if (!snap || typeof snap !== "object") return false;
+      if (snap.projectName !== undefined) els.projectName.value = snap.projectName;
+      if (snap.aspect) els.aspect.value = snap.aspect;
+      if (snap.clipDuration) els.clipDuration.value = snap.clipDuration;
+      if (snap.promptMode) els.promptMode.value = snap.promptMode;
+      if (snap.model !== undefined) els.model.value = snap.model;
+      state.duration = Number(snap.duration) || state.duration;
+      // Source media identity is intentionally not restored: uploaded blobs and extracted frames
+      // cannot reliably survive reload. A compact reference image data URL can be restored.
+      if (snap.referenceImageData || snap.referenceImageUrl) {
+        state.referenceImageData = snap.referenceImageData || "";
+        state.referenceImageUrl = snap.referenceImageUrl || "";
+        state.referenceImageName = snap.referenceImageName || "reference-image.jpg";
+        state.referenceImagePreviewUrl = state.referenceImageData || state.referenceImageUrl;
+        state.referenceFrameIndex = Number.isFinite(Number(snap.referenceFrameIndex)) ? Number(snap.referenceFrameIndex) : -1;
+      }
+      if (Array.isArray(snap.shots) && snap.shots.length) state.shots = snap.shots;
+      state.activeShot = Math.max(0, Math.min(Number(snap.activeShot) || 0, state.shots.length - 1));
+      state.activeTab = snap.activeTab || "full";
+      state.analysis = snap.analysis || {};
+      if (snap.difyRouteConfig && typeof snap.difyRouteConfig === "object") state.difyRouteConfig = snap.difyRouteConfig;
+      state.selectedRoute = snap.selectedRoute || "";
+      if (snap.difyInputs !== undefined) els.difyInputs.value = snap.difyInputs;
+      if (snap.batchSize !== undefined) els.batchSize.value = snap.batchSize;
+      if (snap.difyModelChoice !== undefined) els.difyModelChoice.value = snap.difyModelChoice;
+      if (snap.output !== undefined) els.output.value = snap.output;
+      if (snap.translationPanelOpen) {
+        els.translationPanel.classList.remove("is-hidden");
+      } else {
+        els.translationPanel.classList.add("is-hidden");
+      }
+      if (snap.promptZh !== undefined) els.promptZh.value = snap.promptZh;
+      if (snap.promptEn !== undefined) els.promptEn.value = snap.promptEn;
+      if (snap.translationPanelOpen && snap.promptZh === undefined && snap.promptEn === undefined) {
+        updateTranslationPanelFromOutput();
+      }
+      if (snap.semanticPrompt !== undefined) els.semanticPrompt.value = snap.semanticPrompt;
+      if (snap.analyzePrompt !== undefined) els.analyzePrompt.value = snap.analyzePrompt;
+      document.querySelectorAll(".tab:not([data-result-filter])").forEach(item => {
+        item.classList.toggle("is-active", item.dataset.tab === state.activeTab);
+      });
+      loadShotToInspector();
+      return true;
+    }
+
+    function restoreWorkingState() {
+      let snap = null;
+      try { snap = JSON.parse(localStorage.getItem(STORE.working) || "null"); } catch { snap = null; }
+      if (!snap) return false;
+      const applied = applyPersistSnapshot(snap);
+      if (applied) {
+        const hasContent = (state.shots || []).some(shot => shot && (shot.subject || shot.action || shot.title)) || els.output.value.trim();
+        if (hasContent) setStatus("已恢复上次的反推内容，请重新上传素材继续。", true);
+      }
+      return applied;
+    }
+
+    function readStore(key) {
+      try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; }
+    }
+
+    function writeStore(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* ignore quota */ }
+    }
+
+    function loadProjectList() {
+      const projects = readStore(STORE.projects);
+      els.projectSelect.innerHTML = `<option value="">历史项目…</option>` + projects.map(project => (
+        `<option value="${escapeHtml(project.id)}">${escapeHtml(project.name || "未命名")} · ${escapeHtml(formatStamp(project.savedAt))}</option>`
+      )).join("");
+    }
+
+    function saveProject() {
+      const snapshot = buildPersistSnapshot();
+      const name = (els.projectName.value || "未命名项目").trim();
+      const projects = readStore(STORE.projects);
+      const existing = projects.find(project => project.name === name);
+      const record = { id: existing?.id || `proj-${Date.now()}`, name, savedAt: new Date().toISOString(), snapshot };
+      const next = [record, ...projects.filter(project => project.id !== record.id)].slice(0, 20);
+      writeStore(STORE.projects, next);
+      loadProjectList();
+      els.projectSelect.value = record.id;
+      notify(`已保存项目：${name}`);
+    }
+
+    function loadProject(id) {
+      const record = readStore(STORE.projects).find(project => project.id === id);
+      if (!record) return;
+      applyPersistSnapshot(record.snapshot);
+      renderShots();
+      renderSourceSummary();
+      renderDifyRoutes();
+      generateOutput();
+      notify(`已载入项目：${record.name}`);
+    }
+
+    function deleteSelectedProject() {
+      const id = els.projectSelect.value;
+      if (!id) { notify("请选择要删除的历史项目。"); return; }
+      writeStore(STORE.projects, readStore(STORE.projects).filter(project => project.id !== id));
+      loadProjectList();
+      notify("已删除所选项目。");
+    }
+
+    function loadRunHistoryList() {
+      const runs = readStore(STORE.runs);
+      els.runHistorySelect.innerHTML = `<option value="">历史批次…</option>` + runs.map(run => (
+        `<option value="${escapeHtml(run.runId)}">${escapeHtml(run.runId)} · ${escapeHtml(routeLabel(run.routeType))}</option>`
+      )).join("");
+    }
+
+    function liteRunRecord(run) {
+      return {
+        runId: run.runId,
+        createdAt: run.createdAt,
+        routeType: run.routeType,
+        prompt: run.prompt,
+        workflow: run.workflow,
+        assets: (run.assets || []).map(asset => ({
+          id: asset.id,
+          type: asset.type,
+          promptType: asset.promptType,
+          text: asset.text,
+          title: asset.title,
+          status: asset.status,
+          url: asset.url,
+          localUrl: asset.localUrl,
+          decision: asset.decision,
+          score: asset.score,
+          notes: asset.notes,
+          rerunPrompt: asset.rerunPrompt
+        }))
+      };
+    }
+
+    function persistRunHistory() {
+      if (!state.difyRun || !state.difyRun.runId) return;
+      const runs = readStore(STORE.runs);
+      const lite = liteRunRecord(state.difyRun);
+      const next = [lite, ...runs.filter(run => run.runId !== lite.runId)].slice(0, 8);
+      writeStore(STORE.runs, next);
+      loadRunHistoryList();
+      els.runHistorySelect.value = lite.runId;
+    }
+
+    function loadRunFromHistory(runId) {
+      const run = readStore(STORE.runs).find(item => item.runId === runId);
+      if (!run) return;
+      state.difyRun = run;
+      renderDifyRun(run);
+      renderWorkflow();
+      els.difyStatus.textContent = `批次 ${run.runId}`;
+      notify(`已载入历史批次：${run.runId}`);
+    }
+
+    function exportDelivery() {
+      syncCurrentShot();
+      const kept = (state.difyRun?.assets || []).filter(asset => asset.decision === "keep");
+      const englishPrompt = extractPrimaryEnglishPrompt(els.output.value);
+      const pkg = {
+        meta: {
+          version: APP_VERSION,
+          exportedAt: new Date().toISOString(),
+          project: els.projectName.value.trim()
+        },
+        parameters: {
+          outputMode: els.promptMode.value,
+          aspect: els.aspect.value,
+          duration: els.clipDuration.value.trim(),
+          model: els.model.value.trim() || els.difyModelChoice.value.trim(),
+          route: routeLabel(getActiveRoute()),
+          batchSize: Number(els.batchSize.value) || 1
+        },
+        finalPrompt: {
+          full: els.output.value,
+          chinese: els.promptZh.value.trim(),
+          english: els.promptEn.value.trim() || englishPrompt,
+          semantic: els.semanticPrompt.value.trim()
+        },
+        spec: buildSpec(),
+        dify: state.difyRun ? {
+          runId: state.difyRun.runId,
+          routeType: state.difyRun.routeType,
+          createdAt: state.difyRun.createdAt
+        } : null,
+        keptAssets: kept.map(asset => ({
+          id: asset.id,
+          type: asset.type,
+          promptType: asset.promptType,
+          text: asset.text,
+          url: asset.url,
+          localUrl: asset.localUrl,
+          score: asset.score,
+          notes: asset.notes
+        })),
+        selection: (state.difyRun?.assets || []).map(asset => ({
+          id: asset.id,
+          type: asset.type,
+          decision: asset.decision || "pending",
+          score: asset.score || 0,
+          notes: asset.notes || ""
+        }))
+      };
+      const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${safeFileName(els.projectName.value || "delivery")}-交付包.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      notify(`交付包已导出（保留项 ${kept.length}）。`);
+    }
+
+    function formatStamp(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function apiUrl(path) {
+      if (location.protocol === "file:") {
+        return `http://127.0.0.1:8765${path}`;
+      }
+      return path;
+    }
+
+    boot();
+  </script>
+</body>
+</html>

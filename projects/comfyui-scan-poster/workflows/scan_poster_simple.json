@@ -1,0 +1,125 @@
+{
+  "last_node_id": 4,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [100, 300],
+      "size": [320, 314],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [1],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": ["upload_your_image.png", "image"]
+    },
+    {
+      "id": 2,
+      "type": "ScanPosterOverlay",
+      "pos": [520, 250],
+      "size": [340, 300],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "segs_opt",
+          "type": "SEGS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [2, 3],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ScanPosterOverlay"
+      },
+      "widgets_values": ["green", 2, 0.10, 0.55, 0.15, 0.03, 0]
+    },
+    {
+      "id": 3,
+      "type": "PreviewImage",
+      "pos": [960, 200],
+      "size": [400, 400],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "pos": [960, 650],
+      "size": [400, 80],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": ["scan_poster/output"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "IMAGE"],
+    [2, 2, 0, 3, 0, "IMAGE"],
+    [3, 2, 0, 4, 0, "IMAGE"]
+  ],
+  "groups": [
+    {
+      "title": "📡 Scan Poster - Upload any image, zero prompt needed",
+      "bounding": [70, 140, 1340, 640],
+      "color": "#2a363b",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9,
+      "offset": [0, 0]
+    }
+  },
+  "version": 0.4
+}

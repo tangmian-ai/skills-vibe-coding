@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "LiblibAI 视频一键拔",
+  "version": "1.1.0",
+  "description": "在 liblib.art 模型/作品页面一键抓取并下载示例视频(mp4/webm/mov)和图片，并尝试提取生成提示词(prompt)。",
+  "permissions": ["downloads", "webRequest", "storage", "tabs"],
+  "host_permissions": [
+    "*://*.liblib.art/*",
+    "*://*.liblib.cloud/*",
+    "*://*.liblibai.com/*",
+    "*://*.liblibai-online.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Liblib 视频一键拔",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.liblib.art/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.liblib.art/*"],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

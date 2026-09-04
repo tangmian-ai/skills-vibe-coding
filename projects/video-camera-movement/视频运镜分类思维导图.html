@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视频运镜分类体系 - 思维导图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; overflow: hidden; }
+
+  #mindmap { width: 100vw; height: 100vh; }
+
+  .toolbar {
+    position: fixed; top: 12px; right: 16px; z-index: 100;
+    display: flex; gap: 8px;
+  }
+  .toolbar button {
+    padding: 8px 16px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    backdrop-filter: blur(12px); transition: all .2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+  .toolbar button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+  .btn-edit { background: rgba(47,84,150,.9); color: #fff; }
+  .btn-edit.active { background: rgba(220,80,60,.9); }
+  .btn-action { background: rgba(255,255,255,.85); color: #333; }
+
+  .editor-panel {
+    position: fixed; top: 0; left: 0; width: 42vw; height: 100vh;
+    background: #1e1e2e; transform: translateX(-100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    z-index: 90; display: flex; flex-direction: column;
+    box-shadow: 4px 0 24px rgba(0,0,0,.3);
+  }
+  .editor-panel.open { transform: translateX(0); }
+
+  .editor-header {
+    padding: 12px 16px; background: #2d2d44;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #3d3d5c;
+  }
+  .editor-header span { color: #cdd6f4; font-size: 13px; font-weight: 600; }
+  .editor-header .hint { color: #7f849c; font-size: 11px; }
+
+  #editor {
+    flex: 1; width: 100%; padding: 16px; border: none; resize: none;
+    background: #1e1e2e; color: #cdd6f4;
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, monospace;
+    font-size: 13px; line-height: 1.7; tab-size: 2;
+    outline: none;
+  }
+  #editor::selection { background: rgba(137,180,250,.3); }
+
+  .resize-handle {
+    position: absolute; top: 0; right: -4px; width: 8px; height: 100%;
+    cursor: col-resize; z-index: 91;
+  }
+  .resize-handle:hover, .resize-handle.dragging { background: rgba(137,180,250,.4); }
+
+  #mindmap.with-editor { margin-left: 42vw; width: 58vw; transition: all .3s cubic-bezier(.4,0,.2,1); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-edit" id="btnEdit" onclick="toggleEditor()">✏️ 编辑</button>
+  <button class="btn-action" onclick="expandAll()">📂 全部展开</button>
+  <button class="btn-action" onclick="collapseAll()">📁 收起</button>
+  <button class="btn-action" onclick="fitView()">🎯 居中</button>
+</div>
+
+<div class="editor-panel" id="editorPanel">
+  <div class="editor-header">
+    <span>📝 Markdown 编辑器</span>
+    <span class="hint">实时预览 · 修改后自动更新思维导图</span>
+  </div>
+  <textarea id="editor" spellcheck="false"></textarea>
+  <div class="resize-handle" id="resizeHandle"></div>
+</div>
+
+<svg id="mindmap"></svg>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17"></script>
+<script>
+const MD = `---
+markmap:
+  colorFreezeLevel: 3
+  maxWidth: 300
+  initialExpandLevel: 2
+---
+
+# 🎬 视频运镜分类体系
+
+## 📐 基础属性
+
+### 视频尺寸
+- 16:9 横屏 (YouTube/B站)
+- 9:16 竖屏 (抖音/小红书)
+- 1:1 方形 (Instagram)
+- 4:3 传统比例
+- 2.35:1 超宽银幕
+- 21:9 超宽屏
+
+### 镜头速度
+- 极慢 \`barely perceptible\`
+- 缓慢 \`slow, smooth\`
+- 中速 \`moderate pace\`
+- 快速 \`fast-paced\`
+- 极快/甩 \`whip, rapid\`
+- 变速 \`speed ramp\`
+
+### 景别
+- 大远景 \`extreme wide shot\`
+- 远景 \`wide shot\`
+- 全景 \`full shot\`
+- 中景 \`medium shot\`
+- 中近景 \`medium close-up\`
+- 近景 \`close-up\`
+- 特写 \`extreme close-up\`
+
+## 🎥 运镜动作
+
+### 固定镜头 \`static shot\`
+- 纯固定：完全不动
+- 微固定：极轻微呼吸感抖动
+- 🎤 口播场景
+  - ① 正面直拍：固定/微推，中近景~近景
+  - ② 半身侧面：固定+弧线，中景
+  - ④ 坐姿口播：固定/缓推，中景~近景
+  - ⑤ 车内口播：固定(吸盘)，近景
+  - ⑥ 户外站立：固定为主，中景
+  - ⑧ 屏幕录制+画中画：固定(人物窗口)，近景
+  - ⑨ 产品展示：固定(人)→推至产品特写
+  - ⑪ 采访式：固定/缓推+正反打，中景~近景
+  - ⑫ 双人对话：固定+摇镜头切换，中景
+
+### 推镜头 \`dolly in\`
+- 缓推 \`slow dolly in\` — 靠近人物，放大情绪
+- 快推 \`fast push in\` — 制造紧张压迫感
+- 微推 \`subtle push in\`
+- 推至特写 \`dolly in to close-up\`
+- 推至细节 \`push in to detail\`
+- 阶梯推 \`stepped dolly in\`
+- 🎤 口播场景
+  - ① 正面直拍：微推增加画面张力
+  - ④ 坐姿口播：缓推，中景→近景
+  - ⑦ 探店口播：推拉结合，多景别切换
+  - ⑨ 产品展示：推至产品特写
+  - ⑪ 采访式：缓推强调情绪
+  - ⑬ 情景演绎：推拉+升降组合，多景别
+
+### 拉镜头 \`dolly out\`
+- 缓拉 \`slow dolly out\` — 拉远显空旷，突出孤独感
+- 快拉 \`fast pull out\`
+- 拉远后固定 \`dolly out then hold\`
+- 拉至远景 \`pull out to wide shot\`
+- 无限拉远 \`infinite pull out\`
+- 🎤 口播场景
+  - ⑦ 探店口播：推拉交替揭示环境
+  - ⑬ 情景演绎：拉远交代场景全貌
+
+### 横移镜头 \`truck/tracking\`
+- 向左平移 \`truck left\` — 营造层次感
+- 向右平移 \`truck right\` — 使画面更灵动开阔
+- 斜向移动 \`diagonal tracking\`
+- 不规则移动 \`irregular lateral\`
+- 弧线移动 \`arc tracking\`
+- 穿越移动 \`tracking through\` — 穿过缝隙，实现空间切换
+- 遮挡横移 \`obstacle tracking\` — 藏在柱子门后，制造悬疑或惊喜
+- 🎤 口播场景
+  - ② 半身侧面：弧线移动，中景
+
+### 环绕镜头 \`orbit shot\`
+- 顺时针环绕 \`clockwise orbit\`
+- 逆时针环绕 \`counterclockwise orbit\`
+- 半环绕180° \`180-degree orbit\` — 营造孤独破碎感
+- 全环绕360° \`360-degree orbit\` — 适合打斗或高光时刻
+- 缓慢弧形环绕 \`slow arc orbit\` — 转换视角，唯美治愈
+- 螺旋上升 \`spiral ascending\`
+- 螺旋下降 \`spiral descending\`
+- 🎤 口播场景
+  - ⑥ 户外站立：缓慢环绕，中景
+
+### 升降镜头 \`crane shot\`
+- 升镜头 \`crane up / boom up\` — 镜头抬升，越升越广，表现豁然开朗与史诗感
+- 降镜头 \`crane down / boom down\` — 镜头下压，聚焦人物，表现冷静压抑与故事感
+- 升后俯瞰 \`crane to bird's eye\`
+- 降至平视 \`descend to eye level\`
+- 升降+推拉 \`crane + dolly\`
+- 揭示升降 \`reveal crane\`
+- 🎤 口播场景
+  - ⑬ 情景演绎：跟随+推拉+升降组合
+
+### 摇镜头 \`pan / tilt\`
+- 水平左摇 \`pan left\`
+- 水平右摇 \`pan right\`
+- 垂直上摇 \`tilt up\`
+- 垂直下摇 \`tilt down\`
+- 仰拍上摇 \`low-angle tilt up\` — 从脚拍到脸，提升气场
+- 俯拍下摇 \`high-angle tilt down\` — 从上拍到全身，适合展示穿搭
+- 斜向摇 \`diagonal pan-tilt\`
+- 360°旋转摇 \`360-degree pan\`
+- 揭示摇 \`reveal pan\`
+- 🎤 口播场景
+  - ⑫ 双人对话：摇镜头在两人间切换
+
+### 甩镜头 \`whip pan\`
+- 水平甩 \`horizontal whip pan\`
+- 垂直甩 \`vertical whip tilt\`
+- 甩接甩 \`whip pan transition\`
+- 对角甩 \`diagonal whip\`
+
+### 晃动镜头 \`handheld\`
+- 轻微晃动 \`subtle handheld\`
+- 明显晃动 \`shaky handheld\`
+- 跟随晃动 \`handheld tracking\`
+- 奔跑晃动 \`running handheld\`
+- 手持纪实 \`documentary handheld\` — 微抖，有生活感和纪录片感
+- 🎤 口播场景
+  - ⑤ 车内口播：轻微晃动增加真实感
+  - ⑦ 探店口播：手持跟随+晃动
+  - ⑩ Vlog式：手持自拍+晃动，近景~中近景
+
+### 变焦镜头 \`zoom\`
+- 缓慢变焦推 \`slow zoom in\`
+- 快速变焦推 \`snap zoom in\`
+- 变焦拉 \`zoom out\`
+- 希区柯克变焦 \`dolly zoom / vertigo\` — 背景扭曲，表现恐惧或失控
+- 微距变焦 \`macro zoom\` — 展现极致细节，有科幻或微观感
+- 宇宙超远变焦 \`cosmic zoom\` — 一镜到底，从太空到街头
+- 急速冲撞变焦 \`crash zoom\` — 瞬间特写，表现震惊
+- 平滑光学推进 \`smooth optical zoom in\` — 温柔拉近，突出面部情绪
+- 平滑光学拉远 \`smooth optical zoom out\` — 慢慢拉宽，显环境空旷
+
+### 滚转镜头 \`roll\`
+- 顺时针滚转 \`clockwise roll\`
+- 逆时针滚转 \`counterclockwise roll\`
+- 微滚转 \`subtle dutch angle\`
+- 荷兰倾斜角 \`dutch angle\` — 画面歪斜，表现紧张不安
+
+### 跟随镜头 \`tracking shot\`
+- 背跟 \`following from behind\` — 跟随背影，故事感拉满
+- 正跟 \`backward facing subject\` — 人走进镜头，气场坚定
+- 侧跟 \`side tracking\` — 平行侧移，街拍流畅自然
+- 低角度跟 \`low-angle tracking\`
+- 高角度跟 \`overhead tracking\`
+- 环绕跟 \`orbiting tracking\`
+- 第一人称行走 \`first-person walking\` — 沉浸式视角，超强代入感
+- 🎤 口播场景
+  - ③ 走路口播：正跟/侧跟+稳定器，中景~中近景
+  - ⑦ 探店口播：跟随+手持，多景别
+  - ⑬ 情景演绎：跟随+推拉+升降，多景别
+
+### 航拍运镜 \`aerial/drone\`
+- 俯冲 \`drone dive\`
+- 拉升 \`drone ascend\`
+- 航拍环绕 \`aerial orbit\` — 突出环境巨大与人的渺小
+- 航拍跟随 \`aerial tracking\`
+- 航拍平移 \`aerial lateral\`
+- 无人机高空飞跃 \`aerial flyover\` — 上帝视角，开阔治愈
+- 史诗无人机升起 \`epic drone reveal\` — 从山后露出，惊艳开场
+- 上帝俯拍 \`top-down/bird's eye\` — 90度俯拍，构图高级
+- FPV穿越机 \`FPV drone shot\` — 高速俯冲，刺激炸裂
+
+### 特殊视角与焦点
+
+#### 特殊视角
+- 过肩镜头 \`over-the-shoulder (OTS)\` — 增强代入感与故事感
+- 鱼眼/猫眼视角 \`fisheye / peephole\` — 制造扭曲压迫感，适合悬疑
+
+#### 焦点控制
+- 虚焦转清晰 \`rack focus in\` — 营造回忆或心动氛围感
+- 焦点切换 \`rack focus shift\` — 转移视线，突出重点
+
+## 🔄 转场
+
+### 基础转场
+- 自然过渡 \`smooth transition\`
+- 淡入 \`fade in\`
+- 淡出 \`fade out / fade to black\`
+- 交叉叠化 \`cross dissolve\`
+  - 🎤 采访式：正反打切换常用交叉叠化
+- 跳切 \`jump cut\`
+  - 🎤 口播剪辑：正面直拍/坐姿口播常用跳切压缩时间
+
+### 创意转场
+- 前景遮挡无缝 \`foreground wipe\`
+  - 🎤 探店口播：前景遮挡实现场景无缝切换
+- 甩转场 \`whip pan transition\`
+  - 🎤 探店口播/情景演绎：快速切换场景
+- 匹配剪辑 \`match cut\`
+- 遮罩转场 \`mask wipe\`
+- 闪白转场 \`flash transition\`
+- 模糊转场 \`blur transition\`
+- 穿越镜头转场 \`through-object transition\` — 穿过缝隙实现空间切换
+- 虚焦转场 \`focus transition\` — 虚焦→清晰，营造回忆或心动感
+
+## 🤖 AI视频Prompt结构
+- **格式**: [运镜] + [景别] + [主体] + [动作] + [环境] + [光线] + [风格]
+- **平台**: Kling / Seedance
+
+### 复合运镜
+- 推+升 \`dolly in + crane up\`
+- 拉+降 \`dolly out + descending\`
+- 横移+推 \`lateral to dolly in\`
+- 环绕+升 \`spiral ascending orbit\`
+
+### 运镜节奏
+- 静-动-静 (Hold-Move-Hold)
+- 动-静 (Move-Hold)
+- 静-动 (Hold-Move)
+- 缓入缓出 (Ease In/Out)
+- 匀速 (Constant Speed)`;
+
+const svgEl = document.getElementById('mindmap');
+const editorEl = document.getElementById('editor');
+const panelEl = document.getElementById('editorPanel');
+const btnEl = document.getElementById('btnEdit');
+
+const { Transformer } = markmap;
+const { Markmap } = markmap;
+const transformer = new Transformer();
+
+let mm;
+
+function renderMarkmap(md) {
+  const { root, features } = transformer.transform(md);
+  const { styles, scripts } = transformer.getUsedAssets(features);
+  if (mm) {
+    mm.setData(root);
+    mm.fit();
+  } else {
+    mm = Markmap.create(svgEl, {
+      colorFreezeLevel: 3,
+      maxWidth: 300,
+      initialExpandLevel: 2,
+      duration: 300,
+      zoom: true,
+      pan: true,
+    }, root);
+  }
+}
+
+editorEl.value = MD;
+renderMarkmap(MD);
+
+let debounceTimer;
+editorEl.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    renderMarkmap(editorEl.value);
+  }, 400);
+});
+
+function toggleEditor() {
+  const isOpen = panelEl.classList.toggle('open');
+  svgEl.classList.toggle('with-editor', isOpen);
+  btnEl.classList.toggle('active', isOpen);
+  btnEl.textContent = isOpen ? '✕ 关闭编辑' : '✏️ 编辑';
+  setTimeout(() => mm && mm.fit(), 350);
+}
+
+function expandAll() {
+  if (!mm) return;
+  const walk = (n) => { n.payload = { ...n.payload, fold: 0 }; n.children?.forEach(walk); };
+  walk(mm.state.data);
+  mm.renderData();
+}
+
+function collapseAll() {
+  if (!mm) return;
+  let depth = 0;
+  const walk = (n, d) => {
+    if (d >= 2) n.payload = { ...n.payload, fold: 1 };
+    n.children?.forEach(c => walk(c, d + 1));
+  };
+  walk(mm.state.data, 0);
+  mm.renderData();
+}
+
+function fitView() {
+  mm && mm.fit();
+}
+
+// Resize handle for editor panel
+const handle = document.getElementById('resizeHandle');
+let isResizing = false;
+handle.addEventListener('mousedown', (e) => {
+  isResizing = true;
+  handle.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+document.addEventListener('mousemove', (e) => {
+  if (!isResizing) return;
+  const w = Math.max(280, Math.min(e.clientX, window.innerWidth * 0.7));
+  const pct = (w / window.innerWidth * 100);
+  panelEl.style.width = pct + 'vw';
+  svgEl.style.marginLeft = pct + 'vw';
+  svgEl.style.width = (100 - pct) + 'vw';
+});
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return;
+  isResizing = false;
+  handle.classList.remove('dragging');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+  setTimeout(() => mm && mm.fit(), 100);
+});
+
+// Keyboard shortcut: Cmd/Ctrl+E to toggle editor
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
+    e.preventDefault();
+    toggleEditor();
+  }
+});
+</script>
+</body>
+</html>

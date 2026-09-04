@@ -1,0 +1,3633 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>通用视频生成 Workflow 原型</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: #191b1f;
+      --panel-2: #121417;
+      --line: #30343a;
+      --line-strong: #46505a;
+      --text: #edf2f5;
+      --muted: #a8b1ba;
+      --soft: #77828e;
+      --cyan: #67d6ff;
+      --green: #7de69c;
+      --amber: #f2bd67;
+      --red: #ff7b7b;
+      --violet: #b9a3ff;
+      --ink: #071114;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        var(--bg);
+      background-size: 36px 36px;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      min-height: 36px;
+      padding: 0 12px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 760;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--line-strong); background: rgba(255,255,255,.1); }
+    button.primary { background: var(--cyan); color: var(--ink); border-color: transparent; }
+    button.success { background: var(--green); color: #08160c; border-color: transparent; }
+    button.warn { color: #ffe0a8; background: rgba(242,189,103,.12); border-color: rgba(242,189,103,.4); }
+    button:disabled { opacity: .48; cursor: not-allowed; }
+
+    [data-lucide] {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+      flex: 0 0 auto;
+    }
+
+    .app {
+      width: min(1520px, calc(100vw - 48px));
+      margin: 0 auto;
+      padding: 18px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+      border: 1px solid rgba(103,214,255,.38);
+      background: rgba(103,214,255,.08);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--soft);
+    }
+
+    .dot.is-running { background: var(--amber); }
+    .dot.is-ready { background: var(--green); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr) minmax(300px, 340px);
+      gap: 18px;
+      align-items: start;
+      transition: grid-template-columns .18s ease;
+    }
+
+    body.agent-collapsed .layout {
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr) 56px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(25,27,31,.94);
+      padding: 16px;
+      box-shadow: 0 12px 34px rgba(0,0,0,.18);
+    }
+
+    .section + .section { margin-top: 14px; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .head-title {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .head-title .meta {
+      display: block;
+    }
+
+    .icon-button {
+      width: 36px;
+      min-width: 36px;
+      padding: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .meta {
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      color: #d8e0e6;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(8,9,10,.55);
+      color: var(--text);
+      outline: none;
+    }
+
+    input,
+    select {
+      height: 38px;
+      padding: 0 10px;
+    }
+
+    textarea {
+      min-height: 140px;
+      padding: 10px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(103,214,255,.58);
+      box-shadow: 0 0 0 3px rgba(103,214,255,.12);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .segmented button {
+      min-height: 34px;
+      color: var(--muted);
+    }
+
+    .segmented button.is-active {
+      color: #dff8ff;
+      border-color: rgba(103,214,255,.5);
+      background: rgba(103,214,255,.12);
+    }
+
+    .drop {
+      position: relative;
+      min-height: 96px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(255,255,255,.25);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255,255,255,.035);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .drop input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .drop strong {
+      display: block;
+      max-width: 100%;
+      margin: 6px 0 4px;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .drop > div {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .drop.is-active {
+      border-color: rgba(103,214,255,.58);
+      background: rgba(103,214,255,.08);
+    }
+
+    .drop.is-active strong {
+      color: #dff8ff;
+    }
+
+    .drop.is-compact {
+      min-height: 86px;
+    }
+
+    .reference-uploader {
+      display: grid;
+      gap: 10px;
+    }
+
+    .reference-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .reference-drop {
+      min-height: 124px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(103,214,255,.46);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(103,214,255,.1), rgba(185,163,255,.08)),
+        rgba(255,255,255,.03);
+      cursor: pointer;
+      padding: 16px;
+    }
+
+    .reference-drop strong {
+      display: block;
+      margin: 8px 0 4px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .reference-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+      gap: 8px;
+    }
+
+    .reference-thumb {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      aspect-ratio: 1;
+    }
+
+    .reference-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .reference-index {
+      position: absolute;
+      left: 6px;
+      bottom: 6px;
+      min-width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(0,0,0,.62);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .reference-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      min-width: 24px;
+      height: 24px;
+      min-height: 24px;
+      padding: 0;
+      border-color: rgba(0,0,0,.28);
+      background: rgba(0,0,0,.58);
+      color: var(--text);
+    }
+
+    .workflow-canvas {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(110px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .flow-node {
+      position: relative;
+      min-height: 118px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+    }
+
+    .flow-node:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      height: 1px;
+      background: var(--line-strong);
+    }
+
+    .flow-node.is-ok {
+      border-color: rgba(125,230,156,.42);
+    }
+
+    .flow-node.is-active {
+      border-color: rgba(103,214,255,.52);
+      background: rgba(103,214,255,.08);
+    }
+
+    .flow-node.is-warn {
+      border-color: rgba(242,189,103,.58);
+      background: rgba(242,189,103,.08);
+    }
+
+    .flow-node.is-error {
+      border-color: rgba(255,123,123,.58);
+      background: rgba(255,123,123,.08);
+    }
+
+    .flow-node.is-pending {
+      opacity: .72;
+    }
+
+    .flow-node strong {
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .flow-node span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .node-status {
+      display: inline-flex;
+      width: fit-content;
+      min-height: 22px;
+      align-items: center;
+      padding: 0 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .flow-node.is-ok .node-status { color: #c9ffd9; border-color: rgba(125,230,156,.35); }
+    .flow-node.is-active .node-status { color: #dff8ff; border-color: rgba(103,214,255,.35); }
+    .flow-node.is-warn .node-status { color: #ffe0a8; border-color: rgba(242,189,103,.35); }
+    .flow-node.is-error .node-status { color: #ffd1d1; border-color: rgba(255,123,123,.35); }
+
+    .pipeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+      padding: 12px;
+    }
+
+    .stage.is-active {
+      border-color: rgba(103,214,255,.52);
+      background: rgba(103,214,255,.08);
+    }
+
+    .stage.is-done {
+      border-color: rgba(125,230,156,.42);
+    }
+
+    .stage-index {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.06);
+      color: #dfe6ec;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .stage-title {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 840;
+    }
+
+    .stage-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .stage-state {
+      color: var(--soft);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .main {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 8px;
+    }
+
+    .shot {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+    }
+
+    .time {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .shot strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .shot p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .issue-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .issue {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+    }
+
+    .issue-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: var(--amber);
+      background: rgba(242,189,103,.12);
+    }
+
+    .issue.is-fixed .issue-icon {
+      color: var(--green);
+      background: rgba(125,230,156,.12);
+    }
+
+    .issue strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .issue span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .prompt-tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .generation-config {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.03);
+    }
+
+    .generation-config label {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 740;
+    }
+
+    .generation-config-wide {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 740;
+    }
+
+    .merge-note {
+      padding: 10px;
+      border: 1px solid rgba(103,214,255,.28);
+      border-radius: var(--radius);
+      background: rgba(103,214,255,.07);
+      color: #dff8ff;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .textarea-wrap {
+      position: relative;
+    }
+
+    .counter {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      color: var(--soft);
+      font-size: 11px;
+      pointer-events: none;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .result {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(255,255,255,.035);
+    }
+
+    .preview {
+      min-height: 180px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.04) 25%, transparent 25%),
+        #090a0b;
+      background-size: 24px 24px;
+      color: var(--muted);
+    }
+
+    .preview video,
+    .preview img {
+      display: block;
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      background: #050607;
+    }
+
+    .result-body {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result.is-error {
+      border-color: rgba(255,123,123,.42);
+      background: rgba(255,123,123,.06);
+    }
+
+    .result.is-running {
+      border-color: rgba(242,189,103,.42);
+      background: rgba(242,189,103,.06);
+    }
+
+    .result-error {
+      color: #ffd1d1;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .result-link {
+      width: fit-content;
+      color: var(--cyan);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .result-link:hover {
+      text-decoration: underline;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      color: #dce3e8;
+      background: rgba(12,14,16,.62);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .pill.good { color: #c9ffd9; border-color: rgba(125,230,156,.35); }
+    .pill.warn { color: #ffe0a8; border-color: rgba(242,189,103,.35); }
+
+    .result.is-approved {
+      border-color: rgba(125,230,156,.48);
+      background: rgba(125,230,156,.08);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .automation-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .automation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .config-item {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+      min-width: 0;
+    }
+
+    .config-item strong {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .config-item span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .approval-box {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(103,214,255,.28);
+      border-radius: var(--radius);
+      background: rgba(103,214,255,.06);
+    }
+
+    .approval-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden { display: none !important; }
+
+    .agent-panel {
+      position: sticky;
+      top: 16px;
+      display: grid;
+      grid-template-rows: auto auto minmax(72px, 1fr) auto;
+      max-height: calc(100vh - 32px);
+      min-height: 520px;
+      overflow: hidden;
+      transition: padding .18s ease, min-height .18s ease;
+    }
+
+    .agent-content {
+      display: contents;
+    }
+
+    .agent-rail {
+      display: none;
+    }
+
+    body.agent-collapsed .agent-panel {
+      grid-template-rows: 1fr;
+      min-height: 520px;
+      padding: 8px;
+    }
+
+    body.agent-collapsed .agent-panel > .section-head,
+    body.agent-collapsed .agent-content {
+      display: none;
+    }
+
+    body.agent-collapsed .agent-rail {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 12px;
+      min-height: calc(100vh - 48px);
+    }
+
+    .agent-rail-label {
+      writing-mode: vertical-rl;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .agent-log {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      overflow: auto;
+      max-height: 140px;
+      padding-right: 4px;
+    }
+
+    .agent-log:empty {
+      display: none;
+    }
+
+    .agent-dashboard {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .agent-card {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid rgba(103,214,255,.24);
+      border-radius: var(--radius);
+      background: rgba(103,214,255,.06);
+    }
+
+    .agent-card strong {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .agent-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .agent-kpis,
+    .agent-chips,
+    .agent-mode {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .agent-kpi,
+    .agent-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+      font-size: 11px;
+      font-weight: 720;
+    }
+
+    .agent-status-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .agent-status-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .agent-status-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .agent-summary {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      color: var(--soft);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .agent-details {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 6px;
+    }
+
+    .agent-details summary {
+      width: fit-content;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .agent-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .agent-details summary::after {
+      content: "展开";
+      margin-left: 6px;
+      color: var(--cyan);
+    }
+
+    .agent-details[open] summary::after {
+      content: "收起";
+    }
+
+    .agent-detail-body {
+      display: grid;
+      gap: 8px;
+      padding-top: 8px;
+    }
+
+    .agent-chip.is-safe {
+      color: #c9ffd9;
+      border-color: rgba(125,230,156,.32);
+      background: rgba(125,230,156,.08);
+    }
+
+    .agent-chip.is-warn {
+      color: #ffe0a8;
+      border-color: rgba(242,189,103,.36);
+      background: rgba(242,189,103,.1);
+    }
+
+    .agent-chip.is-blocked {
+      color: #ffd1d1;
+      border-color: rgba(255,123,123,.34);
+      background: rgba(255,123,123,.08);
+    }
+
+    .agent-mode {
+      margin-bottom: 6px;
+    }
+
+    .agent-mode button {
+      flex: 1 1 88px;
+      min-height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+      font-size: 12px;
+    }
+
+    .agent-mode button.is-active {
+      color: var(--ink);
+      border-color: transparent;
+      background: var(--cyan);
+    }
+
+    .agent-verification {
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--soft);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .agent-action-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .agent-action {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 8px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+    }
+
+    .agent-action span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .agent-action button {
+      min-height: 26px;
+      padding: 0 8px;
+      font-size: 11px;
+    }
+
+    .msg {
+      display: grid;
+      gap: 4px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .msg.user {
+      border-color: rgba(103,214,255,.35);
+      background: rgba(103,214,255,.08);
+      color: #dff8ff;
+    }
+
+    .msg strong {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .msg span {
+      white-space: pre-wrap;
+    }
+
+    .agent-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .agent-tools button {
+      height: 30px;
+      min-height: 30px;
+      padding: 0 9px;
+      font-size: 12px;
+    }
+
+    .agent-input {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .agent-input textarea {
+      min-height: 74px;
+      max-height: 120px;
+      resize: vertical;
+    }
+
+    #agentSendBtn {
+      min-height: 32px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 1050px) {
+      .layout,
+      .grid-2,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      body.agent-collapsed .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .agent-panel {
+        position: static;
+        max-height: none;
+        min-height: 0;
+      }
+
+      body.agent-collapsed .agent-panel {
+        min-height: 54px;
+      }
+
+      body.agent-collapsed .agent-rail {
+        min-height: 38px;
+        grid-template-columns: auto 1fr;
+        align-content: center;
+        justify-items: start;
+      }
+
+      body.agent-collapsed .agent-rail-label {
+        writing-mode: horizontal-tb;
+      }
+
+      .app {
+        width: min(100vw - 24px, 760px);
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .generation-config {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><i data-lucide="workflow"></i></div>
+        <div>
+          <h1>通用视频生成 Workflow</h1>
+          <div class="subtitle">用节点展示问题线，Agent 负责对话式修改和重跑</div>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="status"><span class="dot" id="statusDot"></span><span id="statusText">等待任务</span></span>
+        <button type="button" id="runBtn" class="primary"><i data-lucide="play"></i>自动跑到校验</button>
+        <button type="button" id="resetBtn"><i data-lucide="rotate-ccw"></i>重置</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <section class="section">
+          <div class="section-head">
+            <h2>任务输入</h2>
+            <span class="meta">声音默认开启</span>
+          </div>
+          <div class="field">
+            <label for="taskName">任务名</label>
+            <input id="taskName" value="通用视频生成任务">
+          </div>
+          <div class="field">
+            <label>反推模型</label>
+            <div class="segmented" id="modelPicker">
+              <button type="button" data-model="both" class="is-active">双模型</button>
+              <button type="button" data-model="doubao">豆包</button>
+              <button type="button" data-model="qwen">千问</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>反推源素材</label>
+            <div class="source-grid">
+              <div class="drop is-active" id="videoSourceDrop">
+                <input id="sourceVideoInput" type="file" accept="video/*">
+                <div>
+                  <i data-lucide="video"></i>
+                  <strong id="sourceVideoName">上传反推视频</strong>
+                  <span class="meta">识别动作、运镜、转场、字幕、音频</span>
+                </div>
+              </div>
+              <div class="drop" id="imageSourceDrop">
+                <input id="sourceImageInput" type="file" accept="image/*">
+                <div>
+                  <i data-lucide="image"></i>
+                  <strong id="sourceImageName">上传反推图片</strong>
+                  <span class="meta">识别构图、主体、材质、风格</span>
+                </div>
+              </div>
+            </div>
+            <span class="meta" id="sourceModeHint">当前模式：视频反推。会优先分析时间轴、动作、运镜和音频。</span>
+          </div>
+          <div class="field">
+            <label>用户参考图 <span class="meta">不预设主体、产品、人物、场景或风格类型</span></label>
+            <div class="reference-uploader">
+              <input class="reference-input" id="referenceImagesInput" type="file" accept="image/*" multiple>
+              <label class="reference-drop" for="referenceImagesInput" aria-label="选择一张或多张参考图">
+                <div>
+                  <i data-lucide="images"></i>
+                  <strong>添加参考图</strong>
+                  <span class="meta">可一次选择多张，后续选择会追加显示</span>
+                </div>
+              </label>
+              <div class="reference-gallery" id="referenceGallery"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <h2>Pipeline</h2>
+            <span class="meta" id="pipelineMeta">0 / 6</span>
+          </div>
+          <div class="pipeline" id="pipeline"></div>
+        </section>
+      </aside>
+
+      <main class="main">
+        <section class="section">
+          <div class="section-head">
+            <h2>Workflow 视图</h2>
+            <span class="meta">直接定位异常节点</span>
+          </div>
+          <div class="workflow-canvas" id="workflowCanvas"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <h2>结构化反推</h2>
+            <span class="meta">自动产物，可人工覆盖</span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </section>
+
+        <div class="grid-2">
+          <section class="section">
+            <div class="section-head">
+              <h2>完整性校验</h2>
+              <span class="meta" id="issueMeta">等待反推</span>
+            </div>
+            <div class="issue-list" id="issues"></div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <h2>Prompt 编辑</h2>
+              <span class="meta">只在问题处介入</span>
+            </div>
+            <div class="prompt-tools">
+              <button type="button" id="fixMotionBtn" class="warn"><i data-lucide="move-3d"></i>补全动作轨迹</button>
+              <button type="button" id="fixSubtitleBtn"><i data-lucide="subtitles"></i>补全字幕槽</button>
+              <button type="button" id="cleanBtn"><i data-lucide="shield-check"></i>清洗平台词</button>
+              <button type="button" id="replaceProductBtn" class="warn"><i data-lucide="eraser"></i>替换原产品</button>
+              <button type="button" id="generateBtn" class="success"><i data-lucide="send"></i>进入生成</button>
+            </div>
+            <div class="generation-config">
+              <label>生成线路
+                <select id="generationRouteSelect">
+                  <option value="auto">自动选择</option>
+                  <option value="first-last-frame-video">首尾帧视频</option>
+                </select>
+              </label>
+              <label>视频模型
+                <select id="videoModelSelect"></select>
+              </label>
+              <label>生成秒数
+                <select id="durationSelect"></select>
+              </label>
+              <label>视频比例
+                <select id="ratioSelect"></select>
+              </label>
+              <label>清晰度
+                <select id="resolutionSelect"></select>
+              </label>
+              <label>生成个数
+                <input id="batchCountInput" type="number" min="1" max="4" value="1">
+              </label>
+              <label id="firstFrameField" style="display:none; grid-column:1 / -1; flex-direction:row; align-items:center; gap:8px; cursor:pointer;">
+                <input id="firstFrameToggle" type="checkbox" style="width:16px; height:16px;">
+                <span>首帧图路线：先用文生图生成视频首帧，再图生视频（复用上方 Prompt）</span>
+              </label>
+              <div id="lastFrameField" class="generation-config-wide" style="display:none;">
+                <label for="lastFrameInput">尾帧图</label>
+                <div class="drop is-compact" id="lastFrameDrop">
+                  <input id="lastFrameInput" type="file" accept="image/*">
+                  <div>
+                    <i data-lucide="image-plus"></i>
+                    <strong id="lastFrameName">上传尾帧图</strong>
+                    <span class="meta">首帧使用反推源图片或第 1 张参考图</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="textarea-wrap">
+              <textarea id="promptBox" spellcheck="false"></textarea>
+              <span class="counter" id="counter">0 字</span>
+            </div>
+          </section>
+        </div>
+
+        <section class="section" id="resultSection">
+          <div class="section-head">
+            <h2>结果对比</h2>
+            <span class="meta">保留、重跑、回到编辑</span>
+          </div>
+          <div class="result-grid" id="results"></div>
+        </section>
+
+        <section class="section" id="automationSection">
+          <div class="section-head">
+            <span class="head-title">
+              <h2>自动化工作流上传后台配置</h2>
+              <span class="meta">海外 InsMind / 轻舟 BFF</span>
+            </span>
+            <button type="button" id="automationRefreshBtn"><i data-lucide="refresh-cw"></i>检测配置</button>
+          </div>
+          <div class="automation-panel" id="automationPanel"></div>
+        </section>
+      </main>
+
+      <aside class="section agent-panel" id="agentPanel">
+        <div class="section-head">
+          <span class="head-title">
+            <h2>Agent</h2>
+            <span class="meta">总控推进与修复</span>
+          </span>
+          <button type="button" id="agentCollapseBtn" class="icon-button" aria-label="收起 Agent 面板" title="收起 Agent 面板">
+            <i data-lucide="chevrons-right"></i>
+          </button>
+        </div>
+        <div class="agent-content">
+          <div class="agent-dashboard" id="agentDashboard"></div>
+          <div class="agent-log" id="agentLog"></div>
+          <div class="agent-input">
+            <div class="agent-mode" id="agentModePicker" aria-label="Agent 自动化等级">
+              <button type="button" data-agent-mode="watch">观察</button>
+              <button type="button" data-agent-mode="assist">半自动</button>
+              <button type="button" data-agent-mode="auto">自动</button>
+            </div>
+            <div class="agent-tools">
+              <button type="button" id="agentDiagnoseBtn"><i data-lucide="scan-search"></i>诊断</button>
+              <button type="button" id="agentStepBtn" class="primary"><i data-lucide="wand-sparkles"></i>执行建议</button>
+              <button type="button" id="agentFixMotionBtn" class="warn"><i data-lucide="move-3d"></i>补动作</button>
+              <button type="button" id="agentCleanBtn"><i data-lucide="shield-check"></i>清风险词</button>
+              <button type="button" id="agentRerunBtn" class="success"><i data-lucide="refresh-cw"></i>重跑问题线</button>
+            </div>
+            <textarea id="agentInput" placeholder="例如：把产品图换成第 2 张，补完整口播字幕，保留原运镜但换背景。"></textarea>
+            <button type="button" id="agentSendBtn" class="primary"><i data-lucide="send"></i>发送给 Agent</button>
+          </div>
+        </div>
+        <div class="agent-rail">
+          <button type="button" id="agentExpandBtn" class="icon-button" aria-label="展开 Agent 面板" title="展开 Agent 面板">
+            <i data-lucide="chevrons-left"></i>
+          </button>
+          <span class="agent-rail-label">Agent</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    const stages = [
+      { id: "input", title: "素材输入", desc: "反推源视频/图片 + 用户参考图" },
+      { id: "reverse", title: "双模型反推", desc: "豆包 / 千问自动反推结构化字段，不要求人工逐步确认" },
+      { id: "check", title: "完整性校验", desc: "检查动作、运镜、字幕、音频、参考图和连贯性" },
+      { id: "edit", title: "人工编辑", desc: "只针对校验问题改 Prompt，支持一键补全和直接编辑" },
+      { id: "generate", title: "生成视频", desc: "声音默认开启，失败后自动做一次安全清洗重试" },
+      { id: "compare", title: "结果对比", desc: "展示豆包版 / 千问版，保留或回到 Prompt 编辑重跑" }
+    ];
+
+    const baseShots = [
+      {
+        time: "0.0-1.0s",
+        title: "主体入场",
+        text: "根据反推源识别主体、场景和初始构图；镜头从稳定全景或中景开始，保留原视频节奏和主体位置。"
+      },
+      {
+        time: "1.0-2.0s",
+        title: "参考图替换",
+        text: "把用户参考图作为整体视觉参考，保留原镜头运动，用参考图补充或替换画面里的目标对象、材质、场景或风格。"
+      },
+      {
+        time: "2.0-3.0s",
+        title: "动作与运镜",
+        text: "记录主体可见动作、运动方向、起止姿态、产品旋转、推拉摇移和变焦；校验是否遗漏真实存在的动作轨迹。"
+      },
+      {
+        time: "3.0-4.0s",
+        title: "字幕与音频",
+        text: "抽取口播/字幕并补全时间码；默认开启免版权音乐，鼓点匹配转场和关键动作。"
+      }
+    ];
+
+    const issues = [
+      {
+        id: "motion",
+        title: "动作轨迹不完整",
+        desc: "反推结果有主体动作概括，但没有明确可见动作的起止状态、方向、幅度、速度、入镜/出镜或重心变化；若无该动作应明确标注无明显位移。",
+        fixed: false
+      },
+      {
+        id: "subtitle",
+        title: "字幕/口播字段为空",
+        desc: "当前视频未检测到明确口播，仍应保留 subtitle_transcript 字段，避免后续口播视频漏字幕。",
+        fixed: false
+      },
+      {
+        id: "slot",
+        title: "参考图已绑定",
+        desc: "用户参考图已作为整体视觉参考进入生成链路，不再按固定主体、人物、场景或风格分类限制。",
+        fixed: true
+      },
+      {
+        id: "audio",
+        title: "音频建议已生成",
+        desc: "默认开启免版权音乐，节拍匹配镜头切换，转场加入轻微 whoosh / pop。",
+        fixed: true
+      }
+    ];
+
+    const workflowNodes = [
+      { id: "source", title: "源素材识别", desc: "等待上传视频或图片" },
+      { id: "reverse", title: "反推结构化", desc: "豆包 / 千问" },
+      { id: "slots", title: "参考图绑定", desc: "多图参考" },
+      { id: "check", title: "完整性校验", desc: "动作线待补" },
+      { id: "prompt", title: "Prompt 编辑", desc: "Agent 可修改" },
+      { id: "generate", title: "生成与对比", desc: "audio: on" }
+    ];
+
+    const fallbackModelDurations = [
+      { match: /seedance2\.0fast|hailuo2\.3fast/i, values: [5, 10] },
+      { match: /seedance2\.0|klingv3o|klingv3|klingv2\.6|wan2\./i, values: [5, 10] },
+      { match: /happyhorse|hailuo|klingvo/i, values: [5] }
+    ];
+
+    const state = {
+      progress: 0,
+      model: "both",
+      sourceMode: "video",
+      hasSource: false,
+      sourceFileName: "",
+      sourceFileData: "",
+      sourceFileType: "",
+      sourceImageData: "",
+      reverseState: "idle",
+      reverseError: "",
+      analysis: null,
+      analysisRuns: [],
+      mergeRationale: "",
+      referenceImages: [],
+      difyStatus: null,
+      difyRun: null,
+      difyError: "",
+      automationStatus: null,
+      automationState: "idle",
+      automationError: "",
+      approvedAsset: null,
+      automationSubmission: null,
+      generationState: "idle",
+      generated: false,
+      videoModelChoice: "",
+      durationChoice: "5",
+      ratioChoice: "9:16",
+      resolutionChoice: "720p",
+      batchCount: 1,
+      generationRouteMode: "auto",
+      firstFrameRoute: false,
+      lastFrameImageData: "",
+      lastFrameImageName: "",
+      lastFrameImageType: "",
+      agentMode: "assist",
+      agentLastDiagnosis: null,
+      agentLastVerification: null,
+      agentBusy: false,
+      agentAutoSignature: "",
+      agentAutoTimer: null,
+      agentConversationId: "",
+      issues: structuredClone(issues)
+    };
+
+    const els = {
+      statusDot: document.getElementById("statusDot"),
+      statusText: document.getElementById("statusText"),
+      pipeline: document.getElementById("pipeline"),
+      pipelineMeta: document.getElementById("pipelineMeta"),
+      timeline: document.getElementById("timeline"),
+      issues: document.getElementById("issues"),
+      issueMeta: document.getElementById("issueMeta"),
+      workflowCanvas: document.getElementById("workflowCanvas"),
+      promptBox: document.getElementById("promptBox"),
+      counter: document.getElementById("counter"),
+      results: document.getElementById("results"),
+      automationPanel: document.getElementById("automationPanel"),
+      automationRefreshBtn: document.getElementById("automationRefreshBtn"),
+      runBtn: document.getElementById("runBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      fixMotionBtn: document.getElementById("fixMotionBtn"),
+      fixSubtitleBtn: document.getElementById("fixSubtitleBtn"),
+      cleanBtn: document.getElementById("cleanBtn"),
+      replaceProductBtn: document.getElementById("replaceProductBtn"),
+      generateBtn: document.getElementById("generateBtn"),
+      videoModelSelect: document.getElementById("videoModelSelect"),
+      generationRouteSelect: document.getElementById("generationRouteSelect"),
+      durationSelect: document.getElementById("durationSelect"),
+      ratioSelect: document.getElementById("ratioSelect"),
+      resolutionSelect: document.getElementById("resolutionSelect"),
+      batchCountInput: document.getElementById("batchCountInput"),
+      firstFrameField: document.getElementById("firstFrameField"),
+      firstFrameToggle: document.getElementById("firstFrameToggle"),
+      lastFrameField: document.getElementById("lastFrameField"),
+      lastFrameInput: document.getElementById("lastFrameInput"),
+      lastFrameDrop: document.getElementById("lastFrameDrop"),
+      lastFrameName: document.getElementById("lastFrameName"),
+      modelPicker: document.getElementById("modelPicker"),
+      videoSourceDrop: document.getElementById("videoSourceDrop"),
+      imageSourceDrop: document.getElementById("imageSourceDrop"),
+      sourceVideoInput: document.getElementById("sourceVideoInput"),
+      sourceImageInput: document.getElementById("sourceImageInput"),
+      sourceVideoName: document.getElementById("sourceVideoName"),
+      sourceImageName: document.getElementById("sourceImageName"),
+      sourceModeHint: document.getElementById("sourceModeHint"),
+      referenceImagesInput: document.getElementById("referenceImagesInput"),
+      referenceGallery: document.getElementById("referenceGallery"),
+      agentPanel: document.getElementById("agentPanel"),
+      agentDashboard: document.getElementById("agentDashboard"),
+      agentLog: document.getElementById("agentLog"),
+      agentInput: document.getElementById("agentInput"),
+      agentSendBtn: document.getElementById("agentSendBtn"),
+      agentModePicker: document.getElementById("agentModePicker"),
+      agentDiagnoseBtn: document.getElementById("agentDiagnoseBtn"),
+      agentStepBtn: document.getElementById("agentStepBtn"),
+      agentCollapseBtn: document.getElementById("agentCollapseBtn"),
+      agentExpandBtn: document.getElementById("agentExpandBtn"),
+      agentFixMotionBtn: document.getElementById("agentFixMotionBtn"),
+      agentCleanBtn: document.getElementById("agentCleanBtn"),
+      agentRerunBtn: document.getElementById("agentRerunBtn")
+    };
+
+    function buildPrompt() {
+      if (state.analysis) return buildPromptFromAnalysis(state.analysis);
+      const sourceLine = state.sourceMode === "image"
+        ? "反推源为图片：优先保持上传图片的主体、构图、材质、光线和风格，再补充适合图生视频的轻微动作、镜头推进和音频节奏。"
+        : "反推源为视频：优先保持上传视频的动作、运镜、转场、节奏、字幕和音频结构。";
+      const referenceLine = referenceBindingText();
+      return [
+        `通用视频生成任务，${state.ratioChoice || "9:16"}。根据反推源素材提取主体、场景、动作、运镜、字幕和音频结构；用户参考图作为补充视觉参考，不预设类型。`,
+        sourceLine,
+        referenceLine,
+        "运镜：保留反推源里的景别、机位、推拉摇移、跟拍、旋转、变焦、转场方式和速度；如果缺失，由校验器提示并补全。",
+        "主体动作：必须写清楚视频中真实可见的动作轨迹，包括起止状态、方向、幅度、速度、转身、手势、产品旋转、入镜和出镜路径；如果没有某类动作，明确标注无明显位移，不要编造。",
+        "字幕/口播：subtitle_transcript 为空；如果后续检测到口播，必须逐句写入并标注出现时间。",
+        "音频：音乐默认开启。使用原创免版权音乐，无歌词无人声，鼓点匹配关键动作和转场，转场可加入轻微 whoosh 与 pop 音效。",
+        "负面约束：无平台标识、无账号文字、无水印、无品牌商标、无字幕乱码；避免主体变形、参考素材元素丢失、转场断裂、镜头漂移、无音乐或音画不同步。"
+      ].join("\\n");
+    }
+
+    function buildPromptFromAnalysis(analysis) {
+      const shots = Array.isArray(analysis?.shots) ? analysis.shots : [];
+      const useRef = hasReferenceImages();
+      const subjectFor = shot => useRef
+        ? "以用户参考图主体为准（替换源视频中的产品/主体，保留参考图主体的形态、材质、比例与细节）"
+        : compactSentence(shot.subject, 90);
+      const shotText = shots.map((shot, index) => {
+        const time = `${formatSec(shot.startSec ?? index)}-${formatSec(shot.endSec ?? index + 1)}s`;
+        return `${index + 1}. ${time} ${shot.title || "镜头"}：主体=${subjectFor(shot)}；场景=${compactSentence(shot.environment, 90)}；动作=${compactSentence(shot.action, 120)}；运镜=${compactSentence(shot.camera, 120)}；光线=${compactSentence(shot.lighting, 80)}；音频=${compactSentence(shot.audio, 80)}`;
+      }).join("\n");
+      const referenceLine = referenceBindingText();
+      const summaryLine = useRef
+        ? `通用视频生成任务，${state.ratioChoice || "9:16"}。主体以用户参考图为准，把反推得到的运镜、动作、转场、节奏与音频结构套用到参考图主体上；${compactSentence(analysis.overallSummary || "保持源视频的镜头语言与节奏", 240)}`
+        : `通用视频生成任务，${state.ratioChoice || "9:16"}。${compactSentence(analysis.overallSummary || analysis.projectTitle || "根据反推源生成同风格视频", 360)}`;
+      const negativeLine = useRef
+        ? `负面约束：主体必须替换为用户参考图主体，不要出现源视频中的原始产品/主体；${compactSentence(analysis.negative || "避免主体变形、镜头漂移、转场断裂、文字乱码、参考素材丢失、无音乐或音画不同步。", 200)}`
+        : `负面约束：${compactSentence(analysis.negative || "避免主体变形、镜头漂移、转场断裂、文字乱码、参考素材丢失、无音乐或音画不同步。", 260)}`;
+      return [
+        summaryLine,
+        `风格：${compactSentence(analysis.detectedStyle, 180)}`,
+        "反推分镜：",
+        shotText || "1. 按原视频节奏保持主体、场景、动作、运镜、字幕和音频结构。",
+        referenceLine,
+        negativeLine
+      ].filter(Boolean).join("\n");
+    }
+
+    function referenceBindingText() {
+      if (firstLastModeEnabled()) {
+        const first = firstLastFirstFrame();
+        const firstName = first.name || "未选择首帧";
+        const lastName = state.lastFrameImageName || "未上传尾帧";
+        return `首尾帧模式：首帧=${firstName}，尾帧=${lastName}。生成时必须从首帧自然过渡到尾帧，保持主体身份、镜头方向、动作连续性和首尾构图逻辑一致。`;
+      }
+      const refs = referenceImages();
+      if (!refs.length) {
+        return "用户参考图：未上传。生成时按反推源素材保持动作、运镜、转场、字幕和音频结构。";
+      }
+      const names = refs.map((item, index) => `${index + 1}.${item.name}`).join("；");
+      return `用户参考图：共 ${refs.length} 张，${names}。生成时以这些参考图作为画面主体，替换反推源里的产品/主体，并保留反推源的运镜、动作、转场、节奏与音频结构；不要保留源视频原本的产品外观。`;
+    }
+
+    function compactSentence(value, max = 120) {
+      const text = String(value || "").replace(/\s+/g, " ").trim();
+      if (text.length <= max) return text;
+      return `${text.slice(0, Math.max(8, max - 1))}…`;
+    }
+
+    function formatSec(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "0.0";
+      return number.toFixed(1);
+    }
+
+    function renderPipeline() {
+      els.pipelineMeta.textContent = `${state.progress} / ${stages.length}`;
+      els.pipeline.innerHTML = stages.map((stage, index) => {
+        const num = index + 1;
+        const active = state.progress === index;
+        const done = state.progress > index;
+        return `
+          <div class="stage${active ? " is-active" : ""}${done ? " is-done" : ""}">
+            <span class="stage-index">${String(num).padStart(2, "0")}</span>
+            <span>
+              <span class="stage-title">${stage.title}</span>
+              <span class="stage-desc">${stage.desc}</span>
+            </span>
+            <span class="stage-state">${done ? "完成" : active ? "当前" : "等待"}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function workflowStatusLabel(status) {
+      if (status === "ok") return "正常";
+      if (status === "warn") return "待处理";
+      if (status === "active") return "当前";
+      if (status === "error") return "失败";
+      return "等待";
+    }
+
+    function modelLabel(model) {
+      if (model === "doubao") return "豆包";
+      if (model === "qwen") return "千问";
+      return "双模型";
+    }
+
+    function configuredApiBase() {
+      const clean = value => String(value || "").trim().replace(/\/+$/, "");
+      try {
+        const params = new URLSearchParams(location.search);
+        const fromQuery = clean(params.get("api") || params.get("apiBase"));
+        if (fromQuery) {
+          localStorage.setItem("videoPipelineApiBase", fromQuery);
+          return fromQuery;
+        }
+        return clean(localStorage.getItem("videoPipelineApiBase"));
+      } catch {
+        return "";
+      }
+    }
+
+    const API_BASE = configuredApiBase();
+
+    function apiUrl(path) {
+      const cleanPath = String(path || "").startsWith("/") ? path : `/${path}`;
+      if (API_BASE) return `${API_BASE}${cleanPath}`;
+      if (location.protocol === "file:") return `http://127.0.0.1:8765${cleanPath}`;
+      return cleanPath;
+    }
+
+    function assetUrl(url) {
+      const value = String(url || "");
+      if (!value) return "";
+      if (value.startsWith("/") && location.protocol === "file:") return apiUrl(value);
+      return value;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function compactName(name, max = 24) {
+      const value = String(name || "").trim();
+      if (value.length <= max) return value;
+      const dot = value.lastIndexOf(".");
+      const ext = dot > 0 ? value.slice(dot) : "";
+      const base = dot > 0 ? value.slice(0, dot) : value;
+      const keep = Math.max(8, max - ext.length - 1);
+      return `${base.slice(0, keep)}…${ext}`;
+    }
+
+    function referenceImages() {
+      return Array.isArray(state.referenceImages) ? state.referenceImages : [];
+    }
+
+    function hasReferenceImages() {
+      return referenceImages().length > 0;
+    }
+
+    function firstLastFirstFrame() {
+      if (state.sourceMode === "image" && state.sourceImageData) {
+        return {
+          dataUrl: state.sourceImageData,
+          name: state.sourceFileName || "first-frame.png",
+          type: state.sourceFileType || "image/png"
+        };
+      }
+      const firstReference = referenceImages()[0];
+      if (firstReference?.dataUrl) {
+        return {
+          dataUrl: firstReference.dataUrl,
+          name: firstReference.name || "first-frame.png",
+          type: firstReference.type || "image/png"
+        };
+      }
+      return { dataUrl: "", name: "", type: "" };
+    }
+
+    function firstLastModeEnabled() {
+      return state.generationRouteMode === "first-last-frame-video";
+    }
+
+    function guessOriginalProductTerms(text) {
+      const stop = new Set(["参考图","主体","镜头","运镜","画面","场景","动作","转场","节奏","音频","光线","背景","构图","产品","视频","生成","结构","科技","界面","色彩","风格","推近","悬浮","保持","整体","效果","展示","内部","金属","质感","对比","元素","水印","负面","约束","机位","平视","中心","近景","中景","特写","细节","真实","商业","渲染","荒漠","岩石","光效","轮廓","蓝色","橙色","暖橙","冰蓝","渐变","材质","任务","通用","用户"]);
+      const counts = new Map();
+      const runs = String(text || "").match(/[\u4e00-\u9fa5]+/g) || [];
+      for (const run of runs) {
+        for (let n = 2; n <= 4; n += 1) {
+          for (let i = 0; i + n <= run.length; i += 1) {
+            const g = run.slice(i, i + n);
+            if (stop.has(g)) continue;
+            counts.set(g, (counts.get(g) || 0) + 1);
+          }
+        }
+      }
+      const ranked = [...counts.entries()]
+        .filter(([g, c]) => c >= 3)
+        .sort((a, b) => (b[1] - a[1]) || (b[0].length - a[0].length));
+      const picked = [];
+      for (const [g, c] of ranked) {
+        if (picked.some(p => p.g.includes(g) && p.c >= c)) continue;
+        picked.push({ g, c });
+        if (picked.length >= 4) break;
+      }
+      return picked.map(p => p.g);
+    }
+
+    function activeRouteType() {
+      if (firstLastModeEnabled()) return "first-last-frame-video";
+      if (hasReferenceImages()) return "multi-reference-video";
+      return state.sourceMode === "image" ? "image-to-video" : "text-to-video";
+    }
+
+    function activeRoute() {
+      return (state.difyStatus?.routes || []).find(route => route.type === activeRouteType()) || null;
+    }
+
+    function routeReady(route = activeRoute()) {
+      return Boolean(route?.configured && route?.connected);
+    }
+
+    function routeReferenceInput(route = activeRoute()) {
+      return route?.inputTypes?.referenceImages || null;
+    }
+
+    function routeReferenceAcceptsLocalFiles(route = activeRoute()) {
+      const input = routeReferenceInput(route);
+      if (!input) return true;
+      return Boolean(input.acceptsLocalFile || input.acceptsLocalFileList);
+    }
+
+    function routeReferenceInputSummary(route = activeRoute()) {
+      const input = routeReferenceInput(route);
+      if (!input) return "";
+      const key = route?.inputKeys?.referenceImages || input.variable || "参考图字段";
+      if (input.acceptsLocalFileList) return `${key}: file-list，可接收本地多图`;
+      if (input.acceptsLocalFile) return `${key}: file，可接收本地单图`;
+      if (input.expectsString) return `${key}: ${input.kind || input.type || "string"}，只接收 URL 文本`;
+      return `${key}: ${input.kind || input.type || "未知类型"}`;
+    }
+
+    function routeModelChoices(route = activeRoute()) {
+      return (route?.modelChoices || [])
+        .map(item => typeof item === "string" ? item : item?.value)
+        .filter(Boolean);
+    }
+
+    function routeOptionValues(route, key) {
+      return (route?.[key] || [])
+        .map(item => typeof item === "string" ? item : item?.value)
+        .filter(Boolean);
+    }
+
+    function durationChoicesForModel(model, route = activeRoute()) {
+      const routeValues = routeOptionValues(route, "durationChoices");
+      if (routeValues.length) return routeValues;
+      const matched = fallbackModelDurations.find(item => item.match.test(model || ""));
+      return (matched?.values || [5]).map(String);
+    }
+
+    function ratioChoices(route = activeRoute()) {
+      const routeValues = routeOptionValues(route, "ratioChoices");
+      return routeValues.length ? routeValues : ["9:16", "16:9", "1:1", "4:3", "3:4"];
+    }
+
+    function resolutionChoices(route = activeRoute()) {
+      const routeValues = routeOptionValues(route, "resolutionChoices");
+      return routeValues.length ? routeValues : ["480p", "720p", "1080p"];
+    }
+
+    function openIssueCount() {
+      return state.issues.filter(item => !item.fixed).length;
+    }
+
+    function renderReferenceImages() {
+      const refs = referenceImages();
+      els.referenceGallery.innerHTML = refs.length
+        ? refs.map((item, index) => `
+            <div class="reference-thumb" title="${escapeHtml(item.name)}">
+              <img src="${escapeHtml(item.dataUrl)}" alt="${escapeHtml(item.name)}">
+              <span class="reference-index">${index + 1}</span>
+              <button class="reference-remove" type="button" data-reference-remove="${escapeHtml(item.id)}" aria-label="移除 ${escapeHtml(item.name)}">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+          `).join("")
+        : "";
+    }
+
+    function renderGenerationConfig() {
+      const route = activeRoute();
+      const isFirstLast = firstLastModeEnabled();
+      if (els.generationRouteSelect) els.generationRouteSelect.value = state.generationRouteMode || "auto";
+      const models = routeModelChoices(route);
+      const selectedModel = models.includes(state.videoModelChoice)
+        ? state.videoModelChoice
+        : models[0] || state.videoModelChoice || "";
+      state.videoModelChoice = selectedModel;
+
+      els.videoModelSelect.innerHTML = models.length
+        ? models.map(value => `<option value="${escapeHtml(value)}"${value === selectedModel ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")
+        : `<option value="">${route ? "Dify 未返回模型选项" : "等待 Dify 线路"}</option>`;
+      els.videoModelSelect.disabled = !models.length;
+
+      const durations = durationChoicesForModel(selectedModel, route);
+      const selectedDuration = durations.includes(String(state.durationChoice)) ? String(state.durationChoice) : String(durations[0] || "5");
+      state.durationChoice = selectedDuration;
+      els.durationSelect.innerHTML = durations.map(value => `<option value="${escapeHtml(value)}"${String(value) === selectedDuration ? " selected" : ""}>${escapeHtml(value)} 秒</option>`).join("");
+
+      const ratios = ratioChoices(route);
+      const selectedRatio = ratios.includes(state.ratioChoice) ? state.ratioChoice : ratios[0] || "9:16";
+      state.ratioChoice = selectedRatio;
+      els.ratioSelect.innerHTML = ratios.map(value => `<option value="${escapeHtml(value)}"${value === selectedRatio ? " selected" : ""}>${escapeHtml(value)}</option>`).join("");
+
+      const resolutions = resolutionChoices(route);
+      const selectedResolution = resolutions.includes(state.resolutionChoice) ? state.resolutionChoice : resolutions[0] || "720p";
+      state.resolutionChoice = selectedResolution;
+      els.resolutionSelect.innerHTML = resolutions.map(value => `<option value="${escapeHtml(value)}"${value === selectedResolution ? " selected" : ""}>${escapeHtml(value)}</option>`).join("");
+
+      els.batchCountInput.value = String(state.batchCount || 1);
+
+      if (els.firstFrameField) {
+        const canFirstFrame = hasReferenceImages() && !isFirstLast;
+        els.firstFrameField.style.display = canFirstFrame ? "flex" : "none";
+        if (!canFirstFrame) state.firstFrameRoute = false;
+        if (els.firstFrameToggle) els.firstFrameToggle.checked = Boolean(state.firstFrameRoute);
+      }
+      if (els.lastFrameField) {
+        els.lastFrameField.style.display = isFirstLast ? "grid" : "none";
+      }
+      if (els.lastFrameDrop) {
+        els.lastFrameDrop.classList.toggle("is-active", Boolean(state.lastFrameImageData));
+      }
+      if (els.lastFrameName) {
+        els.lastFrameName.textContent = state.lastFrameImageName ? compactName(state.lastFrameImageName) : "上传尾帧图";
+        els.lastFrameName.title = state.lastFrameImageName || "";
+      }
+
+      const routeLabelText = route?.label || activeRouteType();
+      els.generateBtn.title = route
+        ? `使用 ${routeLabelText}，模型 ${selectedModel || "未选择"}，${selectedDuration}s，${selectedRatio}，${state.batchCount} 个，audio: on`
+        : "等待读取 Dify 线路";
+    }
+
+    function renderWorkflowCanvas() {
+      if (!state.hasSource) {
+        const nodes = workflowNodes.map(node => {
+          if (node.id === "source") return { ...node, status: "active", desc: "请先上传反推视频或图片" };
+          return { ...node, status: "pending", desc: "等待源素材" };
+        });
+        els.workflowCanvas.innerHTML = nodes.map(node => `
+          <div class="flow-node is-${node.status}">
+            <span class="node-status">${workflowStatusLabel(node.status)}</span>
+            <strong>${node.title}</strong>
+            <span>${node.desc}</span>
+          </div>
+        `).join("");
+        return;
+      }
+
+      const hasOpenIssue = state.issues.some(item => !item.fixed);
+      const nodes = workflowNodes.map(node => {
+        if (node.id === "source") return { ...node, status: "ok", desc: `${state.sourceMode === "image" ? "图片" : "视频"}已识别` };
+        if (node.id === "reverse") {
+          if (state.reverseState === "running") return { ...node, status: "active", desc: `${modelLabel(state.model)}反推中` };
+          if (state.reverseState === "error") return { ...node, status: "error", desc: "反推失败" };
+          if (state.analysis) return { ...node, status: "ok", desc: `${modelLabel(state.model)}反推完成` };
+          return { ...node, status: "pending", desc: `等待${modelLabel(state.model)}反推` };
+        }
+        if (node.id === "slots") return { ...node, status: state.analysis ? "ok" : "pending", desc: state.analysis ? (hasReferenceImages() ? `已绑定 ${referenceImages().length} 张参考图` : "未上传参考图，按反推源生成") : "等待反推结果" };
+        if (node.id === "check") {
+          if (!state.analysis) return { ...node, status: "pending", desc: "等待反推与参考图绑定" };
+          return { ...node, status: hasOpenIssue ? "warn" : "ok", desc: hasOpenIssue ? "动作线待补" : "校验通过" };
+        }
+        if (node.id === "prompt") {
+          if (!state.analysis) return { ...node, status: "pending", desc: "等待反推 Prompt" };
+          if (hasOpenIssue) return { ...node, status: "pending", desc: "等待修复校验问题" };
+          return { ...node, status: state.progress >= 4 ? "ok" : "active", desc: "可编辑后进入生成" };
+        }
+        if (node.id === "generate") {
+          if (state.generationState === "running") return { ...node, status: "active", desc: "Dify 生成中" };
+          if (state.generationState === "error") return { ...node, status: "error", desc: "Dify 线路或结果异常" };
+          if (state.generated) return { ...node, status: "ok", desc: "已获取生成结果" };
+          return { ...node, status: "pending", desc: state.progress >= 4 ? "等待 Dify 生成" : "等待 Prompt" };
+        }
+        return node;
+      });
+      els.workflowCanvas.innerHTML = nodes.map(node => `
+        <div class="flow-node is-${node.status}">
+          <span class="node-status">${workflowStatusLabel(node.status)}</span>
+          <strong>${node.title}</strong>
+          <span>${node.desc}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderTimeline() {
+      if (!state.hasSource) {
+        els.timeline.innerHTML = `
+          <div class="shot">
+            <span class="time">未开始</span>
+            <span>
+              <strong>等待反推源素材</strong>
+              <p>上传视频后分析时间轴、动作、运镜、转场、字幕和音频；上传图片后分析主体、构图、材质和风格。</p>
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.reverseState === "running") {
+        els.timeline.innerHTML = `
+          <div class="shot">
+            <span class="time">反推中</span>
+            <span>
+              <strong>${modelLabel(state.model)}正在反推视频 Prompt</strong>
+              <p>Dify 正在分析上传素材，完成后会把反推分镜写入这里，并同步更新 Prompt 编辑框。</p>
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.reverseState === "error") {
+        els.timeline.innerHTML = `
+          <div class="shot">
+            <span class="time">失败</span>
+            <span>
+              <strong>反推失败</strong>
+              <p>${escapeHtml(state.reverseError || "Dify 反推没有返回有效结果。")}</p>
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.analysis?.shots?.length) {
+        const mergeNote = state.mergeRationale
+          ? `<div class="merge-note">${escapeHtml(state.mergeRationale)}</div>`
+          : "";
+        els.timeline.innerHTML = mergeNote + state.analysis.shots.map((shot, index) => `
+          <div class="shot">
+            <span class="time">${formatSec(shot.startSec ?? index)}-${formatSec(shot.endSec ?? index + 1)}s</span>
+            <span>
+              <strong>${escapeHtml(shot.title || `镜头 ${index + 1}`)}</strong>
+              <p>${escapeHtml([
+                shot.subject && `主体：${shot.subject}`,
+                shot.environment && `场景：${shot.environment}`,
+                shot.action && `动作：${shot.action}`,
+                shot.camera && `运镜：${shot.camera}`,
+                shot.audio && `音频：${shot.audio}`
+              ].filter(Boolean).join("；"))}</p>
+            </span>
+          </div>
+        `).join("");
+        return;
+      }
+
+      if (state.sourceMode === "image") {
+        els.timeline.innerHTML = `
+          <div class="shot">
+            <span class="time">0.0-4.0s</span>
+            <span>
+              <strong>图片反推动态化</strong>
+              <p>从上传图片的主体、构图、材质和光线出发，生成轻微推进、主体摆动、产品或关键对象细节展示；没有原始时间轴时，系统会自动补足动作、运镜和音频建议。</p>
+            </span>
+          </div>
+        `;
+        return;
+      }
+      els.timeline.innerHTML = baseShots.map(shot => `
+        <div class="shot">
+          <span class="time">${shot.time}</span>
+          <span>
+            <strong>${shot.title}</strong>
+            <p>${shot.text}</p>
+          </span>
+        </div>
+      `).join("");
+    }
+
+    function renderIssues() {
+      if (!state.hasSource) {
+        els.issueMeta.textContent = "等待源素材";
+        els.issues.innerHTML = `
+          <div class="issue">
+            <span class="issue-icon"><i data-lucide="upload"></i></span>
+            <span>
+              <strong>尚未开始校验</strong>
+              <span>上传反推视频或图片后，再检查动作、运镜、字幕、音频和参考图。</span>
+            </span>
+            <span class="stage-state">等待</span>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      if (!state.analysis) {
+        els.issueMeta.textContent = state.reverseState === "error" ? "反推失败" : "等待反推";
+        els.issues.innerHTML = `
+          <div class="issue">
+            <span class="issue-icon"><i data-lucide="${state.reverseState === "error" ? "triangle-alert" : "scan-search"}"></i></span>
+            <span>
+              <strong>${state.reverseState === "error" ? "没有拿到反推 Prompt" : "等待视频反推 Prompt"}</strong>
+              <span>${escapeHtml(state.reverseState === "error" ? state.reverseError : "点击“自动跑到校验”后，会先调用 Dify 反推，再进入完整性校验。")}</span>
+            </span>
+            <span class="stage-state">${state.reverseState === "error" ? "失败" : "等待"}</span>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      const open = state.issues.filter(item => !item.fixed).length;
+      els.issueMeta.textContent = open ? `${open} 项待处理` : "校验通过";
+      els.issues.innerHTML = state.issues.map(item => `
+        <div class="issue${item.fixed ? " is-fixed" : ""}">
+          <span class="issue-icon"><i data-lucide="${item.fixed ? "check" : "triangle-alert"}"></i></span>
+          <span>
+            <strong>${item.title}</strong>
+            <span>${item.desc}</span>
+          </span>
+          <span class="stage-state">${item.fixed ? "已处理" : "待处理"}</span>
+        </div>
+      `).join("");
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderResults() {
+      if (state.generationState === "running") {
+        els.results.innerHTML = `
+          <div class="result is-running">
+            <div class="preview"><i data-lucide="loader-circle"></i></div>
+            <div class="result-body">
+              <strong>Dify 生成中</strong>
+              <span class="meta">线路：${escapeHtml(activeRoute()?.label || activeRouteType())}，audio: on。等待工作流返回视频或图片 URL。</span>
+            </div>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      if (state.generationState === "error") {
+        els.results.innerHTML = `
+          <div class="result is-error">
+            <div class="preview"><i data-lucide="triangle-alert"></i></div>
+            <div class="result-body">
+              <strong>Dify 未生成可用结果</strong>
+              <span class="result-error">${escapeHtml(state.difyError || "没有返回可展示的生成资产。")}</span>
+            </div>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      if (!state.generated) {
+        const route = activeRoute();
+        const routeText = route
+          ? `${route.label || route.type} · ${routeReady(route) ? "已接通" : route.configured ? "未接通" : "未配置"}`
+          : "等待读取 Dify 线路";
+        const referenceInputText = hasReferenceImages() && route ? routeReferenceInputSummary(route) : "";
+        els.results.innerHTML = `
+          <div class="result">
+            <div class="preview"><i data-lucide="video"></i></div>
+            <div class="result-body">
+              <strong>等待生成结果</strong>
+              <span class="meta">当前 Dify 线路：${escapeHtml(routeText)}。只有 Dify 返回视频/图片 URL 后才会标记完成。</span>
+              ${referenceInputText ? `<span class="meta">参考图输入：${escapeHtml(referenceInputText)}</span>` : ""}
+            </div>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      const assets = mediaAssets();
+      els.results.innerHTML = assets.map((item, index) => {
+        const selected = state.approvedAsset?.assetIndex === index;
+        return `
+        <div class="result${selected ? " is-approved" : ""}">
+          <div class="preview">
+            ${item.type === "video"
+              ? `<video src="${escapeHtml(assetUrl(item.localUrl || item.url))}" controls playsinline preload="metadata"></video>`
+              : `<img src="${escapeHtml(assetUrl(item.localUrl || item.url))}" alt="${escapeHtml(item.title || "生成结果")}">`}
+          </div>
+          <div class="result-body">
+            <strong>${escapeHtml(item.title || "Dify 生成结果")}</strong>
+            <span class="meta">${escapeHtml(state.difyRun?.runId || "")} · ${escapeHtml(activeRoute()?.label || state.difyRun?.routeType || "")}</span>
+            <a class="result-link" href="${escapeHtml(assetUrl(item.localUrl || item.url))}" target="_blank" rel="noreferrer">打开结果文件</a>
+            <div class="pill-row">
+              <span class="pill good">audio: on</span>
+              <span class="pill good">${escapeHtml(item.type)}</span>
+              <span class="pill ${selected ? "good" : "warn"}">${selected ? "已人工确认" : "需要抽检"}</span>
+            </div>
+            <div class="result-actions">
+              ${item.type === "video"
+                ? `<button type="button" class="success" data-confirm-asset="${index}"><i data-lucide="check"></i>${selected ? "重新提交下一步" : "确认并进入下一步"}</button>`
+                : `<span class="meta">只有视频结果可进入下一步自动化工作流。</span>`}
+            </div>
+          </div>
+        </div>
+      `;
+      }).join("");
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function mediaAssets() {
+      return (state.difyRun?.assets || []).filter(item => ["video", "image"].includes(item.type));
+    }
+
+    function renderAutomationPanel() {
+      const status = state.automationStatus;
+      const probe = status?.probe;
+      const approved = state.approvedAsset;
+      const submit = state.automationSubmission;
+      const qingzhouPayload = submit?.qingzhouExamplePayload;
+      const statusText = !status
+        ? "等待读取配置"
+        : status.authenticated
+          ? (probe?.ok ? `轻舟登录态可用，examples ${probe.status}` : `轻舟配置已读取，登录态检测失败 ${probe?.status || ""}`)
+          : "固定项已配置，缺少 token/cookie";
+      els.automationPanel.innerHTML = `
+        <div class="automation-grid">
+          <div class="config-item"><strong>business</strong><span>${escapeHtml(status?.business || "overseas")}</span></div>
+          <div class="config-item"><strong>x-business-id</strong><span>${escapeHtml(status?.businessId || "124")}</span></div>
+          <div class="config-item"><strong>bff_base_url</strong><span>${escapeHtml(status?.bffBaseUrl || "https://market.gaoding.com/bff-api")}</span></div>
+          <div class="config-item"><strong>editor_origin</strong><span>${escapeHtml(status?.editorOrigin || "https://www.insmind.com")}</span></div>
+          <div class="config-item"><strong>api_path</strong><span>${escapeHtml(status?.apiPath || "/independent/side/market-ai/examples")}</span></div>
+          <div class="config-item"><strong>登录态</strong><span>${escapeHtml(statusText)}</span></div>
+        </div>
+        <div class="approval-box">
+          <strong>${approved ? "已选择人工确认视频" : "等待人工确认视频"}</strong>
+          <span class="meta">${approved ? escapeHtml(`${approved.asset.title || "生成视频"} · ${approved.asset.localUrl || approved.asset.url || ""}`) : "在结果对比里点击“确认并进入下一步”后，会把确认的视频写入本地记录，并按后台配置提交到下一步。"}</span>
+          ${qingzhouPayload ? `
+            <div class="automation-grid">
+              <div class="config-item"><strong>提交模型</strong><span>${escapeHtml(qingzhouPayload.model || "")}</span></div>
+              <div class="config-item"><strong>视频模型</strong><span>${escapeHtml(qingzhouPayload.user_input_items?.video_model?.value || "")}</span></div>
+              <div class="config-item"><strong>ratio</strong><span>${escapeHtml(qingzhouPayload.user_input_items?.ratio?.value || "")}</span></div>
+              <div class="config-item"><strong>参考图</strong><span>${escapeHtml(String(qingzhouPayload.reference_images?.length || 0))} 张</span></div>
+            </div>
+          ` : ""}
+          ${state.automationError ? `<span class="result-error">${escapeHtml(state.automationError)}</span>` : ""}
+          ${submit ? `<span class="meta">${escapeHtml(submit.detail || (submit.submitted ? "已提交" : "已记录"))}</span>` : ""}
+          <div class="approval-actions">
+            <button type="button" id="automationSubmitBtn" class="success" ${approved && state.automationState !== "running" ? "" : "disabled"}>
+              <i data-lucide="upload-cloud"></i>${state.automationState === "running" ? "提交中" : "上传确认视频到下一步"}
+            </button>
+            <span class="meta">登录 token 和 Cookie 只供本地服务调用，不在页面展示。</span>
+          </div>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    const agentModes = {
+      watch: "观察模式",
+      assist: "半自动模式",
+      auto: "自动推进模式"
+    };
+
+    function agentModeLabel(mode = state.agentMode) {
+      return agentModes[mode] || agentModes.assist;
+    }
+
+    function promptRiskTerms() {
+      const text = els.promptBox?.value || "";
+      const terms = [];
+      const matcher = /小红书|抖音|账号|水印|平台标识|品牌商标|同款|复现/g;
+      let match;
+      while ((match = matcher.exec(text))) {
+        const prefix = text.slice(Math.max(0, match.index - 1), match.index);
+        if (prefix === "无") continue;
+        terms.push(match[0]);
+      }
+      return [...new Set(terms)];
+    }
+
+    function agentSnapshot() {
+      return {
+        progress: state.progress,
+        openIssues: openIssueCount(),
+        promptLength: els.promptBox?.value.length || 0,
+        reverseState: state.reverseState,
+        generationState: state.generationState,
+        generated: Boolean(state.generated),
+        approved: Boolean(state.approvedAsset),
+        automationState: state.automationState,
+        riskTerms: promptRiskTerms()
+      };
+    }
+
+    function openIssueIds() {
+      return state.issues.filter(item => !item.fixed).map(item => item.id);
+    }
+
+    function diagnoseAgentState() {
+      const riskTerms = promptRiskTerms();
+      const issueIds = openIssueIds();
+
+      if (!state.hasSource) {
+        return {
+          severity: "blocked",
+          title: "等待源素材",
+          detail: "总控 Agent 已就绪，但还没有反推视频或图片。当前不能启动反推、校验或生成。",
+          actions: [],
+          next: "上传源视频或图片后，我会从反推节点开始推进。"
+        };
+      }
+
+      if (state.reverseState === "running" || state.generationState === "running" || state.automationState === "running") {
+        return {
+          severity: "warn",
+          title: "外部任务运行中",
+          detail: "当前有反推、生成或后台提交任务正在执行。Agent 暂时只观察，不叠加新的动作。",
+          actions: [],
+          next: "等待运行结果返回后再诊断下一步。"
+        };
+      }
+
+      if (state.reverseState === "error") {
+        return {
+          severity: "blocked",
+          title: "反推失败",
+          detail: state.reverseError || "没有拿到可用于生成的结构化反推结果。",
+          actions: ["start_reverse"],
+          next: "建议确认后重试反推；如果连续失败，再切换模型或检查 Dify 分析接口。"
+        };
+      }
+
+      if (!state.analysis) {
+        return {
+          severity: "warn",
+          title: "等待反推 Prompt",
+          detail: `${modelLabel(state.model)}尚未完成结构化反推，完整性校验和生成节点都不能继续。`,
+          actions: ["start_reverse"],
+          next: "建议从反推节点开始跑到校验。"
+        };
+      }
+
+      if (issueIds.length) {
+        const actions = [];
+        if (issueIds.includes("motion")) actions.push("fix_motion");
+        if (issueIds.includes("subtitle")) actions.push("fix_subtitle");
+        if (riskTerms.length) actions.push("clean_risk_terms");
+        return {
+          severity: "warn",
+          title: `完整性校验还有 ${issueIds.length} 项`,
+          detail: "生成节点被校验项拦截。Agent 可以先补动作轨迹和字幕槽，再重新检查 Prompt。",
+          actions,
+          next: actions.length ? "这些属于低风险 Prompt 修复，可在半自动或自动推进模式执行。" : "需要人工确认剩余校验项。"
+        };
+      }
+
+      if (riskTerms.length) {
+        return {
+          severity: "warn",
+          title: "发现高风险词",
+          detail: `Prompt 里仍有 ${riskTerms.join("、")}，可能导致生成或平台审核失败。`,
+          actions: ["clean_risk_terms"],
+          next: "建议先清洗风险词，再进入生成。"
+        };
+      }
+
+      if (state.generationState === "error") {
+        return {
+          severity: "blocked",
+          title: "生成节点失败",
+          detail: state.difyError || "Dify 没有返回可展示的视频或图片结果。",
+          actions: ["clean_risk_terms", "prepare_rerun_generation"],
+          next: "建议先做安全清洗，再从 Prompt 编辑节点重跑生成。"
+        };
+      }
+
+      if (!state.generated) {
+        return {
+          severity: "safe",
+          title: "可以进入生成",
+          detail: "反推结果和完整性校验已通过，当前阻塞点是生成节点未执行。",
+          actions: ["run_generation"],
+          next: "生成会调用外部 Dify 线路，执行前需要你确认。"
+        };
+      }
+
+      if (!state.approvedAsset) {
+        return {
+          severity: "safe",
+          title: "等待人工确认结果",
+          detail: "已有生成结果。Agent 不会替你选择最终视频，需要人工在结果对比里确认。",
+          actions: ["review_result"],
+          next: "选择一个视频后，我可以继续推动后台提交。"
+        };
+      }
+
+      if (state.automationState === "error") {
+        return {
+          severity: "blocked",
+          title: "后台提交失败",
+          detail: state.automationError || "确认视频未能提交到下一步自动化工作流。",
+          actions: ["submit_approved_asset"],
+          next: "建议确认后重试提交，或检查轻舟登录态与 BFF 配置。"
+        };
+      }
+
+      if (!state.automationSubmission) {
+        return {
+          severity: "safe",
+          title: "确认视频待提交",
+          detail: "人工已确认视频，但还没有上传到下一步自动化后台。",
+          actions: ["submit_approved_asset"],
+          next: "提交会调用本地自动化接口，执行前需要你确认。"
+        };
+      }
+
+      return {
+        severity: "safe",
+        title: "当前链路已完成",
+        detail: "反推、校验、生成、确认和下一步提交都已走通。",
+        actions: [],
+        next: "可以重置任务或回到 Prompt 编辑后重跑。"
+      };
+    }
+
+    function applyMotionPatch() {
+      const before = els.promptBox.value;
+      if (!before.includes("动作轨迹补全")) {
+        els.promptBox.value += "\n动作轨迹补全：只补充视频中真实可见的动作轨迹，包括起止状态、运动方向、幅度、速度、旋转方向、入镜/出镜路径和重心变化；没有可见位移时标注“无明显位移”，不要编造不存在的运动。";
+      }
+      markIssueFixed("motion");
+      return els.promptBox.value !== before;
+    }
+
+    function applySubtitlePatch() {
+      const before = els.promptBox.value;
+      if (!before.includes("字幕完整性检查")) {
+        els.promptBox.value += "\n字幕完整性检查：如果检测到口播或画面字幕，必须按时间码完整写入 subtitle_transcript；无字幕时明确标注为空。";
+      }
+      markIssueFixed("subtitle");
+      return els.promptBox.value !== before;
+    }
+
+    function applyRiskClean() {
+      const before = els.promptBox.value;
+      els.promptBox.value = els.promptBox.value
+        .replace(/小红书|抖音|账号|水印|平台标识|品牌商标/g, (term, offset, text) => {
+          return text.slice(Math.max(0, offset - 1), offset) === "无" ? term : "无平台文字";
+        })
+        .replace(/同款|复现/g, "原创参考风格");
+      return els.promptBox.value !== before;
+    }
+
+    const agentActionRegistry = {
+      fix_motion: {
+        label: "补全动作轨迹",
+        risk: "safe",
+        execute: () => applyMotionPatch() ? "已补动作轨迹并关闭 motion 校验项。" : "motion 校验项已处理，Prompt 无需重复补动作。"
+      },
+      fix_subtitle: {
+        label: "补全字幕槽",
+        risk: "safe",
+        execute: () => applySubtitlePatch() ? "已补 subtitle_transcript 规则并关闭 subtitle 校验项。" : "subtitle 校验项已处理，Prompt 无需重复补字幕。"
+      },
+      clean_risk_terms: {
+        label: "清洗风险词",
+        risk: "safe",
+        execute: () => applyRiskClean() ? "已清洗平台、账号、水印、商标和复刻类风险词。" : "未发现需要清洗的风险词。"
+      },
+      prepare_rerun_generation: {
+        label: "回到生成前节点",
+        risk: "safe",
+        execute: () => {
+          state.progress = 4;
+          state.generated = false;
+          state.generationState = "idle";
+          state.difyRun = null;
+          state.difyError = "";
+          state.approvedAsset = null;
+          state.automationSubmission = null;
+          return "已回到 Prompt 编辑后的生成入口，保留素材识别和参考图绑定结果。";
+        }
+      },
+      start_reverse: {
+        label: "启动反推",
+        risk: "external",
+        execute: async () => {
+          await runReverseAnalysis();
+          return "已触发反推节点。";
+        }
+      },
+      run_generation: {
+        label: "调用 Dify 生成",
+        risk: "external",
+        execute: async () => {
+          await runDifyGeneration();
+          return "已触发 Dify 生成节点。";
+        }
+      },
+      submit_approved_asset: {
+        label: "提交确认视频",
+        risk: "external",
+        execute: async () => {
+          if (!state.approvedAsset) return "没有已确认的视频，无法提交。";
+          await submitApprovedAsset(state.approvedAsset.assetIndex);
+          return "已触发确认视频提交。";
+        }
+      },
+      review_result: {
+        label: "人工查看结果",
+        risk: "manual",
+        manualOnly: true
+      }
+    };
+
+    function canRunAgentAction(action, explicit) {
+      if (!action || action.manualOnly) return false;
+      if (state.agentMode === "watch") return false;
+      if (action.risk === "external") return Boolean(explicit);
+      if (state.agentMode === "auto") return true;
+      return Boolean(explicit);
+    }
+
+    function agentActionRiskLabel(action) {
+      if (!action) return "未知动作";
+      if (action.manualOnly) return "人工步骤";
+      if (action.risk === "external") return "外部接口，执行前确认";
+      return state.agentMode === "auto" ? "低风险，自动推进可执行" : "低风险 Prompt 修复";
+    }
+
+    function buildAgentVerification(before, after, results, skipped) {
+      const parts = [];
+      if (before.openIssues !== after.openIssues) parts.push(`校验项 ${before.openIssues} -> ${after.openIssues}`);
+      if (before.promptLength !== after.promptLength) parts.push(`Prompt ${before.promptLength} -> ${after.promptLength} 字`);
+      if (before.progress !== after.progress) parts.push(`进度 ${before.progress} -> ${after.progress}`);
+      if (before.generationState !== after.generationState) parts.push(`生成状态 ${before.generationState} -> ${after.generationState}`);
+      if (after.riskTerms.length) parts.push(`剩余风险词：${after.riskTerms.join("、")}`);
+      if (!after.riskTerms.length && before.riskTerms.length) parts.push("风险词已清空");
+      if (skipped.length) parts.push(`待人工确认：${skipped.join("、")}`);
+      if (!parts.length && results.length) parts.push("状态无结构变化，已记录动作结果");
+      return parts.join("；") || "没有可自动执行的动作";
+    }
+
+    async function runAgentAction(actionId, explicit = true) {
+      const action = agentActionRegistry[actionId];
+      if (!action) return;
+      if (!canRunAgentAction(action, explicit)) {
+        addAgentMessage("agent", `「${action.label}」当前不会自动执行：${agentActionRiskLabel(action)}。`);
+        render();
+        return;
+      }
+      if (action.risk === "external") {
+        const confirmed = window.confirm(`Agent 建议执行「${action.label}」。这个动作会调用外部接口，是否继续？`);
+        if (!confirmed) {
+          state.agentLastVerification = `已取消「${action.label}」。`;
+          addAgentMessage("agent", state.agentLastVerification);
+          render();
+          return;
+        }
+      }
+
+      state.agentBusy = true;
+      const before = agentSnapshot();
+      try {
+        const detail = await action.execute();
+        const after = agentSnapshot();
+        state.agentLastDiagnosis = diagnoseAgentState();
+        state.agentLastVerification = buildAgentVerification(before, after, [detail], []);
+        addAgentMessage("agent", `执行：${detail}\n验证：${state.agentLastVerification}`);
+      } catch (error) {
+        state.agentLastVerification = `${action.label} 失败：${error.message || "未知错误"}`;
+        addAgentMessage("agent", state.agentLastVerification);
+      } finally {
+        state.agentBusy = false;
+        render();
+      }
+    }
+
+    async function runAgentStep(explicit = false, diagnoseOnly = false) {
+      if (state.agentBusy) return;
+      state.agentBusy = true;
+      const diagnosis = diagnoseAgentState();
+      state.agentLastDiagnosis = diagnosis;
+      const before = agentSnapshot();
+      const results = [];
+      const skipped = [];
+
+      try {
+        for (const actionId of diagnosis.actions) {
+          const action = agentActionRegistry[actionId];
+          if (!action) continue;
+          if (diagnoseOnly || !canRunAgentAction(action, explicit)) {
+            skipped.push(`${action.label}（${agentActionRiskLabel(action)}）`);
+            continue;
+          }
+          if (action.risk === "external") {
+            const confirmed = window.confirm(`Agent 建议执行「${action.label}」。这个动作会调用外部接口，是否继续？`);
+            if (!confirmed) {
+              skipped.push(`${action.label}（未确认）`);
+              continue;
+            }
+          }
+          const detail = await action.execute();
+          results.push(detail);
+        }
+
+        const after = agentSnapshot();
+        state.agentLastDiagnosis = diagnoseAgentState();
+        state.agentLastVerification = buildAgentVerification(before, after, results, skipped);
+        if (results.length || skipped.length) {
+          addAgentMessage("agent", [
+            `诊断：${diagnosis.title}`,
+            results.length ? `执行：${results.join("；")}` : "",
+            skipped.length ? `未执行：${skipped.join("、")}` : "",
+            `验证：${state.agentLastVerification}`
+          ].filter(Boolean).join("\n"));
+        } else {
+          addAgentMessage("agent", `诊断：${diagnosis.title}\n${diagnosis.detail}\n下一步：${diagnosis.next}`);
+        }
+      } finally {
+        state.agentBusy = false;
+        render();
+      }
+    }
+
+    function renderAgentDashboard() {
+      const diagnosis = diagnoseAgentState();
+      state.agentLastDiagnosis = diagnosis;
+      const snapshot = agentSnapshot();
+      const actionItems = diagnosis.actions
+        .map(actionId => ({ id: actionId, action: agentActionRegistry[actionId] }))
+        .filter(item => item.action);
+      const actionHtml = actionItems.length
+        ? `<div class="agent-action-list">${actionItems.map(({ id, action }) => `
+          <div class="agent-action">
+            <div>
+              <strong>${escapeHtml(action.label)}</strong>
+              <span>${escapeHtml(agentActionRiskLabel(action))}</span>
+            </div>
+            ${action.manualOnly
+              ? `<span class="agent-chip">人工</span>`
+              : `<button type="button" data-agent-action="${escapeHtml(id)}" ${state.agentBusy ? "disabled" : ""}>${action.risk === "external" ? "确认执行" : "执行"}</button>`}
+          </div>
+        `).join("")}</div>`
+        : `<div class="agent-chips"><span class="agent-chip">暂无动作</span></div>`;
+      const severityClass = diagnosis.severity === "blocked" ? "is-blocked" : diagnosis.severity === "warn" ? "is-warn" : "is-safe";
+      const summaryText = [
+        `校验 ${snapshot.openIssues}`,
+        `Prompt ${snapshot.promptLength} 字`,
+        `进度 ${snapshot.progress} / ${stages.length}`
+      ].join(" · ");
+
+      els.agentDashboard.innerHTML = `
+        <div class="agent-card">
+          <div class="agent-status-row">
+            <div class="agent-status-main">
+              <span class="agent-chip ${severityClass}">${escapeHtml(agentModeLabel())}</span>
+              <strong class="agent-status-title">${escapeHtml(diagnosis.title)}</strong>
+            </div>
+            <span class="agent-chip">${actionItems.length ? `${actionItems.length} 个建议` : "无动作"}</span>
+          </div>
+          <p>${escapeHtml(diagnosis.next)}</p>
+          <div class="agent-summary"><span>${escapeHtml(summaryText)}</span></div>
+          <details class="agent-details">
+            <summary>详情</summary>
+            <div class="agent-detail-body">
+              <p>${escapeHtml(diagnosis.detail)}</p>
+              ${actionHtml}
+              ${state.agentLastVerification ? `<div class="agent-verification">最近验证：${escapeHtml(state.agentLastVerification)}</div>` : ""}
+            </div>
+          </details>
+        </div>
+      `;
+
+      [...els.agentModePicker.querySelectorAll("button[data-agent-mode]")].forEach(button => {
+        button.classList.toggle("is-active", button.dataset.agentMode === state.agentMode);
+      });
+      els.agentStepBtn.disabled = state.agentBusy || !actionItems.some(({ action }) => !action.manualOnly);
+    }
+
+    function agentAutoSignature(diagnosis) {
+      return [
+        state.hasSource,
+        state.reverseState,
+        Boolean(state.analysis),
+        openIssueIds().join(","),
+        promptRiskTerms().join(","),
+        state.generationState,
+        state.generated,
+        state.automationState,
+        diagnosis.actions.join(",")
+      ].join("|");
+    }
+
+    function scheduleAgentAutopilot() {
+      if (state.agentMode !== "auto" || state.agentBusy) return;
+      const diagnosis = state.agentLastDiagnosis || diagnoseAgentState();
+      const executable = diagnosis.actions.some(actionId => canRunAgentAction(agentActionRegistry[actionId], false));
+      if (!executable) return;
+      const signature = agentAutoSignature(diagnosis);
+      if (state.agentAutoSignature === signature) return;
+      state.agentAutoSignature = signature;
+      if (state.agentAutoTimer) window.clearTimeout(state.agentAutoTimer);
+      state.agentAutoTimer = window.setTimeout(() => {
+        state.agentAutoTimer = null;
+        runAgentStep(false);
+      }, 120);
+    }
+
+    function updateStatus(text, mode = "") {
+      els.statusText.textContent = text;
+      els.statusDot.className = `dot ${mode}`;
+    }
+
+    function render() {
+      renderReferenceImages();
+      renderGenerationConfig();
+      renderPipeline();
+      renderWorkflowCanvas();
+      renderTimeline();
+      renderIssues();
+      renderResults();
+      renderAutomationPanel();
+      renderAgentDashboard();
+      els.videoSourceDrop.classList.toggle("is-active", state.sourceMode === "video");
+      els.imageSourceDrop.classList.toggle("is-active", state.sourceMode === "image");
+      els.sourceModeHint.textContent = state.sourceMode === "image"
+        ? state.hasSource ? "当前模式：图片反推。会优先分析主体、构图、材质和风格，再补动态镜头。" : "当前模式：等待上传图片或视频作为反推源。"
+        : state.hasSource ? "当前模式：视频反推。会优先分析时间轴、动作、运镜和音频。" : "当前模式：等待上传视频或图片作为反推源。";
+      els.counter.textContent = `${els.promptBox.value.length} 字`;
+      els.runBtn.disabled = !state.hasSource;
+      const issuesOpen = openIssueCount();
+      els.runBtn.disabled = !state.hasSource || state.reverseState === "running";
+      els.generateBtn.disabled = !state.hasSource || !state.analysis || state.generationState === "running" || issuesOpen > 0;
+      if (!state.analysis) els.generateBtn.title = "请先自动反推 Prompt";
+      else if (issuesOpen > 0) els.generateBtn.title = `还有 ${issuesOpen} 个校验项未处理`;
+      if (window.lucide) window.lucide.createIcons();
+      scheduleAgentAutopilot();
+    }
+
+    function setAgentCollapsed(collapsed) {
+      document.body.classList.toggle("agent-collapsed", collapsed);
+      els.agentPanel.setAttribute("aria-expanded", String(!collapsed));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function setProgress(value) {
+      if (!state.hasSource) {
+        updateStatus("请先上传反推源素材", "");
+        render();
+        return;
+      }
+      state.progress = Math.max(0, Math.min(value, stages.length));
+      if (state.progress >= stages.length) updateStatus("结果可对比", "is-ready");
+      else if (state.progress > 0) updateStatus("Pipeline 运行中", "is-running");
+      else updateStatus("等待任务", "");
+      render();
+    }
+
+    function analyzeModels() {
+      return state.model === "both" ? ["doubao", "qwen"] : [state.model || "doubao"];
+    }
+
+    async function runReverseAnalysis() {
+      if (!state.hasSource || !state.sourceFileData) {
+        updateStatus("请先上传反推源素材", "");
+        render();
+        return;
+      }
+
+      state.reverseState = "running";
+      state.reverseError = "";
+      state.analysis = null;
+      state.analysisRuns = [];
+      state.mergeRationale = "";
+      state.generated = false;
+      state.generationState = "idle";
+      state.difyRun = null;
+      state.difyError = "";
+      state.approvedAsset = null;
+      state.automationSubmission = null;
+      state.automationError = "";
+      state.issues = structuredClone(issues);
+      state.progress = 1;
+      updateStatus(`${modelLabel(state.model)}反推中`, "is-running");
+      render();
+
+      const runs = [];
+      const errors = [];
+      for (const model of analyzeModels()) {
+        try {
+          updateStatus(`${modelLabel(model)}反推中`, "is-running");
+          const response = await fetch(apiUrl("/api/analyze"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              project: document.getElementById("taskName")?.value || "通用视频生成任务",
+              sourceMode: state.sourceMode,
+              outputMode: "video",
+              aspect: "9:16",
+              durationSec: "",
+              model,
+              sourceFile: state.sourceFileData,
+              sourceFileName: state.sourceFileName || (state.sourceMode === "image" ? "source-image.png" : "source-video.mp4"),
+              sourceFileType: state.sourceFileType || "",
+              referenceMode: hasReferenceImages(),
+              analyzePrompt: "生成视频反推提示词，包括完整运镜、转场、节奏、主体动作、字幕/口播和音频建议。只描述真实可见动作，不要编造前后移动。输出严格 JSON。"
+            })
+          });
+          const data = await response.json().catch(() => null);
+          if (!response.ok) throw new Error(data?.detail || data?.error || `${modelLabel(model)}反推失败：${response.status}`);
+          if (!data?.analysis?.shots?.length) throw new Error(`${modelLabel(model)}没有返回有效 shots`);
+          runs.push({ model, analysis: data.analysis, workflowRunId: data.workflowRunId || "" });
+        } catch (error) {
+          errors.push(`${modelLabel(model)}：${error.message || "反推失败"}`);
+        }
+      }
+
+      if (!runs.length) {
+        state.reverseState = "error";
+        state.reverseError = errors.join("\n") || "Dify 反推没有返回有效结果";
+        state.progress = 1;
+        updateStatus("反推失败", "is-running");
+        render();
+        return;
+      }
+
+      state.analysisRuns = runs;
+      const merged = mergeAnalyses(runs);
+      state.analysis = merged.analysis;
+      state.mergeRationale = merged.rationale;
+      state.reverseState = "success";
+      state.reverseError = errors.length ? errors.join("\n") : "";
+      state.progress = 3;
+      els.promptBox.value = buildPrompt();
+      updateStatus(errors.length ? "反推完成，部分模型失败" : "反推完成，等待校验", "is-running");
+      render();
+    }
+
+    function analysisScore(analysis) {
+      const shots = Array.isArray(analysis?.shots) ? analysis.shots : [];
+      const fieldScore = shots.reduce((sum, shot) => {
+        return sum
+          + (shot.subject ? 1 : 0)
+          + (shot.environment ? 1 : 0)
+          + (shot.action ? 2 : 0)
+          + (shot.camera ? 2 : 0)
+          + (shot.audio ? 1 : 0)
+          + (shot.lighting ? 1 : 0);
+      }, 0);
+      return shots.length * 10
+        + fieldScore
+        + (analysis?.detectedStyle ? 3 : 0)
+        + (analysis?.overallSummary ? 3 : 0)
+        + (analysis?.negative ? 2 : 0);
+    }
+
+    function longerText(primary, secondary, minDelta = 18) {
+      const a = String(primary || "").trim();
+      const b = String(secondary || "").trim();
+      if (!a) return b;
+      if (b.length > a.length + minDelta && !/无明显|未检测|为空/.test(b)) return b;
+      return a;
+    }
+
+    function mergeAnalyses(runs) {
+      if (!runs.length) return { analysis: null, rationale: "" };
+      const ranked = [...runs].sort((a, b) => analysisScore(b.analysis) - analysisScore(a.analysis));
+      const primary = ranked[0];
+      const merged = structuredClone(primary.analysis);
+      const supplemental = ranked.slice(1);
+      let filled = 0;
+
+      for (const run of supplemental) {
+        const shots = Array.isArray(run.analysis?.shots) ? run.analysis.shots : [];
+        merged.detectedStyle = longerText(merged.detectedStyle, run.analysis?.detectedStyle, 24);
+        merged.overallSummary = longerText(merged.overallSummary, run.analysis?.overallSummary, 30);
+        merged.negative = longerText(merged.negative, run.analysis?.negative, 20);
+        shots.forEach((shot, index) => {
+          if (!merged.shots[index]) {
+            merged.shots[index] = structuredClone(shot);
+            filled += 1;
+            return;
+          }
+          for (const key of ["subject", "environment", "action", "camera", "lighting", "audio"]) {
+            const before = merged.shots[index][key] || "";
+            const after = longerText(before, shot[key], key === "action" || key === "camera" ? 24 : 16);
+            if (after !== before) {
+              merged.shots[index][key] = after;
+              filled += 1;
+            }
+          }
+        });
+      }
+
+      const scoreText = ranked
+        .map(run => `${modelLabel(run.model)} ${analysisScore(run.analysis)}分/${run.analysis?.shots?.length || 0}镜头`)
+        .join("；");
+      const rationale = ranked.length === 1
+        ? `单模型反推依据：使用${modelLabel(primary.model)}返回结果，包含 ${primary.analysis?.shots?.length || 0} 个镜头。`
+        : `双模型合并依据：按分镜数量、动作、运镜、音频、字幕/负面约束字段完整度评分，选择${modelLabel(primary.model)}作为主线（${scoreText}），再用其他模型补充空字段或明显更完整的字段，共补充 ${filled} 处；不新增源视频未出现的动作。`;
+      return { analysis: merged, rationale };
+    }
+
+    async function refreshDifyStatus() {
+      try {
+        const response = await fetch(apiUrl("/api/dify/status"));
+        if (!response.ok) throw new Error(`Dify 状态读取失败：${response.status}`);
+        state.difyStatus = await response.json();
+      } catch (error) {
+        state.difyStatus = null;
+        state.difyError = error.message || "无法读取 Dify 状态";
+      }
+      render();
+    }
+
+    async function refreshAutomationStatus() {
+      try {
+        const response = await fetch(apiUrl("/api/automation/status"));
+        if (!response.ok) throw new Error(`自动化后台状态读取失败：${response.status}`);
+        state.automationStatus = await response.json();
+      } catch (error) {
+        state.automationStatus = null;
+        state.automationError = error.message || "无法读取自动化后台配置";
+      }
+      render();
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("文件读取失败"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function runDifyGeneration() {
+      if (!state.hasSource) {
+        updateStatus("请先上传反推源素材", "");
+        render();
+        return;
+      }
+
+      const issuesOpen = openIssueCount();
+      if (issuesOpen > 0) {
+        state.generationState = "error";
+        state.difyError = `还有 ${issuesOpen} 个完整性校验项未处理，不能进入 Dify。请先补全动作轨迹、字幕槽或清洗风险词。`;
+        updateStatus("生成被校验拦截", "is-running");
+        render();
+        return;
+      }
+
+      await refreshDifyStatus();
+      const route = activeRoute();
+      const routeType = activeRouteType();
+      const firstFrame = firstLastFirstFrame();
+      if (routeType === "first-last-frame-video" && !firstFrame.dataUrl) {
+        state.generationState = "error";
+        state.difyError = "首尾帧模式需要首帧：请上传反推图片，或至少添加 1 张用户参考图作为首帧。";
+        updateStatus("缺少首帧图", "is-running");
+        render();
+        return;
+      }
+      if (routeType === "first-last-frame-video" && !state.lastFrameImageData) {
+        state.generationState = "error";
+        state.difyError = "首尾帧模式需要尾帧图：请在生成配置里上传尾帧图。";
+        updateStatus("缺少尾帧图", "is-running");
+        render();
+        return;
+      }
+      if (!routeReady(route)) {
+        state.generationState = "error";
+        state.difyError = route
+          ? `Dify 线路不可用：${route.label || route.type} ${route.configured ? "已配置但未接通" : "未配置"}。${route.connectDetail || "请检查 API key、base URL、应用发布状态和 IP 白名单。"}`
+          : `没有找到可用 Dify 线路：${activeRouteType()}`;
+        updateStatus("Dify 线路不可用", "is-running");
+        render();
+        return;
+      }
+
+      state.generationState = "running";
+      state.generated = false;
+      state.difyError = "";
+      state.difyRun = null;
+      state.approvedAsset = null;
+      state.automationSubmission = null;
+      state.automationError = "";
+      setProgress(4);
+      updateStatus("Dify 生成中", "is-running");
+      render();
+
+      try {
+        const refs = referenceImages();
+        const batchCount = Math.max(1, Math.min(Number(state.batchCount) || 1, 4));
+        const payload = {
+          prompt: els.promptBox.value,
+          sourceMode: state.sourceMode,
+          routeType,
+          aspect: state.ratioChoice || "9:16",
+          duration: Number(state.durationChoice) || 5,
+          resolution: state.resolutionChoice || "720p",
+          batchSize: 1,
+          firstFrameRoute: Boolean(state.firstFrameRoute) && hasReferenceImages(),
+          modelChoice: state.videoModelChoice || activeRoute()?.model || "",
+          audioSwitch: "on",
+          responseMode: "streaming",
+          taskIntent: "generate",
+          referenceImage: routeType === "image-to-video" ? state.sourceImageData : routeType === "first-last-frame-video" ? firstFrame.dataUrl : "",
+          referenceImageName: routeType === "first-last-frame-video" ? firstFrame.name || "first-frame.png" : state.sourceFileName || "reference-image.png",
+          lastReferenceImage: routeType === "first-last-frame-video" ? state.lastFrameImageData : "",
+          lastReferenceImageName: routeType === "first-last-frame-video" ? state.lastFrameImageName || "last-frame.png" : "last-frame.png",
+          referenceImages: routeType === "multi-reference-video"
+            ? refs.map((item, index) => ({
+              slot: item.slot || `reference_${index + 1}`,
+              name: item.name,
+              dataUrl: item.dataUrl
+            }))
+            : [],
+          videoReference: routeType === "multi-reference-video" && state.sourceMode === "video" ? state.sourceFileData : "",
+          videoReferenceName: state.sourceFileName || "reference-video.mp4"
+        };
+
+        const runs = [];
+        for (let index = 0; index < batchCount; index += 1) {
+          updateStatus(`Dify 生成中 ${index + 1}/${batchCount}`, "is-running");
+          const response = await fetch(apiUrl("/api/dify/run"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...payload, taskIndex: index + 1 })
+          });
+          const data = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(data?.detail || data?.error || `Dify 请求失败：${response.status}`);
+          }
+          runs.push(data);
+        }
+        const mediaAssets = runs.flatMap(data => data.assets || []).filter(item => ["video", "image"].includes(item.type));
+        if (!mediaAssets.length) {
+          throw new Error("Dify 工作流已返回，但 outputs 没有解析到视频/图片 URL。请检查工作流输出字段是否返回 video_url、file_url、download_url 或文件对象。");
+        }
+        state.difyRun = {
+          ...(runs.at(-1) || {}),
+          runId: runs.map(data => data.runId).filter(Boolean).join(" / "),
+          routeType,
+          assets: mediaAssets
+        };
+        state.generated = true;
+        state.generationState = "success";
+        setProgress(6);
+        updateStatus("结果可对比", "is-ready");
+      } catch (error) {
+        state.generated = false;
+        state.generationState = "error";
+        state.difyError = error.message || "Dify 生成失败";
+        updateStatus("Dify 生成失败", "is-running");
+        render();
+      }
+    }
+
+    async function submitApprovedAsset(assetIndex) {
+      const asset = mediaAssets()[assetIndex];
+      if (!asset || asset.type !== "video") {
+        state.automationError = "请选择一个视频结果进入下一步。";
+        render();
+        return;
+      }
+      state.approvedAsset = { assetIndex, asset };
+      state.automationState = "running";
+      state.automationError = "";
+      state.automationSubmission = null;
+      updateStatus("人工确认视频，提交下一步", "is-running");
+      render();
+      try {
+        const response = await fetch(apiUrl("/api/automation/submit"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            runId: state.difyRun?.runId || "",
+            assetIndex,
+            asset,
+            context: {
+              taskName: document.getElementById("taskName")?.value || "通用视频生成任务",
+              routeType: state.difyRun?.routeType || activeRouteType(),
+              routeLabel: activeRoute()?.label || state.difyRun?.routeType || "",
+              modelChoice: state.videoModelChoice || activeRoute()?.model || "",
+              ratio: state.ratioChoice || "9:16",
+              duration: Number(state.durationChoice) || 5,
+              prompt: els.promptBox.value,
+              analysis: compactAnalysisForAutomation(state.analysis),
+              analysisRuns: compactAnalysisRunsForAutomation(state.analysisRuns),
+              mergeRationale: state.mergeRationale || "",
+              reverseModel: state.model || "",
+              referenceImages: referenceImages().map(item => ({
+                name: item.name,
+                dataUrl: item.dataUrl,
+                type: item.type
+              }))
+            },
+            notes: "人工确认通过，进入下一步自动化工作流。"
+          })
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(data?.detail || data?.error || `自动化后台提交失败：${response.status}`);
+        state.automationSubmission = data;
+        state.automationState = data.submitted ? "success" : "recorded";
+        updateStatus(data.submitted ? "已提交下一步" : "已确认，等待上传接口", data.submitted ? "is-ready" : "is-running");
+      } catch (error) {
+        state.automationState = "error";
+        state.automationError = error.message || "自动化后台提交失败";
+        updateStatus("下一步提交失败", "is-running");
+      }
+      render();
+    }
+
+    function compactAnalysisForAutomation(analysis) {
+      if (!analysis || typeof analysis !== "object") return null;
+      const pick = {};
+      for (const key of [
+        "projectTitle",
+        "projectTitleEn",
+        "title",
+        "titleEn",
+        "overallSummary",
+        "overallSummaryEn",
+        "detectedStyle",
+        "detectedStyleEn",
+        "negative",
+        "negativeEn"
+      ]) {
+        if (analysis[key]) pick[key] = analysis[key];
+      }
+      pick.shots = Array.isArray(analysis.shots)
+        ? analysis.shots.slice(0, 8).map(shot => {
+          const item = {};
+          for (const key of [
+            "title",
+            "titleEn",
+            "subject",
+            "subjectEn",
+            "environment",
+            "environmentEn",
+            "action",
+            "actionEn",
+            "camera",
+            "cameraEn",
+            "style",
+            "styleEn"
+          ]) {
+            if (shot?.[key]) item[key] = shot[key];
+          }
+          return item;
+        })
+        : [];
+      return pick;
+    }
+
+    function compactAnalysisRunsForAutomation(runs) {
+      return Array.isArray(runs)
+        ? runs.slice(0, 2).map(run => ({
+          model: run.model || "",
+          workflowRunId: run.workflowRunId || "",
+          analysis: compactAnalysisForAutomation(run.analysis)
+        }))
+        : [];
+    }
+
+    function markIssueFixed(id) {
+      const issue = state.issues.find(item => item.id === id);
+      if (issue) issue.fixed = true;
+    }
+
+    function fixIssue(id) {
+      markIssueFixed(id);
+      render();
+    }
+
+    function addAgentMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = `msg ${role === "user" ? "user" : ""}`;
+      div.innerHTML = `<strong>${role === "user" ? "你" : "Agent"}</strong><span></span>`;
+      div.querySelector("span").textContent = text;
+      els.agentLog.appendChild(div);
+      els.agentLog.scrollTop = els.agentLog.scrollHeight;
+    }
+
+    function buildAgentChatContext() {
+      const diagnosis = diagnoseAgentState();
+      return {
+        taskName: document.getElementById("taskName")?.value || "通用视频生成任务",
+        sourceMode: state.sourceMode,
+        hasSource: state.hasSource,
+        sourceFileName: state.sourceFileName,
+        progress: state.progress,
+        reverseState: state.reverseState,
+        generationState: state.generationState,
+        automationState: state.automationState,
+        generated: state.generated,
+        approvedAsset: Boolean(state.approvedAsset),
+        openIssues: state.issues.filter(item => !item.fixed).map(item => ({ id: item.id, title: item.title, desc: item.desc })),
+        referenceImageCount: referenceImages().length,
+        promptPreview: els.promptBox.value.slice(0, 1600),
+        diagnosis: {
+          title: diagnosis.title,
+          detail: diagnosis.detail,
+          next: diagnosis.next,
+          actions: diagnosis.actions
+        }
+      };
+    }
+
+    function runLocalAgentFallback(text) {
+      if (/总控|推进|下一步|诊断|执行建议|自动/.test(text)) {
+        runAgentStep(true).catch(error => {
+          addAgentMessage("agent", `总控执行失败：${error.message || error}`);
+          render();
+        });
+      }
+      else if (/动作|移动|轨迹|位移|转身|手势|产品旋转/.test(text)) agentFixMotion();
+      else if (/清洗|水印|账号|平台|版权|品牌/.test(text)) agentCleanRisk();
+      else if (/重跑|生成|再来|问题线/.test(text)) agentRerunProblemLine();
+      else {
+        addAgentMessage("agent", "我现在只接到本地规则，Dify 对话接口没有返回。这个修改会先作为 Prompt 编辑建议保留。");
+      }
+    }
+
+    async function sendAgentChat(text) {
+      els.agentSendBtn.disabled = true;
+      els.agentSendBtn.innerHTML = `<i data-lucide="loader-circle"></i>Agent 回复中`;
+      if (window.lucide) window.lucide.createIcons();
+      try {
+        const response = await fetch(apiUrl("/api/agent/chat"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: text,
+            conversationId: state.agentConversationId,
+            context: buildAgentChatContext()
+          })
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(data?.detail || data?.error || `Agent 对话失败：${response.status}`);
+        if (data?.conversationId) state.agentConversationId = data.conversationId;
+        addAgentMessage("agent", data?.answer || "我收到了，但这次没有拿到有效回复。");
+      } catch (error) {
+        addAgentMessage("agent", `Dify Agent 暂时没接上：${error.message || "未知错误"}\n我先用本地规则处理这句话。`);
+        runLocalAgentFallback(text);
+      } finally {
+        els.agentSendBtn.disabled = false;
+        els.agentSendBtn.innerHTML = `<i data-lucide="send"></i>发送给 Agent`;
+        render();
+      }
+    }
+
+    function agentFixMotion() {
+      applyMotionPatch();
+      state.agentLastVerification = "手动工具：已补动作轨迹并关闭 motion 校验项";
+      addAgentMessage("agent", state.agentLastVerification);
+      render();
+    }
+
+    function agentCleanRisk() {
+      const changed = applyRiskClean();
+      state.agentLastVerification = changed ? "手动工具：已清洗平台标识、账号、水印、品牌商标和高风险复刻词" : "手动工具：没有发现需要清洗的风险词";
+      addAgentMessage("agent", state.agentLastVerification);
+      render();
+    }
+
+    function agentRerunProblemLine() {
+      agentActionRegistry.prepare_rerun_generation.execute();
+      state.agentLastVerification = "手动工具：已准备重跑问题线";
+      addAgentMessage("agent", "已准备重跑问题线：从 Prompt 编辑节点继续，保留素材识别和参考图绑定结果。");
+      render();
+    }
+
+    els.promptBox.value = buildPrompt();
+    els.runBtn.addEventListener("click", runReverseAnalysis);
+    els.resetBtn.addEventListener("click", () => {
+      state.progress = 0;
+      state.hasSource = false;
+      state.sourceFileName = "";
+      state.sourceFileData = "";
+      state.sourceFileType = "";
+      state.sourceImageData = "";
+      state.referenceImages = [];
+      state.reverseState = "idle";
+      state.reverseError = "";
+      state.analysis = null;
+      state.analysisRuns = [];
+      state.mergeRationale = "";
+      state.difyRun = null;
+      state.difyError = "";
+      state.approvedAsset = null;
+      state.automationSubmission = null;
+      state.automationError = "";
+      state.automationState = "idle";
+      state.generationState = "idle";
+      state.generated = false;
+      state.resolutionChoice = "720p";
+      state.generationRouteMode = "auto";
+      state.firstFrameRoute = false;
+      state.lastFrameImageData = "";
+      state.lastFrameImageName = "";
+      state.lastFrameImageType = "";
+      state.agentLastDiagnosis = null;
+      state.agentLastVerification = null;
+      state.agentBusy = false;
+      state.agentAutoSignature = "";
+      if (state.agentAutoTimer) {
+        window.clearTimeout(state.agentAutoTimer);
+        state.agentAutoTimer = null;
+      }
+      state.issues = structuredClone(issues);
+      state.agentLastDiagnosis = null;
+      state.agentLastVerification = null;
+      els.promptBox.value = buildPrompt();
+      els.sourceVideoInput.value = "";
+      els.sourceImageInput.value = "";
+      if (els.lastFrameInput) els.lastFrameInput.value = "";
+      els.sourceVideoName.textContent = "上传反推视频";
+      els.sourceImageName.textContent = "上传反推图片";
+      if (els.lastFrameName) els.lastFrameName.textContent = "上传尾帧图";
+      if (els.referenceImagesInput) els.referenceImagesInput.value = "";
+      els.agentLog.innerHTML = "";
+      addAgentMessage("agent", "已重置任务。你可以上传视频或图片作为反推源，再添加任意参考图。");
+      updateStatus("等待任务", "");
+      render();
+    });
+
+    els.modelPicker.addEventListener("click", event => {
+      const button = event.target.closest("button[data-model]");
+      if (!button) return;
+      state.model = button.dataset.model;
+      state.reverseState = state.hasSource ? "idle" : state.reverseState;
+      state.reverseError = "";
+      state.analysis = null;
+      state.analysisRuns = [];
+      state.mergeRationale = "";
+      if (state.hasSource) {
+        state.progress = 1;
+        els.promptBox.value = buildPrompt();
+      }
+      [...els.modelPicker.querySelectorAll("button")].forEach(item => item.classList.toggle("is-active", item === button));
+      render();
+    });
+
+    els.results.addEventListener("click", event => {
+      const button = event.target.closest("[data-confirm-asset]");
+      if (!button) return;
+      submitApprovedAsset(Number(button.getAttribute("data-confirm-asset")) || 0);
+    });
+
+    els.automationPanel.addEventListener("click", event => {
+      const button = event.target.closest("#automationSubmitBtn");
+      if (!button || !state.approvedAsset) return;
+      submitApprovedAsset(state.approvedAsset.assetIndex);
+    });
+
+    els.automationRefreshBtn.addEventListener("click", refreshAutomationStatus);
+
+    els.videoModelSelect.addEventListener("change", event => {
+      state.videoModelChoice = event.target.value;
+      const durations = durationChoicesForModel(state.videoModelChoice);
+      state.durationChoice = durations.includes(String(state.durationChoice)) ? String(state.durationChoice) : String(durations[0] || "5");
+      els.promptBox.value = buildPrompt();
+      render();
+    });
+
+    if (els.generationRouteSelect) {
+      els.generationRouteSelect.addEventListener("change", event => {
+        state.generationRouteMode = event.target.value || "auto";
+        state.firstFrameRoute = false;
+        state.generated = false;
+        state.generationState = "idle";
+        state.difyRun = null;
+        state.difyError = "";
+        els.promptBox.value = buildPrompt();
+        render();
+      });
+    }
+
+    els.durationSelect.addEventListener("change", event => {
+      state.durationChoice = event.target.value || "5";
+      render();
+    });
+
+    els.ratioSelect.addEventListener("change", event => {
+      state.ratioChoice = event.target.value || "9:16";
+      els.promptBox.value = buildPrompt();
+      render();
+    });
+
+    els.resolutionSelect.addEventListener("change", event => {
+      state.resolutionChoice = event.target.value || "720p";
+      render();
+    });
+
+    els.batchCountInput.addEventListener("input", event => {
+      state.batchCount = Math.max(1, Math.min(Number(event.target.value) || 1, 4));
+      render();
+    });
+
+    if (els.firstFrameToggle) {
+      els.firstFrameToggle.addEventListener("change", event => {
+        state.firstFrameRoute = Boolean(event.target.checked);
+        render();
+      });
+    }
+
+    if (els.lastFrameInput) {
+      els.lastFrameInput.addEventListener("change", async event => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          state.difyError = "尾帧只能上传图片。";
+          render();
+          return;
+        }
+        state.lastFrameImageData = await readFileAsDataUrl(file);
+        state.lastFrameImageName = file.name || "last-frame.png";
+        state.lastFrameImageType = file.type || "image/png";
+        state.generated = false;
+        state.generationState = "idle";
+        state.difyRun = null;
+        state.difyError = "";
+        els.promptBox.value = buildPrompt();
+        render();
+      });
+    }
+
+    function setSourceMode(mode, fileName = "", dataUrl = "", fileType = "") {
+      state.sourceMode = mode;
+      state.hasSource = Boolean(fileName) && !fileName.startsWith("上传反推");
+      state.sourceFileName = state.hasSource ? fileName : "";
+      state.sourceFileData = state.hasSource ? dataUrl : "";
+      state.sourceFileType = state.hasSource ? fileType : "";
+      state.sourceImageData = mode === "image" && state.hasSource ? dataUrl : "";
+      state.reverseState = "idle";
+      state.reverseError = "";
+      state.analysis = null;
+      state.analysisRuns = [];
+      state.mergeRationale = "";
+      state.progress = state.hasSource ? Math.max(state.progress, 1) : 0;
+      state.generated = false;
+      state.generationState = "idle";
+      state.difyRun = null;
+      state.difyError = "";
+      state.approvedAsset = null;
+      state.automationSubmission = null;
+      state.automationError = "";
+      state.issues = structuredClone(issues);
+      state.agentLastDiagnosis = null;
+      state.agentLastVerification = null;
+      if (mode === "video" && fileName) {
+        els.sourceVideoName.textContent = compactName(fileName);
+        els.sourceVideoName.title = fileName;
+      }
+      if (mode === "image" && fileName) {
+        els.sourceImageName.textContent = compactName(fileName);
+        els.sourceImageName.title = fileName;
+      }
+      updateStatus(state.hasSource ? "源素材已上传，等待反推" : "等待任务", state.hasSource ? "is-running" : "");
+      els.promptBox.value = buildPrompt();
+      render();
+    }
+
+    els.sourceVideoInput.addEventListener("change", async event => {
+      const file = event.target.files?.[0];
+      const dataUrl = file ? await readFileAsDataUrl(file) : "";
+      setSourceMode("video", file?.name || "上传反推视频", dataUrl, file?.type || "video/mp4");
+    });
+
+    els.sourceImageInput.addEventListener("change", async event => {
+      const file = event.target.files?.[0];
+      const dataUrl = file ? await readFileAsDataUrl(file) : "";
+      setSourceMode("image", file?.name || "上传反推图片", dataUrl, file?.type || "image/png");
+    });
+
+    async function appendReferenceImages(files) {
+      const selected = Array.from(files || []).filter(file => file && file.type.startsWith("image/"));
+      if (!selected.length) return;
+      const next = [];
+      for (const file of selected) {
+        const dataUrl = await readFileAsDataUrl(file);
+        next.push({
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          slot: "reference",
+          name: file.name,
+          type: file.type || "image/png",
+          dataUrl
+        });
+      }
+      state.referenceImages = [...referenceImages(), ...next];
+      state.generated = false;
+      state.generationState = "idle";
+      state.difyRun = null;
+      state.difyError = "";
+      state.approvedAsset = null;
+      state.automationSubmission = null;
+      state.automationError = "";
+      els.promptBox.value = buildPrompt();
+      render();
+    }
+
+    els.referenceImagesInput.addEventListener("change", event => {
+      appendReferenceImages(event.target.files).catch(error => {
+        state.difyError = error.message || "参考图读取失败";
+        render();
+      }).finally(() => {
+        event.target.value = "";
+      });
+    });
+
+    els.referenceGallery.addEventListener("click", event => {
+      const button = event.target.closest("[data-reference-remove]");
+      if (!button) return;
+      const id = button.getAttribute("data-reference-remove");
+      state.referenceImages = referenceImages().filter(item => item.id !== id);
+      state.generated = false;
+      state.generationState = "idle";
+      state.difyRun = null;
+      state.difyError = "";
+      els.promptBox.value = buildPrompt();
+      render();
+    });
+
+    els.fixMotionBtn.addEventListener("click", () => {
+      applyMotionPatch();
+      state.agentLastVerification = "手动修复：动作轨迹已补全";
+      render();
+    });
+
+    els.fixSubtitleBtn.addEventListener("click", () => {
+      applySubtitlePatch();
+      state.agentLastVerification = "手动修复：字幕槽已补全";
+      render();
+    });
+
+    els.cleanBtn.addEventListener("click", () => {
+      applyRiskClean();
+      state.agentLastVerification = "手动修复：风险词已清洗";
+      render();
+    });
+
+    els.replaceProductBtn.addEventListener("click", () => {
+      const suggested = guessOriginalProductTerms(els.promptBox.value);
+      const input = window.prompt(
+        "把源视频原产品的关键词替换为「参考图主体」。\n多个词用逗号或空格分隔（已根据当前 Prompt 自动猜测，可修改）：",
+        suggested.join("，")
+      );
+      if (input === null) return;
+      const terms = input.split(/[，,、\s]+/).map(s => s.trim()).filter(Boolean);
+      if (!terms.length) return;
+      const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      let text = els.promptBox.value;
+      terms.sort((a, b) => b.length - a.length).forEach(term => {
+        text = text.replace(new RegExp(escapeRe(term), "g"), "参考图主体");
+      });
+      text = text.replace(/(参考图主体)(?:的?\1)+/g, "$1");
+      els.promptBox.value = text;
+      render();
+    });
+
+    els.agentFixMotionBtn.addEventListener("click", agentFixMotion);
+    els.agentCleanBtn.addEventListener("click", agentCleanRisk);
+    els.agentRerunBtn.addEventListener("click", agentRerunProblemLine);
+    els.agentDashboard.addEventListener("click", event => {
+      const button = event.target.closest("button[data-agent-action]");
+      if (!button) return;
+      runAgentAction(button.dataset.agentAction, true).catch(error => {
+        addAgentMessage("agent", `动作执行失败：${error.message || error}`);
+        render();
+      });
+    });
+    els.agentDiagnoseBtn.addEventListener("click", () => runAgentStep(false, true).catch(error => {
+      addAgentMessage("agent", `总控执行失败：${error.message || error}`);
+      render();
+    }));
+    els.agentStepBtn.addEventListener("click", () => runAgentStep(true).catch(error => {
+      addAgentMessage("agent", `总控执行失败：${error.message || error}`);
+      render();
+    }));
+    els.agentModePicker.addEventListener("click", event => {
+      const button = event.target.closest("button[data-agent-mode]");
+      if (!button) return;
+      state.agentMode = button.dataset.agentMode || "assist";
+      state.agentAutoSignature = "";
+      state.agentLastVerification = `已切换到${agentModeLabel()}。${state.agentMode === "auto" ? "低风险修复会自动执行，外部接口仍需确认。" : state.agentMode === "watch" ? "只诊断和记录，不自动改 Prompt。" : "点击执行建议后才会改 Prompt 或触发外部动作。"}`;
+      addAgentMessage("agent", state.agentLastVerification);
+      render();
+      if (state.agentMode === "auto") {
+        runAgentStep(false).catch(error => {
+          addAgentMessage("agent", `自动推进失败：${error.message || error}`);
+          render();
+        });
+      }
+    });
+    els.agentCollapseBtn.addEventListener("click", () => setAgentCollapsed(true));
+    els.agentExpandBtn.addEventListener("click", () => setAgentCollapsed(false));
+
+    els.agentSendBtn.addEventListener("click", () => {
+      const text = els.agentInput.value.trim();
+      if (!text) return;
+      addAgentMessage("user", text);
+      els.agentInput.value = "";
+      sendAgentChat(text);
+    });
+
+    els.generateBtn.addEventListener("click", runDifyGeneration);
+
+    els.promptBox.addEventListener("input", render);
+    refreshDifyStatus();
+    refreshAutomationStatus();
+    render();
+  </script>
+</body>
+</html>

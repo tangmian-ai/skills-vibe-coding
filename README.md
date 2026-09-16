@@ -2,11 +2,27 @@
 
 ## Skills
 
-- [`video-camera-movement`](skills/video-camera-movement/) — 视频运镜提示词结构化 skill。
+每个目录均以 `SKILL.md` 为入口；需要时读取其 `references/`、`templates/`、`assets/` 或 `examples/`。
+
+### Static & Commercial Visuals
+
+- [`image-generation-production`](skills/image-generation-production/) — 品牌、电商与内容视觉的生图规格、参考图控制和交付 QA。
+- [`typography-art-text`](skills/typography-art-text/) — 艺术字、立体字与文字生图的风格路由和 Prompt 结构。
+- [`brand-ecommerce-creative`](skills/brand-ecommerce-creative/) — 品牌 Kit 到社媒、电商、直播、印刷与 KV 的商业视觉适配。
+- [`app-resource-adaptation`](skills/app-resource-adaptation/) — 已批准活动方案的 App 横幅、入口卡片、弹窗和信息流资源位适配。
+- [`creative-qc-compliance`](skills/creative-qc-compliance/) — 视觉质量、参考图一致性、文案、权利与投放风险质检。
+- [`design-assistant`](skills/design-assistant/) — 从需求拆解、灵感对齐到视觉执行的设计助理工作流。
+
+### Video & Content Systems
+
+- [`video-camera-movement`](skills/video-camera-movement/) — 视频运镜提示词结构化 Skill。
+- [`reverse-video-prompt-completeness`](skills/reverse-video-prompt-completeness/) — 视频反推 Prompt 的动作、运镜、声音、参考素材和线路完整性检查。
+- [`cinematic-director`](skills/cinematic-director/) — 剧本、分镜、关键帧、连续性与 AI 视频导演工作流。
+- [`content-pipeline`](skills/content-pipeline/) — 从选题评估到内容生产、审核和归档的 AI 内容流程。
 
 ## Skill Library
 
-[`library/Skill分类库/`](library/Skill分类库/) 收录可复用的创意生产资料，并按静态视觉、视频、自动化工作流、商业投放和 Agent 规范归档。
+[`library/Skill分类库/`](library/Skill分类库/) 是支撑这些 Skill 的资料层，收录可复用的模板、案例、媒体、工作流和整理报告，不把它当作可直接安装的 Skill。
 
 - `01-生图与艺术字`：生图方法、艺术字/字体设计、参考图控制与 ComfyUI 海报工作流。
 - `02-视频与动态视觉`：视频反推、镜头语言和视频 Prompt 工作台资料。

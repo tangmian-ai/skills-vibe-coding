@@ -1,0 +1,4 @@
+interface:
+  display_name: "App Resource Adaptation"
+  short_description: "Generate, review, and export App campaign placement finals"
+  default_prompt: "Use $app-resource-adaptation to create approved App placement final artwork."

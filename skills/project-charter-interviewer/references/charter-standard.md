@@ -1,31 +1,31 @@
-# Charter Standard
+# 项目章程标准
 
-## Purpose And Appropriate Detail
+## 目的与合适的细节程度
 
-A project charter authorizes and aligns an initiative; it is not a substitute for a detailed delivery plan. Keep it concise enough for sponsors to make a decision, then link to deeper plans only when needed.
+项目章程用于授权和对齐项目，而非替代详细计划。它应足够简洁，使项目发起人能够决策；只有在需要时再链接到更深层的执行计划。
 
-The minimum useful charter connects the business case or outcome, stakeholders, measurable goals, boundaries, milestones, risks, assumptions, constraints, and approval. It should declare both inclusions and exclusions, because exclusions are the practical defense against scope drift.
+一份最低限度有效的项目章程，应连接业务价值或预期结果、干系人、可衡量目标、范围边界、里程碑、风险、假设、约束和批准机制。必须同时写出包含项和排除项，排除项是防止范围失控的实际边界。
 
-## Evidence Labels
+## 证据标签
 
-- **Confirmed:** supplied directly by an authorized stakeholder or source document.
-- **Researched:** corroborated through a direct public source and linked in the evidence log.
-- **Working assumption:** a reasoned provisional choice made to keep the work moving; include validation method, owner role, and impact if wrong.
+- **已确认**：由有权干系人或授权源文件直接提供。
+- **已检索**：由可直接访问的公开来源支持，并记录链接。
+- **工作假设**：为推进工作而做出的合理临时选择；必须包含验证方法、责任角色和假设错误时的影响。
 
-Never label a forecast, a target, or an inferred user need as confirmed without evidence.
+未有证据时，不得将预测、目标或推断出的用户需求写为已确认。
 
-## Outcome Design
+## 结果设计
 
-Use an outcome statement rather than a production activity. A robust measure specifies the audience, measure, source, baseline, target logic, owner, and review date. Separate project delivery health (schedule, budget, quality) from product or business outcomes (adoption, conversion, time saved, satisfaction).
+用结果而非制作活动表述目标。一项可靠指标包含受众、指标、来源、基线、目标逻辑、负责人和复盘时间。区分项目交付健康度（进度、预算、质量）与产品或业务结果（采用、转化、节省时间、满意度）。
 
-## Scope And Change
+## 范围与变化
 
-Write an explicit minimum viable scope and a descoping order. For each scope item, show why it serves the outcome. Use a stage gate for any commitment that would be expensive or hard to reverse.
+明确写出最小可行范围及范围收缩顺序。每个范围项都说明其如何服务于结果。对成本高或难以逆转的承诺设置阶段门。
 
-## Governance
+## 治理
 
-Assign a sponsor or decision owner, delivery owner, approver, and consulted roles. Record what each role can decide and what requires escalation. A stakeholder's influence and engagement can be sensitive; include only the minimum necessary information in a shareable charter.
+分配发起人或决策人、交付负责人、审批人和被咨询角色。记录各角色可以决定的事项及何时需要升级。干系人的影响力与参与度可能敏感，在可共享章程中只保留必要信息。
 
-## Risk Register
+## 风险登记
 
-Phrase a risk as a future uncertainty with a consequence, rather than as a vague concern. Example: “If legal review is not completed before production lock, launch assets cannot be published on the planned date.” Add a leading signal, mitigation, and accountable owner. Distinguish risks from assumptions and already-occurring issues.
+风险应描述为“未来不确定性及其后果”，而非模糊担忧。例如：“若制作锁定日前未完成法务审核，发布素材无法按计划上线。”补充领先预警、缓解方式和责任人。区分风险、假设和已发生的问题。

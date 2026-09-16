@@ -1,52 +1,52 @@
-# Charter Delivery Spec
+# 项目章程交付规范
 
-Generate the following sections as a finished recommendation. Do not reproduce this document as a blank form.
+按以下结构生成一份完成版建议书，不得将本文原样作为空白表格交给用户。
 
-## 1. Executive Decision
+## 1. 决策摘要
 
-State one recommendation: **Proceed**, **Proceed with conditions**, **Run a short discovery**, or **Do not proceed yet**. Explain the decision in three concise bullets: value, feasibility, and the condition or risk that matters most.
+仅给出一个建议：**推进**、**附条件推进**、**先做短期探索** 或 **暂不推进**。用三条简洁结论说明价值、可行性和最重要的前提或风险。
 
-## 2. Project Snapshot
+## 2. 项目快照
 
-Write a one-sentence project statement covering the outcome, primary audience, and delivery mechanism. Include the project type, current stage, intended decision date or milestone, and confidence level.
+用一句话覆盖预期结果、核心受众和交付方式。写明项目类型、所处阶段、拟定决策时间或里程碑，以及当前置信度。
 
-## 3. Problem, Opportunity, And Why Now
+## 3. 问题、机会与时机
 
-Describe the observed problem or opportunity, who experiences it, and why acting now is justified. Distinguish supplied evidence from researched context and working assumptions.
+说明观察到的问题或机会、受影响人群及现在行动的理由。区分用户提供的证据、公开检索背景和工作假设。
 
-## 4. Outcome And Success Measures
+## 4. 预期结果与成功衡量
 
-Write no more than three outcome statements. For each, specify the measurement source, current baseline status, target or target-setting method, owner, and review date. When a baseline is unavailable, define the measurement action and date that will establish it instead of fabricating a number.
+最多写三项结果。每项写明衡量来源、当前基线状态、目标或目标设定方式、负责人角色与复盘时间。基线缺失时，写出建立基线的动作和日期，不得虚构数字。
 
-| Outcome | Evidence / Measure | Baseline Status | Target Or Target-Setting Rule | Owner | Review Point |
+| 预期结果 | 证据 / 衡量方式 | 基线状态 | 目标或设定规则 | 负责人角色 | 复盘节点 |
 | --- | --- | --- | --- | --- | --- |
 
-## 5. Recommended Scope
+## 5. 推荐范围
 
-State the minimum viable scope, key deliverables, and explicit exclusions. Add a descoping order that protects the primary outcome when time, budget, or capacity changes.
+写明最小可行范围、关键交付物与明确排除项。补充范围收缩顺序，确保时间、预算或人力变化时优先保护核心结果。
 
-## 6. Delivery Approach And Milestones
+## 6. 交付路径与里程碑
 
-Explain the recommended delivery path, including material dependencies and stage gates. Use dates only when supplied or reliably researched; otherwise use relative sequencing and name the event needed to set dates.
+说明推荐的交付路径、重要依赖与阶段门。仅在用户提供或可靠检索到日期时使用具体日期；否则使用相对顺序，并说明确定日期所需事件。
 
-| Stage Gate | Output Or Decision | Dependency | Accountable Role | Timing Basis |
+| 阶段门 | 产出或决策 | 依赖项 | 负责角色 | 时间依据 |
 | --- | --- | --- | --- | --- |
 
-## 7. Governance And Stakeholder Plan
+## 7. 治理与干系人计划
 
-Name known roles, decision rights, approval route, and communication cadence. Where a person or team is unknown, assign the role and state how it will be confirmed. Do not invent names.
+写明已知角色、决策权、审批路径和沟通节奏。姓名或团队未知时，只分配角色，并写明确认方式；不得虚构姓名。
 
-## 8. Risks, Assumptions, And Safeguards
+## 8. 风险、假设与保障措施
 
-Include only material items. Give each a probability and impact rating, early warning, mitigation, owner role, and escalation trigger.
+只纳入重要项目。为每项写明概率、影响、预警信号、缓解方式、责任角色和升级触发条件。
 
-| ID | Type | Statement | Probability | Impact | Early Warning | Mitigation | Owner Role | Escalation Trigger |
+| 编号 | 类型 | 表述 | 概率 | 影响 | 预警信号 | 缓解措施 | 责任角色 | 升级触发条件 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-## 9. Immediate Decisions And Actions
+## 9. 最近决策与行动
 
-List the next three to five actions in execution order. Include the first decision required, the accountable role, and the expected evidence or output. State what cannot start until each action is complete.
+按执行顺序列出三至五项行动。写明首个必须决定的事项、责任角色和预期证据或产出，并说明在该行动完成前什么工作不能开始。
 
-## 10. Evidence And Assumption Log
+## 10. 证据与假设日志
 
-List every external source that materially shaped the recommendation. Mark each statement as **Confirmed**, **Researched**, or **Working assumption**. Each working assumption must have an owner role and validation method.
+列出所有实质影响建议的外部来源。每项标记为 **已确认**、**已检索** 或 **工作假设**。每条工作假设必须包含责任角色和验证方式。

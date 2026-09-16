@@ -1,84 +1,84 @@
 ---
 name: project-charter-interviewer
-description: Research, frame, and author a decision-ready Project Charter from a brief, link, notes, or ambiguous idea. Use when a user asks to initiate a project, assess a proposal, plan a campaign or product initiative, clarify goals and scope, identify stakeholders and risks, prepare a kickoff, or create a Project Charter / 立项书 / 项目章程. Research public context first, ask only irreducible decision questions, and deliver a completed charter rather than a blank form.
+description: 根据需求、链接、会议纪要或模糊想法，检索、梳理并撰写可供决策的完整 Project Charter（项目章程/立项书）。当用户需要启动项目、评估方案、规划品牌 campaign 或产品项目、澄清目标和范围、识别干系人与风险、准备 kickoff 或产出立项书时使用。先检索公开背景，仅提出不可替代的关键问题，直接交付完整项目章程而非空白模板。
 ---
 
-# Project Charter Interviewer
+# 立项访谈官
 
-Produce a completed, evidence-backed charter that lets a sponsor decide whether to proceed, revise, or stop. Treat the charter as an initiation and alignment document, not a detailed project plan.
+产出一份有证据支撑、能够帮助项目发起人做出“推进、修改或暂缓”决定的完整项目章程。将项目章程视作立项与对齐文件，而不是详细项目计划。
 
-## Operating Standard
+## 工作准则
 
-- Start from the supplied brief, files, meeting notes, and links. Extract facts before interpreting them.
-- When the request concerns a named company, product, market, audience, regulation, platform, competitor, or current trend, research the public context before drafting. Prefer official sites, primary documentation, filings, app stores, and first-party product materials. Use reputable independent sources only when primary evidence is unavailable.
-- Tag every material claim as **Confirmed**, **Researched**, or **Working assumption**. Give researched claims a direct URL. Do not invent customer data, budgets, deadlines, internal owners, performance baselines, approvals, or legal status.
-- Do not hand the user an empty template. Synthesize a complete recommendation from available evidence. For information that cannot be truthfully inferred, state the uncertainty, select a conservative working assumption, explain its consequence, and assign a validation action.
-- Ask questions only when an answer changes the recommendation materially and cannot be resolved through supplied material or public research. Ask a maximum of three together; while waiting, still deliver the strongest draft possible.
-- Write in the user's language. Keep the main charter to roughly two to four screens unless the project is complex.
+- 先阅读用户提供的需求、文件、会议纪要和链接，再做判断。
+- 当需求涉及具名公司、产品、市场、受众、法规、平台、竞品或当下趋势时，先检索公开背景。优先使用官网、产品文档、监管或标准机构、公开财报、应用商店和一手资料；一手资料不存在时，才使用可靠的独立报道或研究。
+- 所有重要结论标记为 **已确认**、**已检索** 或 **工作假设**。已检索的信息附直接链接。不得编造用户数据、预算、时间、内部负责人、绩效基线、审批或合规结论。
+- 不把空白模板交给用户。应基于现有证据产出完整建议；无法如实推断的信息，应写明不确定性，给出保守的工作假设、其影响和验证动作。
+- 只有当答案会实质改变推荐方案，且无法通过用户材料或公开研究解决时才提问。一次最多问三个；即使等待回答，也要先给出当前证据下最强的可评审草案。
+- 使用用户的语言。除复杂项目外，主体控制在两到四屏内。
 
-## 1. Build An Evidence Map
+## 1. 建立证据地图
 
-Before drafting, create a private working map with four columns: claim, source, confidence, and implication. Separate:
+起草前，在工作区建立四列记录：结论、来源、置信度、对项目的影响。将信息分为：
 
-1. **Business facts:** existing product, audience, commercial model, strategy, prior results.
-2. **Market facts:** category behavior, competitor positioning, platform requirements, regulation, timing.
-3. **Project facts:** requested outcome, delivery constraints, materials, decision-makers, stated deadline.
-4. **Unknowns:** missing information that changes value, scope, feasibility, cost, timing, or approval.
+1. **业务事实**：现有产品、受众、商业模式、战略、已有结果。
+2. **市场事实**：品类行为、竞品定位、平台规则、法规、时机。
+3. **项目事实**：预期结果、交付限制、现有材料、决策者、明确截止时间。
+4. **未知项**：会改变价值、范围、可行性、成本、时间或审批的缺失信息。
 
-When browsing, capture only facts that affect a decision. Record the source URL beside the fact. Do not confuse an inference with a verified fact.
+检索时只收集会影响决策的事实。每条外部事实都记录直接来源链接；不得将推断写成已验证事实。
 
-## 2. Choose The Right Charter Depth
+## 2. 判断项目类型与立项深度
 
-Classify the request and tailor the charter. Do not force irrelevant sections into a small project.
+按项目类型调整内容，不向小项目强塞无关章节。
 
-| Project type | Emphasize |
+| 项目类型 | 重点 |
 | --- | --- |
-| Brand or creative campaign | audience insight, message, channels, formats, production plan, rights, performance signals |
-| Product or feature | user problem, current journey, opportunity, release boundary, instrumentation, rollout, adoption risk |
-| Automation or operations | current process, trigger, inputs/outputs, exception path, human review, access control, time/quality gain |
-| Research or strategy | decision to inform, hypotheses, evidence plan, sample/source quality, decision date |
-| Event or launch | audience, run of show, partners, critical path, contingency, safety and communications |
+| 品牌或创意 campaign | 受众洞察、核心信息、渠道、规格、制作方案、版权与效果信号 |
+| 产品或功能 | 用户问题、现有旅程、机会、首发边界、埋点、灰度、采用风险 |
+| 自动化或运营 | 现状流程、触发条件、输入输出、异常路径、人工审核、权限与时间/质量收益 |
+| 调研或策略 | 要支持的决策、假设、证据计划、样本或来源质量、决策日期 |
+| 活动或发布 | 受众、流程、合作方、关键路径、预案、安全与传播 |
 
-## 3. Resolve Only The Irreducible Questions
+## 3. 只解决不可替代的问题
 
-Do not run a questionnaire by default. Use research and reasoning first. Ask only when one of these is unknown and materially changes the recommendation:
+默认不进行问卷式访谈。先用研究与推理补全，再只询问以下会实质改变方案的信息：
 
-- sponsor or final decision owner;
-- non-negotiable deadline, cost cap, or legal/brand constraint;
-- primary outcome when two plausible outcomes conflict;
-- scope boundary when inclusion choices create materially different delivery paths;
-- baseline or measurement source when success cannot otherwise be assessed.
+- 项目发起人或最终决策人；
+- 不可协商的截止时间、成本上限、法律或品牌约束；
+- 当两个合理目标相冲突时的首要结果；
+- 选择不同范围会形成不同交付路径时的范围边界；
+- 成功无法评估时的基线或衡量来源。
 
-Phrase each question with a recommended default and the trade-off. Example: “I recommend treating the US English launch as the first release and deferring localization; should the first release include additional markets?”
+每个问题都附带推荐默认项及其取舍。例如：“我建议首发只覆盖美国英语市场、将本地化后置；首发是否必须包含其他市场？”
 
-## 4. Make The Recommendation
+## 4. 给出明确建议
 
-Choose a recommended path; do not merely list possibilities. Explicitly state:
+选择一个推荐路径，而不是并列罗列选项。明确说明：
 
-- whether the initiative should **Proceed**, **Proceed with conditions**, **Run a short discovery**, or **Do not proceed yet**;
-- the smallest viable scope that can validate the value hypothesis;
-- what must be true for success;
-- what should be removed first if time or capacity tightens;
-- which decision or evidence is needed before the next stage gate.
+- 项目应 **推进**、**附条件推进**、**先做短期探索** 还是 **暂不推进**；
+- 用于验证价值假设的最小可行范围；
+- 成功必须成立的前提；
+- 时间或能力收紧时应最先移除的内容；
+- 进入下一个阶段门前必须获得的决定或证据。
 
-Use ranges and confidence labels for early estimates. Never turn a guessed value into a hard commitment.
+早期估算使用范围和置信度，不得把猜测写成硬承诺。
 
-## 5. Deliver A Completed Charter
+## 5. 交付完整项目章程
 
-Use [assets/charter-delivery-spec.md](assets/charter-delivery-spec.md) as the required output contract. Deliver every section with actual prose, decisions, and tables. A section may be marked **Not applicable** only with a one-sentence reason; never leave blanks, `TBD`, or placeholder rows.
+以 [assets/charter-delivery-spec.md](assets/charter-delivery-spec.md) 为强制输出结构。每一节均须填写为完整的判断、表格和行动项。只有在给出一句原因时才能标为 **不适用**；不得留下空白、`TBD` 或占位行。
 
-Include an evidence appendix only when research materially informed the recommendation. Keep confidential inputs anonymous and avoid exposing personal data or internal-only information.
+只有当公开研究实质影响了建议时，才附上证据附录。对保密输入进行匿名化，避免暴露不必要的个人或内部信息。
 
-## 6. Validate Before Delivery
+## 6. 交付前校验
 
-Read [references/charter-standard.md](references/charter-standard.md) for the quality baseline and [references/research-protocol.md](references/research-protocol.md) before researching or citing public facts.
+起草前或引用公开事实前，阅读 [references/charter-standard.md](references/charter-standard.md) 与 [references/research-protocol.md](references/research-protocol.md)。
 
-Verify that the final charter:
+确认最终章程：
 
-1. names the business problem and intended outcome, not just an activity;
-2. distinguishes evidence, recommendation, and assumption;
-3. makes scope exclusions and descoping order explicit;
-4. gives success measures a source, baseline status, target logic, owner, and review moment;
-5. includes material dependencies, risks, early warnings, mitigations, and owners;
-6. identifies a decision owner, approval gate, and immediate next action;
-7. uses links for external facts and makes no unsupported claim of certainty.
+1. 说明业务问题和预期结果，而不只描述活动；
+2. 清晰区分证据、建议与假设；
+3. 明确写出范围排除项和范围收缩顺序；
+4. 为成功指标说明来源、基线状态、目标逻辑、负责人和复盘时间；
+5. 为重要依赖、风险、预警、缓解措施和责任角色留痕；
+6. 明确决策人、审批关口和最近的行动项；
+7. 外部事实均可追溯到链接，不以未经支持的信息表达确定性。

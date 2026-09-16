@@ -1,4 +1,4 @@
 interface:
-  display_name: "Project Charter Interviewer"
-  short_description: "Research and write a decision-ready project charter."
-  default_prompt: "Use $project-charter-interviewer to research this initiative and deliver a completed, decision-ready Project Charter."
+  display_name: "立项访谈官"
+  short_description: "研究需求并生成可决策的完整项目章程。"
+  default_prompt: "使用 $project-charter-interviewer 研究这个项目，并直接生成一份完整、可决策的项目章程。"

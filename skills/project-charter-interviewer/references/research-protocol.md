@@ -1,28 +1,28 @@
-# Research Protocol
+# 研究与证据协议
 
-## Source Order
+## 来源优先级
 
-1. User-provided material and authorized project documents.
-2. Official company, product, investor, policy, documentation, or app-store sources.
-3. Primary research, public datasets, standards bodies, and regulators.
-4. Reputable independent reporting or specialist research, clearly attributed.
-5. Secondary summaries only for discovery; verify material claims before use.
+1. 用户提供的材料和已授权项目文件。
+2. 公司、产品、投资者、政策或技术文档、应用商店等官方来源。
+3. 一手研究、公开数据集、标准机构和监管机构。
+4. 可靠的独立报道或专业研究，并明确归因。
+5. 二手总结仅用于发现线索；重要结论必须核验后再使用。
 
-## Research Workflow
+## 研究流程
 
-1. Write the questions that affect the project decision.
-2. Search for evidence against each question, not for generic background.
-3. Capture source title, publisher, URL, publication or access date, claim supported, and confidence.
-4. Cross-check high-stakes facts with another authoritative source where practical.
-5. Separate factual observation from the recommendation derived from it.
+1. 写下会影响项目决策的问题。
+2. 围绕每个问题寻找证据，而不是泛泛收集背景。
+3. 记录来源标题、发布者、URL、发布日期或访问日期、支持的结论和置信度。
+4. 对高风险事实，在可行时使用另一权威来源交叉验证。
+5. 明确区分事实观察与基于事实得出的建议。
 
-## Citation Rules
+## 引用规则
 
-- Link each material external fact directly in the evidence log and near the relevant statement when space permits.
-- Use an access date for living webpages, policies, product pages, pricing, features, and market claims.
-- Do not cite search result pages as evidence.
-- Never claim a public source proves internal performance, customer preference, budget, or approval.
+- 每条实质外部事实都应在证据日志中直链，并尽可能在正文相邻位置标注。
+- 对持续变化的网页、政策、产品页、价格、功能和市场结论记录访问日期。
+- 不得将搜索结果页作为证据。
+- 公开来源不能证明内部绩效、客户偏好、预算或审批；不得过度解读。
 
-## Handling Gaps
+## 处理证据缺口
 
-When credible evidence does not exist, say so. Make the smallest conservative assumption that enables a next step, state the decision risk it creates, and design a low-cost validation action. A completed charter may contain uncertainty; it must not conceal it.
+可信证据不存在时，直接说明。选择能够推动下一步的最小保守假设，写明其决策风险，并设计低成本验证动作。完整项目章程可以包含不确定性，但不得掩盖不确定性。

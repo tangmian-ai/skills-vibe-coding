@@ -4,7 +4,7 @@ description: 小红书文字PLOG选题前期检索。用于「PLOG选题总监�
 license: Proprietary
 compatibility: 需要 curl 与 python3，运行环境必须可访问 https://api.tavily.com
 metadata:
-  author: gaoding-design
+  author: skills-vibe-coding
   version: "1.0"
   upstream: tavily-search
 ---

@@ -11,6 +11,10 @@ Each directory in this folder is a standalone skill project. `SKILL.md` defines 
 - `creative-qc-compliance`: visual QA and commercial risk review.
 - `design-assistant`: brief-to-direction design workflow.
 
+## Project Discovery
+
+- `project-charter-interviewer`: discovery interview, scope alignment, risk register, and decision-ready project charter.
+
 ## Video & Content
 
 - `video-camera-movement`: camera-motion vocabulary and prompts.

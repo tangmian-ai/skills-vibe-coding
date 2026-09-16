@@ -13,6 +13,10 @@
 - [`creative-qc-compliance`](skills/creative-qc-compliance/) — 视觉质量、参考图一致性、文案、权利与投放风险质检。
 - [`design-assistant`](skills/design-assistant/) — 从需求拆解、灵感对齐到视觉执行的设计助理工作流。
 
+### Project Discovery & Operations
+
+- [`project-charter-interviewer`](skills/project-charter-interviewer/) — 通过结构化访谈澄清目标、范围、风险、依赖和衡量指标，输出可评审的 Project Charter。
+
 ### Video & Content Systems
 
 - [`video-camera-movement`](skills/video-camera-movement/) — 视频运镜提示词结构化 Skill。

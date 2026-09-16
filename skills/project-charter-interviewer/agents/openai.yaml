@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Charter Interviewer"
-  short_description: "Turn discovery interviews into an actionable project charter."
-  default_prompt: "Use $project-charter-interviewer to run a structured discovery interview and create a concise project charter."
+  short_description: "Research and write a decision-ready project charter."
+  default_prompt: "Use $project-charter-interviewer to research this initiative and deliver a completed, decision-ready Project Charter."

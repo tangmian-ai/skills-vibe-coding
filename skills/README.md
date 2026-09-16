@@ -13,7 +13,7 @@ Each directory in this folder is a standalone skill project. `SKILL.md` defines 
 
 ## Project Discovery
 
-- `project-charter-interviewer`: discovery interview, scope alignment, risk register, and decision-ready project charter.
+- `project-charter-interviewer`: research-first project framing, evidence log, risk register, and a decision-ready project charter.
 
 ## Video & Content
 

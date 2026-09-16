@@ -1,96 +1,84 @@
 ---
 name: project-charter-interviewer
-description: Conduct structured project-discovery interviews and turn ambiguous briefs, meeting notes, or stakeholder inputs into an actionable Project Charter. Use when a user needs to clarify a new project, define goals and scope, surface risks and dependencies, align stakeholders, prepare a kickoff, or write a project charter / 立项访谈纪要 / 项目章程.
+description: Research, frame, and author a decision-ready Project Charter from a brief, link, notes, or ambiguous idea. Use when a user asks to initiate a project, assess a proposal, plan a campaign or product initiative, clarify goals and scope, identify stakeholders and risks, prepare a kickoff, or create a Project Charter / 立项书 / 项目章程. Research public context first, ask only irreducible decision questions, and deliver a completed charter rather than a blank form.
 ---
 
 # Project Charter Interviewer
 
-Turn an ambiguous request into a decision-ready charter. Adapt the depth to the project's scale. Do not invent facts, owners, dates, budgets, baselines, or approvals.
+Produce a completed, evidence-backed charter that lets a sponsor decide whether to proceed, revise, or stop. Treat the charter as an initiation and alignment document, not a detailed project plan.
 
-## Start With Available Context
+## Operating Standard
 
-1. Read supplied briefs, research, meeting notes, product documents, links, or prior decisions.
-2. Extract confirmed facts into: background, desired outcome, audience, scope, constraints, stakeholders, timing, dependencies, and unknowns.
-3. State the current understanding in 3-6 bullets before questioning. Mark unverified statements as assumptions.
-4. Use the confirmed facts to avoid asking the user to repeat information already provided.
+- Start from the supplied brief, files, meeting notes, and links. Extract facts before interpreting them.
+- When the request concerns a named company, product, market, audience, regulation, platform, competitor, or current trend, research the public context before drafting. Prefer official sites, primary documentation, filings, app stores, and first-party product materials. Use reputable independent sources only when primary evidence is unavailable.
+- Tag every material claim as **Confirmed**, **Researched**, or **Working assumption**. Give researched claims a direct URL. Do not invent customer data, budgets, deadlines, internal owners, performance baselines, approvals, or legal status.
+- Do not hand the user an empty template. Synthesize a complete recommendation from available evidence. For information that cannot be truthfully inferred, state the uncertainty, select a conservative working assumption, explain its consequence, and assign a validation action.
+- Ask questions only when an answer changes the recommendation materially and cannot be resolved through supplied material or public research. Ask a maximum of three together; while waiting, still deliver the strongest draft possible.
+- Write in the user's language. Keep the main charter to roughly two to four screens unless the project is complex.
 
-## Run The Interview In Rounds
+## 1. Build An Evidence Map
 
-Ask no more than five high-value questions per round. Use direct, answerable questions. Offer options only where they reduce ambiguity; leave room for the user's own answer.
+Before drafting, create a private working map with four columns: claim, source, confidence, and implication. Separate:
 
-### Round 1: Outcome And Value
+1. **Business facts:** existing product, audience, commercial model, strategy, prior results.
+2. **Market facts:** category behavior, competitor positioning, platform requirements, regulation, timing.
+3. **Project facts:** requested outcome, delivery constraints, materials, decision-makers, stated deadline.
+4. **Unknowns:** missing information that changes value, scope, feasibility, cost, timing, or approval.
 
-Clarify the business problem, target users, expected change, and why the work matters now.
+When browsing, capture only facts that affect a decision. Record the source URL beside the fact. Do not confuse an inference with a verified fact.
 
-- What decision, behavior, or metric should this project change?
-- Who is the primary user or customer segment?
-- What is the minimum observable result that would make this initiative worthwhile?
-- What happens if the project does not proceed?
+## 2. Choose The Right Charter Depth
 
-### Round 2: Scope And Deliverables
+Classify the request and tailor the charter. Do not force irrelevant sections into a small project.
 
-Separate the essential deliverable from desirable follow-on work.
+| Project type | Emphasize |
+| --- | --- |
+| Brand or creative campaign | audience insight, message, channels, formats, production plan, rights, performance signals |
+| Product or feature | user problem, current journey, opportunity, release boundary, instrumentation, rollout, adoption risk |
+| Automation or operations | current process, trigger, inputs/outputs, exception path, human review, access control, time/quality gain |
+| Research or strategy | decision to inform, hypotheses, evidence plan, sample/source quality, decision date |
+| Event or launch | audience, run of show, partners, critical path, contingency, safety and communications |
 
-- What must be delivered for the first usable release or milestone?
-- What is explicitly out of scope?
-- Which channels, regions, platforms, formats, or languages are included?
-- What existing assets, systems, or work can be reused?
+## 3. Resolve Only The Irreducible Questions
 
-### Round 3: Execution Conditions
+Do not run a questionnaire by default. Use research and reasoning first. Ask only when one of these is unknown and materially changes the recommendation:
 
-Identify decision rights and constraints early.
+- sponsor or final decision owner;
+- non-negotiable deadline, cost cap, or legal/brand constraint;
+- primary outcome when two plausible outcomes conflict;
+- scope boundary when inclusion choices create materially different delivery paths;
+- baseline or measurement source when success cannot otherwise be assessed.
 
-- Who sponsors the project, owns delivery, approves key decisions, and supplies inputs?
-- What fixed dates, budget limits, legal requirements, brand rules, technical limits, or vendor commitments apply?
-- Which external teams, tools, data sources, or approvals can block progress?
-- What is the preferred review cadence and final sign-off path?
+Phrase each question with a recommended default and the trade-off. Example: “I recommend treating the US English launch as the first release and deferring localization; should the first release include additional markets?”
 
-### Round 4: Measurement And Risk
+## 4. Make The Recommendation
 
-Turn vague success language into observable evidence.
+Choose a recommended path; do not merely list possibilities. Explicitly state:
 
-- Which leading and lagging indicators will be tracked? What is the baseline, target, and measurement window?
-- What could most likely delay, weaken, or invalidate the work?
-- What assumptions must be tested first?
-- What decision is needed now to unblock the next step?
+- whether the initiative should **Proceed**, **Proceed with conditions**, **Run a short discovery**, or **Do not proceed yet**;
+- the smallest viable scope that can validate the value hypothesis;
+- what must be true for success;
+- what should be removed first if time or capacity tightens;
+- which decision or evidence is needed before the next stage gate.
 
-## Synthesize Before Continuing
+Use ranges and confidence labels for early estimates. Never turn a guessed value into a hard commitment.
 
-After each round, summarize answers, list changed assumptions, and identify remaining decision gaps. Do not proceed to detailed planning when the project goal, primary audience, or scope boundary is still unclear.
+## 5. Deliver A Completed Charter
 
-If the requester cannot answer a question, record an explicit assumption with an owner and a validation date instead of filling the gap yourself.
+Use [assets/charter-delivery-spec.md](assets/charter-delivery-spec.md) as the required output contract. Deliver every section with actual prose, decisions, and tables. A section may be marked **Not applicable** only with a one-sentence reason; never leave blanks, `TBD`, or placeholder rows.
 
-## Produce The Project Charter
+Include an evidence appendix only when research materially informed the recommendation. Keep confidential inputs anonymous and avoid exposing personal data or internal-only information.
 
-Use [assets/project-charter-template.md](assets/project-charter-template.md) as the output structure. Create a concise charter in the user's language and include:
+## 6. Validate Before Delivery
 
-- a one-sentence project statement;
-- measurable success criteria, clearly marked as confirmed or proposed;
-- in-scope and out-of-scope boundaries;
-- deliverables and milestone-level timeline;
-- stakeholder roles and decision rights;
-- dependencies, assumptions, and open decisions;
-- a risk register with an owner and mitigation for every material risk;
-- immediate next actions with owner and due date when known.
+Read [references/charter-standard.md](references/charter-standard.md) for the quality baseline and [references/research-protocol.md](references/research-protocol.md) before researching or citing public facts.
 
-Keep the main charter scannable. Place unresolved detail in the decision log rather than hiding it in prose.
+Verify that the final charter:
 
-## Handle Common Situations
-
-Read [references/interview-patterns.md](references/interview-patterns.md) when choosing questions for a creative campaign, product feature, operational workflow, or research initiative. Read [references/risk-and-metrics.md](references/risk-and-metrics.md) when defining risks, dependencies, baselines, and success measures.
-
-- **Only a vague idea is provided:** run Round 1 first; do not draft a delivery plan.
-- **A solution is prescribed but the goal is unclear:** ask what outcome the solution is intended to achieve, then validate alternatives.
-- **Stakeholders disagree:** represent each position neutrally, identify the decision owner, and record the decision required.
-- **A deadline is fixed:** work backward from the deadline, expose trade-offs, and label the minimum viable scope.
-- **A creative project is requested:** define the audience insight, message hierarchy, channels, deliverable formats, approval route, and usage rights.
-
-## Quality Check
-
-Before delivering, verify that the charter:
-
-1. Distinguishes confirmed facts, assumptions, and open decisions.
-2. Names a measurable outcome rather than only activities or outputs.
-3. Includes explicit exclusions to prevent scope drift.
-4. Assigns every material risk, dependency, and next action to an owner when one is known.
-5. Does not expose private, confidential, or personally identifying information unnecessarily.
+1. names the business problem and intended outcome, not just an activity;
+2. distinguishes evidence, recommendation, and assumption;
+3. makes scope exclusions and descoping order explicit;
+4. gives success measures a source, baseline status, target logic, owner, and review moment;
+5. includes material dependencies, risks, early warnings, mitigations, and owners;
+6. identifies a decision owner, approval gate, and immediate next action;
+7. uses links for external facts and makes no unsupported claim of certainty.

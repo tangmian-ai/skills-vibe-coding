@@ -15,7 +15,7 @@
 
 ### Project Discovery & Operations
 
-- [`project-charter-interviewer`](skills/project-charter-interviewer/) — 通过结构化访谈澄清目标、范围、风险、依赖和衡量指标，输出可评审的 Project Charter。
+- [`project-charter-interviewer`](skills/project-charter-interviewer/) — 先检索公开背景，再完成目标、范围、风险、依赖和衡量指标判断，输出带证据与行动建议的 Project Charter。
 
 ### Video & Content Systems
 

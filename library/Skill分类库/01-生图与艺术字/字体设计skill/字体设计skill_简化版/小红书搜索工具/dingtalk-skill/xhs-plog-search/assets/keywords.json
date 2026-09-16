@@ -1,0 +1,71 @@
+{
+  "_comment": "钉钉 xhs-plog-search 技能关键词清单。修改本文件后无需重启，下次执行 search.sh 自动生效。",
+  "max_results_per_query": 6,
+  "search_depth": "basic",
+  "topics": [
+    {
+      "name": "颜色+文字拼贴plog",
+      "queries": [
+        "小红书 颜色文字 拼贴plog 公式",
+        "文字plog ins拼贴 小红书 高赞",
+        "color block plog 小红书 模板"
+      ]
+    },
+    {
+      "name": "上下文字plog",
+      "queries": [
+        "小红书 上下文字 plog 公式",
+        "文字夹画面 plog 小红书",
+        "plog 文字排版 上下"
+      ]
+    },
+    {
+      "name": "变形文字小红书封面",
+      "queries": [
+        "小红书 变形文字封面",
+        "小红书 大字封面 变形字",
+        "节气 限定 文字封面 小红书"
+      ]
+    },
+    {
+      "name": "手写体plog",
+      "queries": [
+        "小红书 手写体 plog",
+        "手写文字 plog 模板",
+        "手账 plog 小红书"
+      ]
+    },
+    {
+      "name": "Color Weekly Plog",
+      "queries": [
+        "color weekly plog 小红书",
+        "一周一色 plog",
+        "weekly plog 同色调 小红书"
+      ]
+    },
+    {
+      "name": "摄影花鸟字",
+      "queries": [
+        "花鸟字 小红书 封面",
+        "单字 摄影 封面 小红书",
+        "节气 单字封面 小红书"
+      ]
+    },
+    {
+      "name": "美食探店霓虹字封面",
+      "queries": [
+        "美食探店 文字封面 小红书",
+        "霓虹字 美食 plog",
+        "餐厅打卡 文字封面 小红书"
+      ]
+    },
+    {
+      "name": "涂鸦手账风",
+      "queries": [
+        "小红书 涂鸦手账 plog",
+        "贴纸 plog 小红书",
+        "手账风 plog 教程"
+      ]
+    }
+  ]
+}

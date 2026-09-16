@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt 工具箱 — 格式转换 & 翻译</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    color: #1d1d1f;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #86868b;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  .mode-switch {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 28px;
+    background: #e5e5ea;
+    border-radius: 12px;
+    padding: 3px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: #636366;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .mode-btn.active {
+    background: #fff;
+    color: #1d1d1f;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+  }
+
+  .card-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #86868b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    border: 2px solid #e5e5ea;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.7;
+    font-family: "SF Mono", "Fira Code", "Menlo", monospace;
+    resize: vertical;
+    transition: border-color 0.2s;
+    color: #1d1d1f;
+    background: #fafafa;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #fff;
+  }
+
+  textarea::placeholder { color: #c7c7cc; }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.45);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-secondary {
+    background: #e5e5ea;
+    color: #1d1d1f;
+  }
+
+  .btn-secondary:hover { background: #d1d1d6; }
+
+  .btn-copy {
+    background: none;
+    border: 1.5px solid #d1d1d6;
+    color: #636366;
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover { border-color: #667eea; color: #667eea; }
+  .btn-copy.copied { border-color: #34c759; color: #34c759; }
+
+  .arrow { font-size: 20px; }
+
+  .params-section {
+    margin-top: 16px;
+    display: none;
+  }
+
+  .params-section.show { display: block; }
+
+  .params-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #86868b;
+    margin-bottom: 10px;
+  }
+
+  .param-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+
+  .param-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid #e5e5ea;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .param-row input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .param-row input::placeholder { color: #c7c7cc; }
+
+  .param-name { max-width: 140px; }
+
+  .param-remove {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #ffebee;
+    color: #ff3b30;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .param-remove:hover { background: #ffcdd2; }
+
+  .add-param {
+    margin-top: 10px;
+    padding: 8px 16px;
+    border: 1.5px dashed #d1d1d6;
+    background: transparent;
+    color: #667eea;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .add-param:hover { border-color: #667eea; background: #f5f3ff; }
+
+  .tip {
+    background: #f5f3ff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #636366;
+    margin-top: 20px;
+  }
+
+  .tip strong { color: #667eea; }
+
+  .highlight-arg {
+    background: #e8def8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", monospace;
+    font-size: 12px;
+  }
+
+  .preview-box {
+    background: #fafafa;
+    border: 2px solid #e5e5ea;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 60px;
+    word-break: break-all;
+  }
+
+  .preview-box .arg-highlight {
+    background: linear-gradient(135deg, #e8def8, #d0bcff);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: #4a2d8a;
+  }
+
+  .status-msg {
+    text-align: center;
+    font-size: 13px;
+    color: #86868b;
+    margin-top: 8px;
+    min-height: 20px;
+  }
+
+  .status-msg.error { color: #ff3b30; }
+  .status-msg.success { color: #34c759; }
+
+  .translate-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .translate-options label {
+    font-size: 13px;
+    color: #636366;
+    font-weight: 500;
+  }
+
+  .translate-options select {
+    padding: 8px 12px;
+    border: 1.5px solid #e5e5ea;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1d1d1f;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .translate-options select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .toggle-label {
+    font-size: 13px;
+    color: #636366;
+  }
+
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #e5e5ea;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.25s;
+    border: none;
+    padding: 0;
+  }
+
+  .toggle.on { background: #667eea; }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .toggle.on::after { transform: translateX(20px); }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .container { padding: 20px 12px; }
+    h1 { font-size: 22px; }
+    .param-row { flex-wrap: wrap; }
+    .param-name { max-width: 100%; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .btn { justify-content: center; }
+    .mode-btn { font-size: 12px; padding: 10px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Prompt 工具箱</h1>
+  <p class="subtitle">格式转换 · 翻译中文 · JSON 结构解析 · 支持参数模板</p>
+
+  <div class="mode-switch">
+    <button class="mode-btn active" onclick="switchMode('toText')" id="modeToText">JSON → 纯文本</button>
+    <button class="mode-btn" onclick="switchMode('toJson')" id="modeToJson">纯文本 → JSON</button>
+    <button class="mode-btn" onclick="switchMode('translate')" id="modeTranslate">翻译为中文</button>
+    <button class="mode-btn" onclick="switchMode('mdToText')" id="modeMdToText">MD → 纯文本</button>
+    <button class="mode-btn" onclick="switchMode('jsonStruct')" id="modeJsonStruct">JSON结构 → 文本</button>
+  </div>
+
+  <!-- ========== 模式1: JSON → 纯文本 ========== -->
+  <div id="panelToText">
+    <div class="card">
+      <div class="card-label">
+        <span>输入（含 JSON 参数格式）</span>
+        <button class="btn-copy" onclick="pasteToInput('inputJson')">粘贴</button>
+      </div>
+      <textarea id="inputJson" placeholder='粘贴含 {argument name="..." default="..."} 格式的文本...'></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll('toText')">清空</button>
+      <button class="btn btn-primary" onclick="convertToText()">
+        <span class="arrow">↓</span> 转为纯文本
+      </button>
+      <button class="btn btn-secondary" onclick="loadExample()">加载示例</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <span>输出（纯文本）</span>
+        <button class="btn-copy" onclick="copyOutput('outputText')" id="copyBtn1">复制</button>
+      </div>
+      <textarea id="outputText" readonly placeholder="转换结果将显示在这里..."></textarea>
+    </div>
+  </div>
+
+  <!-- ========== 模式2: 纯文本 → JSON ========== -->
+  <div id="panelToJson" style="display:none;">
+    <div class="card">
+      <div class="card-label">
+        <span>输入（纯文本）</span>
+        <button class="btn-copy" onclick="pasteToInput('inputPlain')">粘贴</button>
+      </div>
+      <textarea id="inputPlain" placeholder="粘贴需要添加参数标记的纯文本..."></textarea>
+
+      <div class="params-section show" id="paramsSection">
+        <div class="params-title">定义可替换参数（在原文中选取要替换的片段）</div>
+        <div id="paramsList">
+          <div class="param-row">
+            <input type="text" class="param-name" placeholder="参数名（如：人物描述）" />
+            <input type="text" class="param-value" placeholder="对应原文片段（如：年轻的白人女性）" />
+            <button class="param-remove" onclick="removeParam(this)">×</button>
+          </div>
+        </div>
+        <button class="add-param" onclick="addParam()">+ 添加参数</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll('toJson')">清空</button>
+      <button class="btn btn-primary" onclick="convertToJson()">
+        <span class="arrow">↓</span> 转为 JSON 参数格式
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <span>输出（JSON 参数格式）</span>
+        <button class="btn-copy" onclick="copyOutput('outputJson')" id="copyBtn2">复制</button>
+      </div>
+      <textarea id="outputJson" readonly placeholder="转换结果将显示在这里..."></textarea>
+      <div id="previewArea" style="margin-top: 14px; display: none;">
+        <div class="params-title">预览（参数高亮显示）</div>
+        <div class="preview-box" id="previewBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 模式3: 翻译为中文 ========== -->
+  <div id="panelTranslate" style="display:none;">
+    <div class="card">
+      <div class="card-label">
+        <span>输入（任意语言）</span>
+        <button class="btn-copy" onclick="pasteToInput('inputTranslate')">粘贴</button>
+      </div>
+      <textarea id="inputTranslate" placeholder="粘贴需要翻译的文本，支持英语、日语、韩语、法语等任意语言...&#10;&#10;含 {argument name=&quot;...&quot; default=&quot;...&quot;} 格式的文本也能正确处理，只翻译文本内容，保留参数结构。"></textarea>
+      <div class="translate-options">
+        <label>源语言：</label>
+        <select id="sourceLang">
+          <option value="auto" selected>自动检测</option>
+          <option value="en">English 英语</option>
+          <option value="ja">日本語 日语</option>
+          <option value="ko">한국어 韩语</option>
+          <option value="fr">Français 法语</option>
+          <option value="de">Deutsch 德语</option>
+          <option value="es">Español 西班牙语</option>
+          <option value="ru">Русский 俄语</option>
+          <option value="pt">Português 葡萄牙语</option>
+          <option value="it">Italiano 意大利语</option>
+          <option value="ar">العربية 阿拉伯语</option>
+          <option value="th">ไทย 泰语</option>
+          <option value="vi">Tiếng Việt 越南语</option>
+        </select>
+        <div class="toggle-row">
+          <span class="toggle-label">保留 JSON 参数结构</span>
+          <button class="toggle on" id="keepJsonToggle" onclick="toggleKeepJson()"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll('translate')">清空</button>
+      <button class="btn btn-primary" onclick="translateToChinese()" id="translateBtn">
+        <span class="arrow">↓</span> 翻译为中文
+      </button>
+      <button class="btn btn-secondary" onclick="loadTranslateExample()">加载示例</button>
+    </div>
+
+    <div class="status-msg" id="translateStatus"></div>
+
+    <div class="card">
+      <div class="card-label">
+        <span>输出（中文翻译）</span>
+        <button class="btn-copy" onclick="copyOutput('outputTranslate')" id="copyBtn3">复制</button>
+      </div>
+      <textarea id="outputTranslate" readonly placeholder="翻译结果将显示在这里..."></textarea>
+    </div>
+  </div>
+
+  <!-- ========== 模式4: Markdown → 纯文本 ========== -->
+  <div id="panelMdToText" style="display:none;">
+    <div class="card">
+      <div class="card-label">
+        <span>输入（Markdown 格式）</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-copy" onclick="loadMdExample()">加载示例</button>
+          <button class="btn-copy" onclick="pasteToInput('inputMd')">粘贴</button>
+        </div>
+      </div>
+      <textarea id="inputMd" placeholder="粘贴 Markdown 格式的文本...&#10;&#10;支持标题 #、加粗 **、斜体 *、链接 []()、图片 ![]()、&#10;代码块 ```、表格 |---|、列表 - 等所有常见 Markdown 语法。"></textarea>
+      <div class="translate-options" style="margin-top:12px;">
+        <div class="toggle-row" style="margin-left:0;">
+          <span class="toggle-label">保留换行结构</span>
+          <button class="toggle on" id="keepLineBreaksToggle" onclick="toggleKeepLineBreaks()"></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">保留列表序号</span>
+          <button class="toggle on" id="keepListNumToggle" onclick="toggleKeepListNum()"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll('mdToText')">清空</button>
+      <button class="btn btn-primary" onclick="convertMdToText()">
+        <span class="arrow">↓</span> 转为纯文本
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">
+        <span>输出（纯文本）</span>
+        <button class="btn-copy" onclick="copyOutput('outputMd')" id="copyBtn4">复制</button>
+      </div>
+      <textarea id="outputMd" readonly placeholder="转换结果将显示在这里..."></textarea>
+    </div>
+
+    <div class="card" id="mdPreviewCard" style="display:none;">
+      <div class="card-label">
+        <span>Markdown 渲染预览</span>
+      </div>
+      <div class="preview-box" id="mdPreviewBox" style="word-break:break-word;"></div>
+    </div>
+  </div>
+
+  <!-- ========== 模式5: JSON结构 → 纯文本 ========== -->
+  <div id="panelJsonStruct" style="display:none;">
+    <div class="card">
+      <div class="card-label">
+        <span>输入（JSON 结构化 Prompt）</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-copy" onclick="loadJsonStructExample()">加载示例</button>
+          <button class="btn-copy" onclick="pasteToInput('inputJsonStruct')">粘贴</button>
+        </div>
+      </div>
+      <textarea id="inputJsonStruct" style="min-height:240px;" placeholder='粘贴 JSON 结构的 Prompt，例如：&#10;{&#10;  "type": "2x2 grid",&#10;  "subject": "{argument name=&quot;主题&quot; default=&quot;年轻男性&quot;}",&#10;  "panels": [...]&#10;}&#10;&#10;支持自动修复中文标点（：→ :  ，→ ,）&#10;支持提取 {argument} / {参数名称} 中的默认值'></textarea>
+      <div class="translate-options" style="margin-top:12px;">
+        <div class="toggle-row" style="margin-left:0;">
+          <span class="toggle-label">提取参数默认值</span>
+          <button class="toggle on" id="extractDefaultToggle" onclick="toggleExtractDefault()"></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">输出英文版</span>
+          <button class="toggle" id="outputEnToggle" onclick="toggleOutputEn()"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="clearAll('jsonStruct')">清空</button>
+      <button class="btn btn-primary" onclick="convertJsonStruct()">
+        <span class="arrow">↓</span> 转为纯文本
+      </button>
+    </div>
+
+    <div class="status-msg" id="jsonStructStatus"></div>
+
+    <div class="card">
+      <div class="card-label">
+        <span>输出（纯文本 Prompt）</span>
+        <button class="btn-copy" onclick="copyOutput('outputJsonStruct')" id="copyBtn5">复制</button>
+      </div>
+      <textarea id="outputJsonStruct" readonly style="min-height:200px;" placeholder="转换结果将显示在这里..."></textarea>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>使用提示：</strong><br>
+    • <b>JSON → 纯文本</b>：提取 <span class="highlight-arg">{argument default="值"}</span> 中的默认值，生成纯文本<br>
+    • <b>纯文本 → JSON</b>：标记可变部分，自动生成参数模板<br>
+    • <b>翻译为中文</b>：支持任意语言翻译为中文，开启「保留 JSON 参数结构」后只翻译文本和 default 值，name 值也一并翻译<br>
+    • <b>MD → 纯文本</b>：去除 Markdown 所有语法标记（标题#、加粗**、链接、代码块、表格等），输出干净文本<br>
+    • <b>JSON结构 → 文本</b>：将完整的 JSON 结构化 Prompt（含嵌套对象、数组、面板）摊平为可直接使用的自然语言描述<br>
+    • 翻译使用 Google Translate 接口，需要网络连接
+  </div>
+</div>
+
+<script>
+let keepJsonStructure = true;
+let keepLineBreaks = true;
+let keepListNum = true;
+
+let extractDefault = true;
+let outputEn = false;
+
+const allModes = ['toText', 'toJson', 'translate', 'mdToText', 'jsonStruct'];
+const panelMap = {
+  toText: 'panelToText',
+  toJson: 'panelToJson',
+  translate: 'panelTranslate',
+  mdToText: 'panelMdToText',
+  jsonStruct: 'panelJsonStruct'
+};
+const btnMap = {
+  toText: 'modeToText',
+  toJson: 'modeToJson',
+  translate: 'modeTranslate',
+  mdToText: 'modeMdToText',
+  jsonStruct: 'modeJsonStruct'
+};
+
+function switchMode(mode) {
+  allModes.forEach(m => {
+    document.getElementById(panelMap[m]).style.display = m === mode ? 'block' : 'none';
+    document.getElementById(btnMap[m]).classList.toggle('active', m === mode);
+  });
+}
+
+function toggleKeepJson() {
+  keepJsonStructure = !keepJsonStructure;
+  document.getElementById('keepJsonToggle').classList.toggle('on', keepJsonStructure);
+}
+
+/* ===== 模式1: JSON → 纯文本 ===== */
+
+function convertToText() {
+  const input = document.getElementById('inputJson').value;
+  if (!input.trim()) return;
+  const pattern = /\{argument\s+name="[^"]*"\s+default="([^"]*)"\}/g;
+  const result = input.replace(pattern, '$1');
+  document.getElementById('outputText').value = result;
+}
+
+/* ===== 模式2: 纯文本 → JSON ===== */
+
+function convertToJson() {
+  let text = document.getElementById('inputPlain').value;
+  if (!text.trim()) return;
+
+  const rows = document.querySelectorAll('#paramsList .param-row');
+  const params = [];
+
+  rows.forEach(row => {
+    const name = row.querySelector('.param-name').value.trim();
+    const value = row.querySelector('.param-value').value.trim();
+    if (name && value) params.push({ name, value });
+  });
+
+  let result = text;
+  let preview = text;
+
+  params.forEach(p => {
+    const tag = `{argument name="${p.name}" default="${p.value}"}`;
+    result = result.split(p.value).join(tag);
+    preview = preview.split(p.value).join(`<span class="arg-highlight">${p.value}【${p.name}】</span>`);
+  });
+
+  document.getElementById('outputJson').value = result;
+
+  if (params.length > 0) {
+    document.getElementById('previewArea').style.display = 'block';
+    document.getElementById('previewBox').innerHTML = preview;
+  }
+}
+
+/* ===== 模式3: 翻译为中文 ===== */
+
+async function googleTranslate(text, sourceLang) {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=zh&dt=t&q=${encodeURIComponent(text)}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const data = await resp.json();
+  let result = '';
+  if (data && data[0]) {
+    for (const seg of data[0]) {
+      if (seg[0]) result += seg[0];
+    }
+  }
+  return result;
+}
+
+async function translateToChinese() {
+  const input = document.getElementById('inputTranslate').value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById('translateBtn');
+  const status = document.getElementById('translateStatus');
+  const sourceLang = document.getElementById('sourceLang').value;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 翻译中...';
+  status.textContent = '';
+  status.className = 'status-msg';
+
+  try {
+    let result;
+
+    if (keepJsonStructure && /\{argument\s+name=/.test(input)) {
+      result = await translateWithJsonPreserve(input, sourceLang);
+    } else {
+      result = await googleTranslate(input, sourceLang);
+    }
+
+    document.getElementById('outputTranslate').value = result;
+    status.textContent = '翻译完成';
+    status.className = 'status-msg success';
+  } catch (err) {
+    status.textContent = '翻译失败: ' + err.message + '（请检查网络连接）';
+    status.className = 'status-msg error';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="arrow">↓</span> 翻译为中文';
+  }
+}
+
+async function translateWithJsonPreserve(input, sourceLang) {
+  const argPattern = /\{argument\s+name="([^"]*)"\s+default="([^"]*)"\}/g;
+
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = argPattern.exec(input)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: input.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: 'arg', name: match[1], defaultVal: match[2], raw: match[0] });
+    lastIndex = argPattern.lastIndex;
+  }
+
+  if (lastIndex < input.length) {
+    parts.push({ type: 'text', value: input.slice(lastIndex) });
+  }
+
+  const textsToTranslate = [];
+  const indexMap = [];
+
+  parts.forEach((p, i) => {
+    if (p.type === 'text' && p.value.trim()) {
+      indexMap.push({ partIndex: i, field: 'value' });
+      textsToTranslate.push(p.value);
+    } else if (p.type === 'arg') {
+      indexMap.push({ partIndex: i, field: 'name' });
+      textsToTranslate.push(p.name);
+      indexMap.push({ partIndex: i, field: 'defaultVal' });
+      textsToTranslate.push(p.defaultVal);
+    }
+  });
+
+  const separator = '\n\u2022\u2022\u2022\n';
+  const combined = textsToTranslate.join(separator);
+
+  const translatedCombined = await googleTranslate(combined, sourceLang);
+
+  const translatedParts = translatedCombined.split(/\n?\u2022\u2022\u2022\n?/);
+
+  indexMap.forEach((map, i) => {
+    const translated = (translatedParts[i] || '').trim();
+    const part = parts[map.partIndex];
+    if (map.field === 'value') {
+      part.value = translated;
+    } else if (map.field === 'name') {
+      part.translatedName = translated;
+    } else if (map.field === 'defaultVal') {
+      part.translatedDefault = translated;
+    }
+  });
+
+  let result = '';
+  parts.forEach(p => {
+    if (p.type === 'text') {
+      result += p.value;
+    } else {
+      const name = p.translatedName || p.name;
+      const def = p.translatedDefault || p.defaultVal;
+      result += `{argument name="${name}" default="${def}"}`;
+    }
+  });
+
+  return result;
+}
+
+/* ===== 模式4: Markdown → 纯文本 ===== */
+
+function toggleKeepLineBreaks() {
+  keepLineBreaks = !keepLineBreaks;
+  document.getElementById('keepLineBreaksToggle').classList.toggle('on', keepLineBreaks);
+}
+
+function toggleKeepListNum() {
+  keepListNum = !keepListNum;
+  document.getElementById('keepListNumToggle').classList.toggle('on', keepListNum);
+}
+
+function convertMdToText() {
+  const input = document.getElementById('inputMd').value;
+  if (!input.trim()) return;
+
+  let text = input;
+
+  // 代码块 → 保留内容
+  text = text.replace(/```[\s\S]*?```/g, function(m) {
+    return m.replace(/```[^\n]*\n?/g, '').replace(/\n?```$/g, '');
+  });
+
+  // 行内代码
+  text = text.replace(/`([^`]+)`/g, '$1');
+
+  // 图片 ![alt](url) → alt
+  text = text.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1');
+
+  // 链接 [text](url) → text
+  text = text.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+
+  // 引用链接 [text][ref] → text
+  text = text.replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1');
+
+  // 引用定义行 [ref]: url → 删除
+  text = text.replace(/^\s*\[[^\]]*\]:\s*.*$/gm, '');
+
+  // HTML 标签
+  text = text.replace(/<[^>]+>/g, '');
+
+  // 标题 # → 去掉 #
+  text = text.replace(/^#{1,6}\s+(.*)$/gm, '$1');
+
+  // 加粗+斜体
+  text = text.replace(/\*\*\*(.+?)\*\*\*/g, '$1');
+  text = text.replace(/___(.+?)___/g, '$1');
+
+  // 加粗
+  text = text.replace(/\*\*(.+?)\*\*/g, '$1');
+  text = text.replace(/__(.+?)__/g, '$1');
+
+  // 斜体
+  text = text.replace(/\*(.+?)\*/g, '$1');
+  text = text.replace(/_(.+?)_/g, '$1');
+
+  // 删除线
+  text = text.replace(/~~(.+?)~~/g, '$1');
+
+  // 水平线
+  text = text.replace(/^[\s]*([-*_]){3,}\s*$/gm, '');
+
+  // 引用块 >
+  text = text.replace(/^>\s?/gm, '');
+
+  // 表格处理
+  text = text.replace(/^\|?[-:|\s]+\|[-:|\s]+\|?$/gm, '');
+  text = text.replace(/^\|(.+)\|$/gm, function(match, content) {
+    return content.split('|').map(c => c.trim()).join('  ');
+  });
+
+  // 无序列表
+  text = text.replace(/^(\s*)[-*+]\s+/gm, function(match, indent) {
+    if (keepListNum) {
+      return indent + '• ';
+    }
+    return indent;
+  });
+
+  // 有序列表
+  text = text.replace(/^(\s*)\d+\.\s+/gm, function(match, indent) {
+    if (keepListNum) return match;
+    return indent;
+  });
+
+  // 任务列表
+  text = text.replace(/\[x\]/gi, '[done]');
+  text = text.replace(/\[ \]/g, '[todo]');
+
+  // 清理多余空行
+  if (keepLineBreaks) {
+    text = text.replace(/\n{3,}/g, '\n\n');
+  } else {
+    text = text.replace(/\n{2,}/g, '\n');
+  }
+
+  text = text.trim();
+
+  document.getElementById('outputMd').value = text;
+}
+
+function loadMdExample() {
+  document.getElementById('inputMd').value = `# 复古胶片人像 Prompt 指南
+
+## 概述
+
+这是一套用于生成 **复古35mm胶片风格** 人像照片的 Prompt 模板。
+
+### 关键要素
+
+1. **胶片质感**：heavy film grain, slightly muted colors
+2. **灯光效果**：harsh direct camera flash
+3. **整体氛围**：nostalgic, candid snapshot aesthetic
+
+## 使用方法
+
+- 修改 \`subject description\` 来改变人物
+- 修改 \`setting\` 来改变背景场景
+- 所有参数都支持 *自定义替换*
+
+### 示例代码
+
+\`\`\`json
+{
+  "subject": "young woman",
+  "style": "vintage 35mm film"
+}
+\`\`\`
+
+## 参考链接
+
+更多技巧参见 [Prompt Engineering Guide](https://example.com) 和 [Film Photography Tips](https://example.com/film)。
+
+---
+
+> 提示：建议配合 **高分辨率** 输出使用，效果更佳。
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| subject | 人物描述 | 年轻女性 |
+| hair | 发型 | 深色长卷发 |
+| setting | 场景 | 昏暗房间 |`;
+  convertMdToText();
+}
+
+/* ===== 模式5: JSON 结构 → 纯文本 ===== */
+
+function toggleExtractDefault() {
+  extractDefault = !extractDefault;
+  document.getElementById('extractDefaultToggle').classList.toggle('on', extractDefault);
+}
+
+function toggleOutputEn() {
+  outputEn = !outputEn;
+  document.getElementById('outputEnToggle').classList.toggle('on', outputEn);
+}
+
+function fixChinesePunctuation(str) {
+  let s = str;
+  // 中文弯引号 → 英文直引号
+  s = s.replace(/[\u201c\u201d\u2018\u2019]/g, '"');
+  // 中文冒号/逗号/分号/括号
+  s = s.replace(/：/g, ':');
+  s = s.replace(/，/g, ',');
+  s = s.replace(/；/g, ';');
+  s = s.replace(/（/g, '(');
+  s = s.replace(/）/g, ')');
+  s = s.replace(/【/g, '[');
+  s = s.replace(/】/g, ']');
+  // 顿号作数组分隔：""、"" → "", ""
+  s = s.replace(/"、"/g, '", "');
+  // 修复连续双引号 "" → " (JSON值边界)
+  s = s.replace(/""/g, '"');
+  return s;
+}
+
+function stripArgTags(str) {
+  if (!extractDefault) return str;
+  return str
+    .replace(/\{argument\s+name="[^"]*"\s+default="([^"]*)"\}/g, '$1')
+    .replace(/\{参数名称\s*=\s*"[^"]*"\s*默认\s*=\s*"([^"]*)"\}/g, '$1')
+    .replace(/\{参数名称\s*=\s*\\?"[^"]*\\?"\s*默认\s*=\s*\\?"([^"]*)\\?"\}/g, '$1');
+}
+
+function convertJsonStruct() {
+  const raw = document.getElementById('inputJsonStruct').value.trim();
+  const status = document.getElementById('jsonStructStatus');
+  status.textContent = '';
+  status.className = 'status-msg';
+
+  if (!raw) return;
+
+  let obj;
+  try {
+    const fixed = fixChinesePunctuation(raw);
+    obj = JSON.parse(fixed);
+  } catch (e) {
+    status.textContent = 'JSON 解析失败: ' + e.message + '（已尝试自动修复中文标点）';
+    status.className = 'status-msg error';
+    return;
+  }
+
+  try {
+    const text = flattenJsonPrompt(obj);
+    document.getElementById('outputJsonStruct').value = text;
+    status.textContent = '转换成功';
+    status.className = 'status-msg success';
+  } catch (e) {
+    status.textContent = '转换出错: ' + e.message;
+    status.className = 'status-msg error';
+  }
+}
+
+function flattenJsonPrompt(obj) {
+  const lines = [];
+  flattenNode(obj, lines, 0);
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function flattenNode(node, lines, depth) {
+  const sep = outputEn ? ': ' : '：';
+  const indent = '  '.repeat(depth);
+
+  if (typeof node === 'string' || typeof node === 'number' || typeof node === 'boolean') {
+    return s(String(node));
+  }
+
+  if (Array.isArray(node)) {
+    const allSimple = node.every(item => typeof item === 'string' || typeof item === 'number');
+    if (allSimple) {
+      return node.map(item => s(String(item))).join(', ');
+    }
+    node.forEach((item, idx) => {
+      if (typeof item === 'string' || typeof item === 'number') {
+        lines.push(indent + '• ' + s(String(item)));
+      } else if (typeof item === 'object' && item !== null) {
+        if (depth > 0) lines.push('');
+        flattenNode(item, lines, depth);
+      }
+    });
+    return null;
+  }
+
+  if (typeof node === 'object' && node !== null) {
+    const keys = Object.keys(node);
+    keys.forEach(key => {
+      const val = node[key];
+
+      if (val === null || val === undefined) return;
+
+      if (typeof val === 'string') {
+        lines.push(indent + s(key) + sep + s(val));
+      } else if (typeof val === 'number' || typeof val === 'boolean') {
+        lines.push(indent + s(key) + sep + String(val));
+      } else if (Array.isArray(val)) {
+        const allSimple = val.every(v => typeof v === 'string' || typeof v === 'number');
+        if (allSimple && val.length <= 6) {
+          lines.push(indent + s(key) + sep + val.map(v => s(String(v))).join(', '));
+        } else if (allSimple) {
+          lines.push(indent + s(key) + sep);
+          val.forEach(v => {
+            lines.push(indent + '  • ' + s(String(v)));
+          });
+        } else {
+          lines.push('');
+          lines.push(indent + '【' + s(key) + '】');
+          val.forEach((item, idx) => {
+            if (typeof item === 'object' && item !== null) {
+              flattenNode(item, lines, depth + 1);
+              if (idx < val.length - 1) lines.push('');
+            } else {
+              lines.push(indent + '  • ' + s(String(item)));
+            }
+          });
+        }
+      } else if (typeof val === 'object') {
+        lines.push('');
+        lines.push(indent + '【' + s(key) + '】');
+        flattenNode(val, lines, depth + 1);
+      }
+    });
+  }
+
+  return null;
+}
+
+function s(str) {
+  return stripArgTags(String(str)).trim();
+}
+
+function loadJsonStructExample() {
+  document.getElementById('inputJsonStruct').value = `{
+  "type": "移动直播电商界面样机",
+  "主题": {
+    "description": "年轻的亚洲女性，深色长发，穿着浅色花卉睡衣套装",
+    "background": "舒适的房间，温暖的灯光"
+  },
+  "ui_layout": {
+    "顶部栏": {
+      "时间": "20:34",
+      "主机信息": {
+        "name": "{argument name=\\"主机名\\" default=\\"Rene Pyjamas\\"}",
+        "stats": "12.8K 赞",
+        "按钮": "关注"
+      },
+      "观众信息": {
+        "total_viewers": "12K"
+      }
+    },
+    "浮动标签": {
+      "labels": ["卖家排名第三", "热门"]
+    },
+    "营销文本覆盖": {
+      "position": "中右",
+      "行": [
+        "{argument name=\\"主标题\\" default=\\"新睡衣\\"}",
+        "{argument name=\\"副标题\\" default=\\"闪购...\\"}",
+        "透气",
+        "柔软丝滑",
+        "不起球、不褪色"
+      ]
+    },
+    "聊天日志": {
+      "消息": [
+        "小***: 好看，多少钱",
+        "小***: 拍了，期待发货",
+        "用***: 身高165，体重120斤，穿多大码？",
+        "晴***: 已拍，坐等收货！"
+      ]
+    },
+    "产品卡": {
+      "title": "{argument name=\\"产品标题\\" default=\\"【Rene 睡衣】2026 春夏\\"}",
+      "tags": ["7天退货政策", "运费险"],
+      "price": "闪购 {argument name=\\"产品价格\\" default=\\"$8.9\\"}",
+      "action_button": "抢购"
+    },
+    "底部栏": {
+      "icons": ["笑脸", "购物车", "心/礼物", "礼品盒", "更多"]
+    }
+  }
+}`;
+  convertJsonStruct();
+}
+
+/* ===== 通用功能 ===== */
+
+function addParam() {
+  const list = document.getElementById('paramsList');
+  const row = document.createElement('div');
+  row.className = 'param-row';
+  row.innerHTML = `
+    <input type="text" class="param-name" placeholder="参数名（如：场景）" />
+    <input type="text" class="param-value" placeholder="对应原文片段（如：昏暗的房间）" />
+    <button class="param-remove" onclick="removeParam(this)">×</button>
+  `;
+  list.appendChild(row);
+}
+
+function removeParam(btn) {
+  const list = document.getElementById('paramsList');
+  if (list.children.length > 1) {
+    btn.parentElement.remove();
+  } else {
+    btn.parentElement.querySelectorAll('input').forEach(i => i.value = '');
+  }
+}
+
+function clearAll(mode) {
+  if (mode === 'toText') {
+    document.getElementById('inputJson').value = '';
+    document.getElementById('outputText').value = '';
+  } else if (mode === 'toJson') {
+    document.getElementById('inputPlain').value = '';
+    document.getElementById('outputJson').value = '';
+    document.getElementById('previewArea').style.display = 'none';
+    const list = document.getElementById('paramsList');
+    list.innerHTML = `
+      <div class="param-row">
+        <input type="text" class="param-name" placeholder="参数名（如：人物描述）" />
+        <input type="text" class="param-value" placeholder="对应原文片段（如：年轻的白人女性）" />
+        <button class="param-remove" onclick="removeParam(this)">×</button>
+      </div>
+    `;
+  } else if (mode === 'translate') {
+    document.getElementById('inputTranslate').value = '';
+    document.getElementById('outputTranslate').value = '';
+    document.getElementById('translateStatus').textContent = '';
+  } else if (mode === 'mdToText') {
+    document.getElementById('inputMd').value = '';
+    document.getElementById('outputMd').value = '';
+    document.getElementById('mdPreviewCard').style.display = 'none';
+  } else if (mode === 'jsonStruct') {
+    document.getElementById('inputJsonStruct').value = '';
+    document.getElementById('outputJsonStruct').value = '';
+    document.getElementById('jsonStructStatus').textContent = '';
+  }
+}
+
+function loadExample() {
+  document.getElementById('inputJson').value =
+    '一张复古35mm胶片风格照片，拍摄的是一位{argument name="人物描述" default="年轻的白人女性"}，{argument name="发型" default="深色长卷发，带有轻薄的刘海"}。她穿着{argument name="服装" default="白色罗纹背心搭配一件宽松的米色针织开衫，开衫自然滑落至一侧肩膀"}，佩戴一条精致的银色项链。她化着柔和的妆容，带有粉色腮红和水润唇彩，微微张开嘴唇，直视镜头。灯光为强烈的正面闪光灯直射，营造出一种随性的、业余抓拍的美感。背景是{argument name="场景" default="灯光昏暗、略显凌乱的房间，桌上堆放着衣物，旁边有一个木质搁架"}。画面具有浓重的胶片颗粒感、略微偏灰的色调，以及怀旧的、高度写实的摄影质感。';
+  convertToText();
+}
+
+function loadTranslateExample() {
+  document.getElementById('inputTranslate').value =
+    'A vintage 35mm film photograph of a {argument name="subject description" default="young Caucasian woman"} with {argument name="hair style" default="long dark wavy hair and wispy bangs"}. She is wearing a {argument name="clothing" default="white ribbed tank top and a loose beige knit cardigan slipping off one shoulder"}, along with a delicate silver necklace. She has soft makeup with pink blush and glossy lips, looking directly at the camera with slightly parted lips. The lighting is harsh direct camera flash, creating a candid, amateur snapshot aesthetic. The background is a {argument name="setting" default="dimly lit, slightly messy room with clothes on a table and a wooden shelf"}. The image features heavy film grain, slightly muted colors, and a nostalgic, highly realistic photographic texture.';
+}
+
+async function copyOutput(id) {
+  const text = document.getElementById(id).value;
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    let btn;
+    if (id === 'outputText') btn = document.getElementById('copyBtn1');
+    else if (id === 'outputJson') btn = document.getElementById('copyBtn2');
+    else if (id === 'outputTranslate') btn = document.getElementById('copyBtn3');
+    else if (id === 'outputMd') btn = document.getElementById('copyBtn4');
+    else btn = document.getElementById('copyBtn5');
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1500);
+  } catch {
+    const ta = document.getElementById(id);
+    ta.select();
+    document.execCommand('copy');
+  }
+}
+
+async function pasteToInput(id) {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById(id).value = text;
+  } catch {}
+}
+
+document.getElementById('inputJson').addEventListener('input', function() {
+  convertToText();
+});
+
+document.getElementById('inputMd').addEventListener('input', function() {
+  convertMdToText();
+});
+</script>
+</body>
+</html>

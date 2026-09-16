@@ -7,3 +7,8 @@ node_modules/
 tmp/
 coverage/
 dist/
+
+# Local editor history and sync state are not distributable skill assets.
+**/.specstory/
+*.baiduyun.uploading.cfg
+.redskill-installed

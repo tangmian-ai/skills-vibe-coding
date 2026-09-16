@@ -4,6 +4,18 @@
 
 - [`video-camera-movement`](skills/video-camera-movement/) — 视频运镜提示词结构化 skill。
 
+## Skill Library
+
+[`library/Skill分类库/`](library/Skill分类库/) 收录可复用的创意生产资料，并按静态视觉、视频、自动化工作流、商业投放和 Agent 规范归档。
+
+- `01-生图与艺术字`：生图方法、艺术字/字体设计、参考图控制与 ComfyUI 海报工作流。
+- `02-视频与动态视觉`：视频反推、镜头语言和视频 Prompt 工作台资料。
+- `03-内容生产与自动化工作流`：内容生产 SOP、热点评估和 Dify 工作流。
+- `04-品牌电商与投放视觉`：品牌、电商、社媒、直播、印刷和 KV 延展技能。
+- `05-通用Skill与Agent规范`：路由、合规、设计助手与 Skill 模板。
+
+资料库中的文件均为可编辑的原始或整理副本。涉及人像、品牌、平台截图和商业素材时，使用前需完成相应的授权与合规复核。
+
 ## Vibe Coding Projects
 
 ### [`video-prompt-workbench`](projects/video-prompt-workbench/)

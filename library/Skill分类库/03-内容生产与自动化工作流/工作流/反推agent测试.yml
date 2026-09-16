@@ -1,0 +1,2056 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 反推agent测试
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: agent
+      id: 1781686012566-source-1781686055779-target
+      source: '1781686012566'
+      sourceHandle: source
+      target: '1781686055779'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: agent
+        targetType: answer
+      id: 1781686055779-source-answer-target
+      source: '1781686055779'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: 系统指令prompt
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: paragraph
+          variable: system_prompt
+        - default: ''
+          hint: ''
+          label: 用户prompt
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: paragraph
+          variable: prompt
+      height: 135
+      id: '1781686012566'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        agent_parameters:
+          instruction:
+            type: constant
+            value: '{{#1781686012566.system_prompt#}}'
+          maximum_iterations:
+            type: constant
+            value: 10
+          model:
+            type: constant
+            value:
+              completion_params: {}
+              mode: chat
+              model: Doubao-Seed-2.0-pro
+              model_type: llm
+              provider: langgenius/volcengine_maas/volcengine_maas
+              type: model-selector
+          query:
+            type: constant
+            value: '{{#1781686012566.prompt#}}'
+          tools:
+            type: constant
+            value:
+            - enabled: true
+              extra:
+                description: 根据多图参考/视频参考/音频参考根据多图参考/视频参考/音频参考和提示词，生成一段视频和提示词，生成一段视频
+              parameters: {}
+              provider_name: 16daa46f-e984-4114-b9c6-d6165b0ab813
+              provider_show_name: 多图参考视频套件【生产测试用】
+              schemas:
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                label:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                llm_description: 视频prompt
+                max: null
+                min: null
+                name: video_prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: klingv3o
+                form: form
+                human_description:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                label:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                llm_description: 视频模型
+                max: null
+                min: null
+                name: video_model
+                options:
+                - icon: null
+                  label:
+                    en_US: klingv3o
+                    ja_JP: klingv3o
+                    pt_BR: klingv3o
+                    zh_Hans: klingv3o
+                  value: klingv3o
+                - icon: null
+                  label:
+                    en_US: klingvo1
+                    ja_JP: klingvo1
+                    pt_BR: klingvo1
+                    zh_Hans: klingvo1
+                  value: klingvo1
+                - icon: null
+                  label:
+                    en_US: seedance2.0
+                    ja_JP: seedance2.0
+                    pt_BR: seedance2.0
+                    zh_Hans: seedance2.0
+                  value: seedance2.0
+                - icon: null
+                  label:
+                    en_US: seedance2.0fast
+                    ja_JP: seedance2.0fast
+                    pt_BR: seedance2.0fast
+                    zh_Hans: seedance2.0fast
+                  value: seedance2.0fast
+                - icon: null
+                  label:
+                    en_US: happyhorse
+                    ja_JP: happyhorse
+                    pt_BR: happyhorse
+                    zh_Hans: happyhorse
+                  value: happyhorse
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 参考图片
+                  ja_JP: 参考图片
+                  pt_BR: 参考图片
+                  zh_Hans: 参考图片
+                label:
+                  en_US: 参考图片
+                  ja_JP: 参考图片
+                  pt_BR: 参考图片
+                  zh_Hans: 参考图片
+                llm_description: 参考图片
+                max: null
+                min: null
+                name: video_image
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 参考视频
+                  ja_JP: 参考视频
+                  pt_BR: 参考视频
+                  zh_Hans: 参考视频
+                label:
+                  en_US: 参考视频（seedance限制全部视频总时长≤15s，720dpi）
+                  ja_JP: 参考视频（seedance限制全部视频总时长≤15s，720dpi）
+                  pt_BR: 参考视频（seedance限制全部视频总时长≤15s，720dpi）
+                  zh_Hans: 参考视频（seedance限制全部视频总时长≤15s，720dpi）
+                llm_description: 参考视频
+                max: null
+                min: null
+                name: video_refer
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 参考音频
+                  ja_JP: 参考音频
+                  pt_BR: 参考音频
+                  zh_Hans: 参考音频
+                label:
+                  en_US: seedance声音参考
+                  ja_JP: seedance声音参考
+                  pt_BR: seedance声音参考
+                  zh_Hans: seedance声音参考
+                llm_description: 参考音频
+                max: null
+                min: null
+                name: audio_refer
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '8'
+                form: form
+                human_description:
+                  en_US: 时长
+                  ja_JP: 时长
+                  pt_BR: 时长
+                  zh_Hans: 时长
+                label:
+                  en_US: 时长（s）
+                  ja_JP: 时长（s）
+                  pt_BR: 时长（s）
+                  zh_Hans: 时长（s）
+                llm_description: 时长
+                max: null
+                min: null
+                name: duration
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: '9:16'
+                form: form
+                human_description:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                label:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                llm_description: 比例
+                max: null
+                min: null
+                name: ratio
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: 720p
+                form: form
+                human_description:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                label:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                llm_description: 清晰度
+                max: null
+                min: null
+                name: resolution
+                options:
+                - icon: null
+                  label:
+                    en_US: 480p
+                    ja_JP: 480p
+                    pt_BR: 480p
+                    zh_Hans: 480p
+                  value: 480p
+                - icon: null
+                  label:
+                    en_US: 720p
+                    ja_JP: 720p
+                    pt_BR: 720p
+                    zh_Hans: 720p
+                  value: 720p
+                - icon: null
+                  label:
+                    en_US: 1080p
+                    ja_JP: 1080p
+                    pt_BR: 1080p
+                    zh_Hans: 1080p
+                  value: 1080p
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: 'on'
+                form: form
+                human_description:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                label:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                llm_description: 声音开关
+                max: null
+                min: null
+                name: audio
+                options:
+                - icon: null
+                  label:
+                    en_US: 'on'
+                    ja_JP: 'on'
+                    pt_BR: 'on'
+                    zh_Hans: 'on'
+                  value: 'on'
+                - icon: null
+                  label:
+                    en_US: 'off'
+                    ja_JP: 'off'
+                    pt_BR: 'off'
+                    zh_Hans: 'off'
+                  value: 'off'
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: 'yes'
+                form: form
+                human_description:
+                  en_US: 是否保留参考视频原声，true / false
+                  ja_JP: 是否保留参考视频原声，true / false
+                  pt_BR: 是否保留参考视频原声，true / false
+                  zh_Hans: 是否保留参考视频原声，true / false
+                label:
+                  en_US: 使用视频原音
+                  ja_JP: 使用视频原音
+                  pt_BR: 使用视频原音
+                  zh_Hans: 使用视频原音
+                llm_description: 是否保留参考视频原声，true / false
+                max: null
+                min: null
+                name: keep_original_sound
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 参考视频用途，基础（默认），1=特征参考
+                  ja_JP: 参考视频用途，基础（默认），1=特征参考
+                  pt_BR: 参考视频用途，基础（默认），1=特征参考
+                  zh_Hans: 参考视频用途，基础（默认），1=特征参考
+                label:
+                  en_US: kling视频参考用途（默认基础，特征参考=1）
+                  ja_JP: kling视频参考用途（默认基础，特征参考=1）
+                  pt_BR: kling视频参考用途（默认基础，特征参考=1）
+                  zh_Hans: kling视频参考用途（默认基础，特征参考=1）
+                llm_description: 参考视频用途，基础（默认），1=特征参考
+                max: null
+                min: null
+                name: video_refer_type
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 分解分镜（分解=1）
+                  ja_JP: 分解分镜（分解=1）
+                  pt_BR: 分解分镜（分解=1）
+                  zh_Hans: 分解分镜（分解=1）
+                label:
+                  en_US: kilng分解分镜（分解=1）
+                  ja_JP: kilng分解分镜（分解=1）
+                  pt_BR: kilng分解分镜（分解=1）
+                  zh_Hans: kilng分解分镜（分解=1）
+                llm_description: 分解分镜（分解=1）
+                max: null
+                min: null
+                name: storyboard_breakdown
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                label:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                llm_description: 内容id
+                max: null
+                min: null
+                name: content_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                label:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                llm_description: 任务id
+                max: null
+                min: null
+                name: task_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              settings:
+                audio:
+                  value:
+                    type: constant
+                    value: 'on'
+                audio_refer:
+                  value:
+                    type: mixed
+                    value: ''
+                content_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                duration:
+                  value:
+                    type: constant
+                    value: 8
+                keep_original_sound:
+                  value:
+                    type: mixed
+                    value: 'yes'
+                ratio:
+                  value:
+                    type: mixed
+                    value: '9:16'
+                resolution:
+                  value:
+                    type: constant
+                    value: 720p
+                storyboard_breakdown:
+                  value:
+                    type: constant
+                    value: ''
+                task_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                video_image:
+                  value:
+                    type: mixed
+                    value: ''
+                video_model:
+                  value:
+                    type: constant
+                    value: klingv3o
+                video_prompt:
+                  value:
+                    type: mixed
+                    value: null
+                video_refer:
+                  value:
+                    type: mixed
+                    value: ''
+                video_refer_type:
+                  value:
+                    type: constant
+                    value: null
+              tool_description: 根据多图参考/视频参考/音频参考根据多图参考/视频参考/音频参考和提示词，生成一段视频和提示词，生成一段视频
+              tool_label: 多图参考视频套件【生产测试用】
+              tool_name: gen_multi_ref_video_kit
+              type: workflow
+            - enabled: true
+              extra:
+                description: 根据提示词和参数生成一张图片，返回图片URL，支持多模型
+              parameters: {}
+              provider_name: 4b499195-c742-468e-b9e1-3502d6ace6c7
+              provider_show_name: 生图套件【生产测试用】
+              schemas:
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 生图prompt
+                  ja_JP: 生图prompt
+                  pt_BR: 生图prompt
+                  zh_Hans: 生图prompt
+                label:
+                  en_US: 生图提示词
+                  ja_JP: 生图提示词
+                  pt_BR: 生图提示词
+                  zh_Hans: 生图提示词
+                llm_description: 生图prompt
+                max: null
+                min: null
+                name: image_prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: nanobanana2
+                form: form
+                human_description:
+                  en_US: 图片模型
+                  ja_JP: 图片模型
+                  pt_BR: 图片模型
+                  zh_Hans: 图片模型
+                label:
+                  en_US: 图片模型
+                  ja_JP: 图片模型
+                  pt_BR: 图片模型
+                  zh_Hans: 图片模型
+                llm_description: 图片模型
+                max: null
+                min: null
+                name: image_model
+                options:
+                - icon: null
+                  label:
+                    en_US: nanobanana2
+                    ja_JP: nanobanana2
+                    pt_BR: nanobanana2
+                    zh_Hans: nanobanana2
+                  value: nanobanana2
+                - icon: null
+                  label:
+                    en_US: 即梦4.5
+                    ja_JP: 即梦4.5
+                    pt_BR: 即梦4.5
+                    zh_Hans: 即梦4.5
+                  value: 即梦4.5
+                - icon: null
+                  label:
+                    en_US: 即梦5.0
+                    ja_JP: 即梦5.0
+                    pt_BR: 即梦5.0
+                    zh_Hans: 即梦5.0
+                  value: 即梦5.0
+                - icon: null
+                  label:
+                    en_US: 即梦4.0
+                    ja_JP: 即梦4.0
+                    pt_BR: 即梦4.0
+                    zh_Hans: 即梦4.0
+                  value: 即梦4.0
+                - icon: null
+                  label:
+                    en_US: gptimage2
+                    ja_JP: gptimage2
+                    pt_BR: gptimage2
+                    zh_Hans: gptimage2
+                  value: gptimage2
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 图片参考
+                  ja_JP: 图片参考
+                  pt_BR: 图片参考
+                  zh_Hans: 图片参考
+                label:
+                  en_US: 参考图片（可多张）
+                  ja_JP: 参考图片（可多张）
+                  pt_BR: 参考图片（可多张）
+                  zh_Hans: 参考图片（可多张）
+                llm_description: 图片参考
+                max: null
+                min: null
+                name: images_ref
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '9:16'
+                form: form
+                human_description:
+                  en_US: 图片比例
+                  ja_JP: 图片比例
+                  pt_BR: 图片比例
+                  zh_Hans: 图片比例
+                label:
+                  en_US: 尺寸
+                  ja_JP: 尺寸
+                  pt_BR: 尺寸
+                  zh_Hans: 尺寸
+                llm_description: 图片比例
+                max: null
+                min: null
+                name: image_ratio
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: 1K
+                form: form
+                human_description:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                label:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                llm_description: 清晰度
+                max: null
+                min: null
+                name: resolution
+                options:
+                - icon: null
+                  label:
+                    en_US: 1K
+                    ja_JP: 1K
+                    pt_BR: 1K
+                    zh_Hans: 1K
+                  value: 1K
+                - icon: null
+                  label:
+                    en_US: 2K
+                    ja_JP: 2K
+                    pt_BR: 2K
+                    zh_Hans: 2K
+                  value: 2K
+                - icon: null
+                  label:
+                    en_US: 4K
+                    ja_JP: 4K
+                    pt_BR: 4K
+                    zh_Hans: 4K
+                  value: 4K
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                label:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                llm_description: 任务id
+                max: null
+                min: null
+                name: content_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                label:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                llm_description: 内容id
+                max: null
+                min: null
+                name: task_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              settings:
+                content_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                image_model:
+                  value:
+                    type: constant
+                    value: nanobanana2
+                image_prompt:
+                  value:
+                    type: mixed
+                    value: ''
+                image_ratio:
+                  value:
+                    type: mixed
+                    value: '9:16'
+                images_ref:
+                  value:
+                    type: mixed
+                    value: ''
+                resolution:
+                  value:
+                    type: constant
+                    value: 1K
+                task_id:
+                  value:
+                    type: mixed
+                    value: '11'
+              tool_description: 根据提示词和参数生成一张图片，返回图片URL，支持多模型
+              tool_label: 生图套件【生产测试用】
+              tool_name: gen_image_kit
+              type: workflow
+            - enabled: true
+              extra:
+                description: 根据首帧/尾帧图片和视频提示词，生成一段视频
+              parameters: {}
+              provider_name: a2b84896-1945-431c-9b8e-27380cd3d632
+              provider_show_name: 首尾帧视频套件【生产测试用】
+              schemas:
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                label:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                llm_description: 视频prompt
+                max: null
+                min: null
+                name: video_prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                label:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                llm_description: 视频模型
+                max: null
+                min: null
+                name: video_model
+                options:
+                - icon: null
+                  label:
+                    en_US: klingv3
+                    ja_JP: klingv3
+                    pt_BR: klingv3
+                    zh_Hans: klingv3
+                  value: klingv3
+                - icon: null
+                  label:
+                    en_US: klingv2.6
+                    ja_JP: klingv2.6
+                    pt_BR: klingv2.6
+                    zh_Hans: klingv2.6
+                  value: klingv2.6
+                - icon: null
+                  label:
+                    en_US: seedance2.0
+                    ja_JP: seedance2.0
+                    pt_BR: seedance2.0
+                    zh_Hans: seedance2.0
+                  value: seedance2.0
+                - icon: null
+                  label:
+                    en_US: seedance2.0fast
+                    ja_JP: seedance2.0fast
+                    pt_BR: seedance2.0fast
+                    zh_Hans: seedance2.0fast
+                  value: seedance2.0fast
+                - icon: null
+                  label:
+                    en_US: hailuo2.3（仅首帧）
+                    ja_JP: hailuo2.3（仅首帧）
+                    pt_BR: hailuo2.3（仅首帧）
+                    zh_Hans: hailuo2.3（仅首帧）
+                  value: hailuo2.3（仅首帧）
+                - icon: null
+                  label:
+                    en_US: hailuo2.3fast（仅首帧）
+                    ja_JP: hailuo2.3fast（仅首帧）
+                    pt_BR: hailuo2.3fast（仅首帧）
+                    zh_Hans: hailuo2.3fast（仅首帧）
+                  value: hailuo2.3fast（仅首帧）
+                - icon: null
+                  label:
+                    en_US: hailuo2.0
+                    ja_JP: hailuo2.0
+                    pt_BR: hailuo2.0
+                    zh_Hans: hailuo2.0
+                  value: hailuo2.0
+                - icon: null
+                  label:
+                    en_US: happyhorse1.0
+                    ja_JP: happyhorse1.0
+                    pt_BR: happyhorse1.0
+                    zh_Hans: happyhorse1.0
+                  value: happyhorse1.0
+                - icon: null
+                  label:
+                    en_US: wan2.7
+                    ja_JP: wan2.7
+                    pt_BR: wan2.7
+                    zh_Hans: wan2.7
+                  value: wan2.7
+                - icon: null
+                  label:
+                    en_US: wan2.6
+                    ja_JP: wan2.6
+                    pt_BR: wan2.6
+                    zh_Hans: wan2.6
+                  value: wan2.6
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 首帧图
+                  ja_JP: 首帧图
+                  pt_BR: 首帧图
+                  zh_Hans: 首帧图
+                label:
+                  en_US: 首帧图
+                  ja_JP: 首帧图
+                  pt_BR: 首帧图
+                  zh_Hans: 首帧图
+                llm_description: 首帧图
+                max: null
+                min: null
+                name: start_frame
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 尾帧图
+                  ja_JP: 尾帧图
+                  pt_BR: 尾帧图
+                  zh_Hans: 尾帧图
+                label:
+                  en_US: 尾帧图
+                  ja_JP: 尾帧图
+                  pt_BR: 尾帧图
+                  zh_Hans: 尾帧图
+                llm_description: 尾帧图
+                max: null
+                min: null
+                name: end_frame
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '8'
+                form: form
+                human_description:
+                  en_US: 时长
+                  ja_JP: 时长
+                  pt_BR: 时长
+                  zh_Hans: 时长
+                label:
+                  en_US: 时长（s）
+                  ja_JP: 时长（s）
+                  pt_BR: 时长（s）
+                  zh_Hans: 时长（s）
+                llm_description: 时长
+                max: null
+                min: null
+                name: duration
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: '9:16'
+                form: form
+                human_description:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                label:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                llm_description: 比例
+                max: null
+                min: null
+                name: ratio
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: 720p
+                form: form
+                human_description:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                label:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                llm_description: 清晰度
+                max: null
+                min: null
+                name: resolution
+                options:
+                - icon: null
+                  label:
+                    en_US: 480p
+                    ja_JP: 480p
+                    pt_BR: 480p
+                    zh_Hans: 480p
+                  value: 480p
+                - icon: null
+                  label:
+                    en_US: 720p
+                    ja_JP: 720p
+                    pt_BR: 720p
+                    zh_Hans: 720p
+                  value: 720p
+                - icon: null
+                  label:
+                    en_US: 1080p
+                    ja_JP: 1080p
+                    pt_BR: 1080p
+                    zh_Hans: 1080p
+                  value: 1080p
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: 'on'
+                form: form
+                human_description:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                label:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                llm_description: 声音开关
+                max: null
+                min: null
+                name: audio
+                options:
+                - icon: null
+                  label:
+                    en_US: 'on'
+                    ja_JP: 'on'
+                    pt_BR: 'on'
+                    zh_Hans: 'on'
+                  value: 'on'
+                - icon: null
+                  label:
+                    en_US: 'off'
+                    ja_JP: 'off'
+                    pt_BR: 'off'
+                    zh_Hans: 'off'
+                  value: 'off'
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 分解分镜（分解=1）
+                  ja_JP: 分解分镜（分解=1）
+                  pt_BR: 分解分镜（分解=1）
+                  zh_Hans: 分解分镜（分解=1）
+                label:
+                  en_US: 分解分镜（分解=1）
+                  ja_JP: 分解分镜（分解=1）
+                  pt_BR: 分解分镜（分解=1）
+                  zh_Hans: 分解分镜（分解=1）
+                llm_description: 分解分镜（分解=1）
+                max: null
+                min: null
+                name: storyboard_breakdown
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                label:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                llm_description: 内容id
+                max: null
+                min: null
+                name: content_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                label:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                llm_description: 任务id
+                max: null
+                min: null
+                name: task_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              settings:
+                audio:
+                  value:
+                    type: constant
+                    value: 'on'
+                content_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                duration:
+                  value:
+                    type: constant
+                    value: 8
+                end_frame:
+                  value:
+                    type: mixed
+                    value: ''
+                ratio:
+                  value:
+                    type: mixed
+                    value: '9:16'
+                resolution:
+                  value:
+                    type: constant
+                    value: 720p
+                start_frame:
+                  value:
+                    type: mixed
+                    value: ''
+                storyboard_breakdown:
+                  value:
+                    type: constant
+                    value: ''
+                task_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                video_model:
+                  value:
+                    type: constant
+                    value: null
+                video_prompt:
+                  value:
+                    type: mixed
+                    value: null
+              tool_description: 根据首帧/尾帧图片和视频提示词，生成一段视频
+              tool_label: 首尾帧视频套件【生产测试用】
+              tool_name: video_kit_first_last_frame
+              type: workflow
+            - enabled: true
+              extra:
+                description: 根据文字提示词直接生成视频，无需图片输入
+              parameters: {}
+              provider_name: c8dfbb1f-8f31-485d-bf95-010c681bd977
+              provider_show_name: 文生视频套件【生产测试用】
+              schemas:
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                label:
+                  en_US: 视频prompt
+                  ja_JP: 视频prompt
+                  pt_BR: 视频prompt
+                  zh_Hans: 视频prompt
+                llm_description: 视频prompt
+                max: null
+                min: null
+                name: video_prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: null
+                form: form
+                human_description:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                label:
+                  en_US: 视频模型
+                  ja_JP: 视频模型
+                  pt_BR: 视频模型
+                  zh_Hans: 视频模型
+                llm_description: 视频模型
+                max: null
+                min: null
+                name: video_model
+                options:
+                - icon: null
+                  label:
+                    en_US: klingv3
+                    ja_JP: klingv3
+                    pt_BR: klingv3
+                    zh_Hans: klingv3
+                  value: klingv3
+                - icon: null
+                  label:
+                    en_US: klingv2.6
+                    ja_JP: klingv2.6
+                    pt_BR: klingv2.6
+                    zh_Hans: klingv2.6
+                  value: klingv2.6
+                - icon: null
+                  label:
+                    en_US: seedance2.0
+                    ja_JP: seedance2.0
+                    pt_BR: seedance2.0
+                    zh_Hans: seedance2.0
+                  value: seedance2.0
+                - icon: null
+                  label:
+                    en_US: seedance2.0fast
+                    ja_JP: seedance2.0fast
+                    pt_BR: seedance2.0fast
+                    zh_Hans: seedance2.0fast
+                  value: seedance2.0fast
+                - icon: null
+                  label:
+                    en_US: seedance1.5
+                    ja_JP: seedance1.5
+                    pt_BR: seedance1.5
+                    zh_Hans: seedance1.5
+                  value: seedance1.5
+                - icon: null
+                  label:
+                    en_US: hailuo2.3
+                    ja_JP: hailuo2.3
+                    pt_BR: hailuo2.3
+                    zh_Hans: hailuo2.3
+                  value: hailuo2.3
+                - icon: null
+                  label:
+                    en_US: hailuo2.3fast
+                    ja_JP: hailuo2.3fast
+                    pt_BR: hailuo2.3fast
+                    zh_Hans: hailuo2.3fast
+                  value: hailuo2.3fast
+                - icon: null
+                  label:
+                    en_US: hailuo2.0
+                    ja_JP: hailuo2.0
+                    pt_BR: hailuo2.0
+                    zh_Hans: hailuo2.0
+                  value: hailuo2.0
+                - icon: null
+                  label:
+                    en_US: happyhorse1.0
+                    ja_JP: happyhorse1.0
+                    pt_BR: happyhorse1.0
+                    zh_Hans: happyhorse1.0
+                  value: happyhorse1.0
+                - icon: null
+                  label:
+                    en_US: wan2.7
+                    ja_JP: wan2.7
+                    pt_BR: wan2.7
+                    zh_Hans: wan2.7
+                  value: wan2.7
+                - icon: null
+                  label:
+                    en_US: wan2.6
+                    ja_JP: wan2.6
+                    pt_BR: wan2.6
+                    zh_Hans: wan2.6
+                  value: wan2.6
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: '8'
+                form: form
+                human_description:
+                  en_US: 时长
+                  ja_JP: 时长
+                  pt_BR: 时长
+                  zh_Hans: 时长
+                label:
+                  en_US: 时长（s）
+                  ja_JP: 时长（s）
+                  pt_BR: 时长（s）
+                  zh_Hans: 时长（s）
+                llm_description: 时长
+                max: null
+                min: null
+                name: duration
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: number
+              - auto_generate: null
+                default: '9:16'
+                form: form
+                human_description:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                label:
+                  en_US: 比例
+                  ja_JP: 比例
+                  pt_BR: 比例
+                  zh_Hans: 比例
+                llm_description: 比例
+                max: null
+                min: null
+                name: ratio
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: 720p
+                form: form
+                human_description:
+                  en_US: 分辨率
+                  ja_JP: 分辨率
+                  pt_BR: 分辨率
+                  zh_Hans: 分辨率
+                label:
+                  en_US: 清晰度
+                  ja_JP: 清晰度
+                  pt_BR: 清晰度
+                  zh_Hans: 清晰度
+                llm_description: 分辨率
+                max: null
+                min: null
+                name: resolution
+                options:
+                - icon: null
+                  label:
+                    en_US: 480p
+                    ja_JP: 480p
+                    pt_BR: 480p
+                    zh_Hans: 480p
+                  value: 480p
+                - icon: null
+                  label:
+                    en_US: 720p
+                    ja_JP: 720p
+                    pt_BR: 720p
+                    zh_Hans: 720p
+                  value: 720p
+                - icon: null
+                  label:
+                    en_US: 1080p
+                    ja_JP: 1080p
+                    pt_BR: 1080p
+                    zh_Hans: 1080p
+                  value: 1080p
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: 'on'
+                form: form
+                human_description:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                label:
+                  en_US: 声音开关
+                  ja_JP: 声音开关
+                  pt_BR: 声音开关
+                  zh_Hans: 声音开关
+                llm_description: 声音开关
+                max: null
+                min: null
+                name: audio
+                options:
+                - icon: null
+                  label:
+                    en_US: 'on'
+                    ja_JP: 'on'
+                    pt_BR: 'on'
+                    zh_Hans: 'on'
+                  value: 'on'
+                - icon: null
+                  label:
+                    en_US: 'off'
+                    ja_JP: 'off'
+                    pt_BR: 'off'
+                    zh_Hans: 'off'
+                  value: 'off'
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                label:
+                  en_US: 内容id
+                  ja_JP: 内容id
+                  pt_BR: 内容id
+                  zh_Hans: 内容id
+                llm_description: 内容id
+                max: null
+                min: null
+                name: content_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: '11'
+                form: form
+                human_description:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                label:
+                  en_US: 任务id
+                  ja_JP: 任务id
+                  pt_BR: 任务id
+                  zh_Hans: 任务id
+                llm_description: 任务id
+                max: null
+                min: null
+                name: task_id
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              settings:
+                audio:
+                  value:
+                    type: constant
+                    value: 'on'
+                content_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                duration:
+                  value:
+                    type: constant
+                    value: 8
+                ratio:
+                  value:
+                    type: mixed
+                    value: '9:16'
+                resolution:
+                  value:
+                    type: constant
+                    value: 720p
+                task_id:
+                  value:
+                    type: mixed
+                    value: '11'
+                video_model:
+                  value:
+                    type: constant
+                    value: null
+                video_prompt:
+                  value:
+                    type: mixed
+                    value: null
+              tool_description: 根据文字提示词直接生成视频，无需图片输入
+              tool_label: 文生视频套件【生产测试用】
+              tool_name: video_kit_text_to_video
+              type: workflow
+            - enabled: true
+              extra:
+                description: qwen&doubao视频识别反推
+              parameters: {}
+              provider_name: 9f9eb080-8f9c-4165-8fef-732acbb33672
+              provider_show_name: 视频阅读反推能力llm【生产测试用】
+              schemas:
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: prompt
+                  ja_JP: prompt
+                  pt_BR: prompt
+                  zh_Hans: prompt
+                label:
+                  en_US: prompt
+                  ja_JP: prompt
+                  pt_BR: prompt
+                  zh_Hans: prompt
+                llm_description: prompt
+                max: null
+                min: null
+                name: prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 第一个类型（图片/视频/音频）
+                  ja_JP: 第一个类型（图片/视频/音频）
+                  pt_BR: 第一个类型（图片/视频/音频）
+                  zh_Hans: 第一个类型（图片/视频/音频）
+                label:
+                  en_US: 上传
+                  ja_JP: 上传
+                  pt_BR: 上传
+                  zh_Hans: 上传
+                llm_description: 第一个类型（图片/视频/音频）
+                max: null
+                min: null
+                name: url
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: true
+                scope: null
+                template: null
+                type: files
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 第二个类型（图片/视频/音频）
+                  ja_JP: 第二个类型（图片/视频/音频）
+                  pt_BR: 第二个类型（图片/视频/音频）
+                  zh_Hans: 第二个类型（图片/视频/音频）
+                label:
+                  en_US: 上传2
+                  ja_JP: 上传2
+                  pt_BR: 上传2
+                  zh_Hans: 上传2
+                llm_description: 第二个类型（图片/视频/音频）
+                max: null
+                min: null
+                name: url2
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: files
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 模型（qwen/doubao）
+                  ja_JP: 模型（qwen/doubao）
+                  pt_BR: 模型（qwen/doubao）
+                  zh_Hans: 模型（qwen/doubao）
+                label:
+                  en_US: model
+                  ja_JP: model
+                  pt_BR: model
+                  zh_Hans: model
+                llm_description: 模型（qwen/doubao）
+                max: null
+                min: null
+                name: model
+                options:
+                - icon: null
+                  label:
+                    en_US: qwen
+                    ja_JP: qwen
+                    pt_BR: qwen
+                    zh_Hans: qwen
+                  value: qwen
+                - icon: null
+                  label:
+                    en_US: doubao
+                    ja_JP: doubao
+                    pt_BR: doubao
+                    zh_Hans: doubao
+                  value: doubao
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: select
+              - auto_generate: null
+                default: ''
+                form: form
+                human_description:
+                  en_US: 系统提示词
+                  ja_JP: 系统提示词
+                  pt_BR: 系统提示词
+                  zh_Hans: 系统提示词
+                label:
+                  en_US: 系统角色
+                  ja_JP: 系统角色
+                  pt_BR: 系统角色
+                  zh_Hans: 系统角色
+                llm_description: 系统提示词
+                max: null
+                min: null
+                name: system_prompt
+                options: []
+                placeholder:
+                  en_US: ''
+                  ja_JP: ''
+                  pt_BR: ''
+                  zh_Hans: ''
+                precision: null
+                required: false
+                scope: null
+                template: null
+                type: string
+              settings:
+                model:
+                  value:
+                    type: constant
+                    value: ''
+                prompt:
+                  value:
+                    type: mixed
+                    value: ''
+                system_prompt:
+                  value:
+                    type: mixed
+                    value: ''
+                url:
+                  value:
+                    type: constant
+                    value: ''
+                url2:
+                  value:
+                    type: constant
+                    value: ''
+              tool_description: qwen&doubao视频识别反推
+              tool_label: 视频阅读反推能力llm【生产测试用】
+              tool_name: video_to_llm
+              type: workflow
+        agent_strategy_label: ReAct
+        agent_strategy_name: ReAct
+        agent_strategy_provider_name: langgenius/agent/agent
+        memory:
+          query_prompt_template: '{{#sys.query#}}
+
+
+            {{#sys.files#}}'
+          window:
+            enabled: true
+            size: 20
+        meta:
+          minimum_dify_version: null
+          version: 0.0.1
+        output_schema: {}
+        plugin_unique_identifier: langgenius/agent:0.0.15@3cb96179914f8c4025282bcb1cc2fd5a951f6be0877567b02daee01e28ca4bf3
+        selected: true
+        title: Agent
+        tool_node_version: '2'
+        type: agent
+      height: 188
+      id: '1781686055779'
+      position:
+        x: 375
+        y: 303
+      positionAbsolute:
+        x: 375
+        y: 303
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1781686055779.text#}}{{#1781686055779.files#}}'
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 103
+      id: answer
+      position:
+        x: 667
+        y: 303
+      positionAbsolute:
+        x: 667
+        y: 303
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: -114.32417495494235
+      y: -144.6040284023864
+      zoom: 0.9382211965006714
+  rag_pipeline_variables: []

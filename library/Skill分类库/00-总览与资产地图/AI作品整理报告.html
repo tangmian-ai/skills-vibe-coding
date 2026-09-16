@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 作品与文件整理报告</title>
+<style>
+:root { color-scheme: light; --bg:#f6f7f9; --paper:#fff; --ink:#1f2937; --muted:#64748b; --line:#d8dee8; --blue:#2156c6; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; line-height:1.72; }
+main { max-width:1040px; margin:0 auto; padding:44px 22px 72px; }
+article { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:38px clamp(22px,4vw,58px); box-shadow:0 18px 45px rgba(15,23,42,.08); }
+h1 { margin:0 0 18px; font-size:36px; line-height:1.18; letter-spacing:0; }
+h2 { margin:42px 0 14px; padding-top:16px; border-top:1px solid var(--line); font-size:25px; line-height:1.28; }
+h3 { margin:30px 0 10px; font-size:20px; color:#0f3f9f; }
+p { margin:10px 0; }
+ul,ol { margin:10px 0 18px; padding-left:1.4em; }
+li { margin:6px 0; }
+code { padding:.12em .36em; border:1px solid #dbe3ef; border-radius:5px; background:#f3f6fb; font-family:"SFMono-Regular",Consolas,monospace; font-size:.92em; }
+pre { overflow:auto; padding:16px; border:1px solid #dbe3ef; border-radius:8px; background:#f8fafc; }
+pre code { padding:0; border:0; background:transparent; }
+blockquote { margin:18px 0; padding:12px 16px; border-left:4px solid var(--blue); background:#f4f7ff; color:#203354; }
+strong { color:#111827; }
+@media print { body { background:#fff; } main { padding:0; } article { border:0; box-shadow:none; } }
+</style>
+</head>
+<body><main><article>
+<h1>AI 作品与文件整理报告</h1>
+<p>生成日期：2026-06-17  <br>整理范围：<code>/Users/edy/Desktop</code>、<code>/Users/edy/Documents</code>、<code>/Users/edy/Downloads</code>、<code>/Users/edy/skills</code>、部分 <code>.codex/.cursor</code> 线索。  <br>处理方式：只读扫描和归类，没有移动、删除或改动原始项目文件。</p>
+<h2>1. 总结</h2>
+<p>这台电脑上最能代表你的 AI 方向的资产，不是零散 prompt，而是一套围绕「AI 生产工作流」的系统化作品：</p>
+<ol>
+<li><strong>视频反推与生成工作台</strong>：从视频/图片反推、参考素材绑定、Dify 路由、生成记录、结果对比到 Agent 协作规则。</li>
+<li><strong>Prompt / Workflow 采集器</strong>：把公开 prompt、视频案例、LibTV 工作流线索抓取后进入本地审核台。</li>
+<li><strong>Skills 能力库</strong>：把经验沉淀为可安装、可分发、可复用的 Agent Skill，并有内部集合页。</li>
+<li><strong>Vibe Coding 原型</strong>：大量 HTML/JS 本地工具页，把想法快速变成交互原型、流程图、评估器和可分享 demo。</li>
+<li><strong>内容生产研究资产</strong>：小红书/Plog、热点反推、视频工作流、素材与生成记录，形成可复盘的数据资产。</li>
+</ol>
+<p>如果要对外展示，建议把你的定位写成：</p>
+<blockquote>AI 工作流与 Agent Skill 构建者，擅长用 Vibe Coding 快速把业务经验沉淀成可运行工具、可复用 Skill 和可验证的内容生产流水线。</blockquote>
+<h2>2. 代表作品清单</h2>
+<h3>A. 视频反推与生成工作台</h3>
+<p>位置：<code>/Users/edy/Documents/视频</code></p>
+<p>这是当前最完整、最能代表你的 AI 作品。它不是单页 demo，而是一个本地视频生产工作台：</p>
+<ul>
+<li>主页面：<code>video-pipeline-prototype.html</code>，标题为“通用视频生成 Workflow 原型”。</li>
+<li>备用工作台：<code>video-prompt-workbench.html</code>，标题为“视频 Prompt 反推工作台”。</li>
+<li>后端入口：<code>video-prompt-server.mjs</code>，负责本地服务和 Dify 调用。</li>
+<li>Agent 规则：<code>agent-readme.md</code>、<code>agent-soul.md</code>。</li>
+<li>关键 Skill：<code>skills/reverse-video-prompt-completeness/SKILL.md</code>。</li>
+<li>可交付包：<code>video-workbench-codex-package/README-CODEX.md</code>，可发给同事让 Codex 检查环境并启动工作台。</li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>约 364 个文件，约 95 MB。</li>
+<li>37 个生成运行记录。</li>
+<li>21 个分析作业记录。</li>
+<li>17 个自动化提交记录。</li>
+<li>最新生成运行：<code>run-20260616-151643</code>。</li>
+<li>最新分析作业：<code>job-20260609-154840</code>。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>把“视频反推 prompt”升级为“workflow state + Dify route + Agent patch”的系统。</li>
+<li>明确规定 Agent 不直接覆盖 prompt，而是输出 patch、重跑节点和风险清洗建议。</li>
+<li>把动作、运镜、字幕、口播、音频、参考素材槽位、Dify 输入都纳入生成前门禁。</li>
+</ul>
+<p>适合展示方式：</p>
+<ul>
+<li>作品集首推。</li>
+<li>可以截图展示 <code>video-pipeline-prototype.html</code>、<code>content-pipeline-mindmap.html</code>、<code>unique-hotspot-evaluator.html</code>。</li>
+<li>对外分享前必须移除 <code>.env</code>、Dify key、内部 URL 和生成记录里的私有资源链接。</li>
+</ul>
+<h3>B. Video Workflow Collector</h3>
+<p>位置：<code>/Users/edy/Desktop/Video Workflow Collector</code></p>
+<p>这是视频 Prompt / 工作流采集台，保留 MeiGen、YouMind 单条 prompt 抓取，同时新增 LibTV、ClipVela、VisioArt 工作流线索抓取。</p>
+<p>关键文件：</p>
+<ul>
+<li><code>README.md</code></li>
+<li><code>collector.py</code></li>
+<li><code>AGENT_WORKFLOW.md</code></li>
+<li><code>agents/agent-a-evidence.md</code></li>
+<li><code>agents/agent-b-gaoding-quality.md</code></li>
+<li><code>schema/video-workflow-record.md</code></li>
+<li><code>public/index.html</code></li>
+<li><code>public/guide.html</code></li>
+<li><code>data/prompts.json</code></li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>约 3721 个文件，约 744 MB。</li>
+<li><code>data/prompts.json</code> 中有 259 条记录。</li>
+<li>来源分布：MeiGen 100、LibTV 99、YouMind 60。</li>
+<li><code>evidenceStatus</code> 为 <code>verified_video</code> 的记录共 259 条。</li>
+<li><code>effectMatchStatus</code> 为 <code>partial</code> 的记录共 259 条。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>建立了“抓取与证据”和“稿定迁移与质量”的双 Agent 分工。</li>
+<li>用 <code>evidenceStatus</code> 避免把营销页、模板文案、封面图误判成真实视频案例。</li>
+<li>能作为视频工作流数据库和反推 prompt 审核台使用。</li>
+</ul>
+<p>适合展示方式：</p>
+<ul>
+<li>作为“AI 视频案例采集与证据审核系统”展示。</li>
+<li>可以搭配 <code>AGENT_WORKFLOW.md</code> 说明你的 Agent 工作流设计能力。</li>
+</ul>
+<h3>C. Prompt Hub Collector</h3>
+<p>位置：<code>/Users/edy/Desktop/Prompt Hub Collector</code></p>
+<p>这是通用 Prompt 收集器，自动从公开网站抓取 prompt，并提供本地审核台。</p>
+<p>关键文件：</p>
+<ul>
+<li><code>README.md</code></li>
+<li><code>collector.py</code></li>
+<li><code>public/index.html</code></li>
+<li><code>public/guide.html</code></li>
+<li><code>data/prompts.json</code></li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>约 795 个文件，约 128 MB。</li>
+<li><code>data/prompts.json</code> 中有 441 条 prompt。</li>
+<li>来源分布：MeiGen 335、YouMind 106。</li>
+<li>抓取运行记录 5 次。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>把 prompt 收集、去重、评分、风险标记、翻译、审核和同步都放到一个本地工具里。</li>
+<li>适合展示为“Prompt 数据资产化工具”。</li>
+</ul>
+<p>适合展示方式：</p>
+<ul>
+<li>对外展示时可以保留功能说明，清空 <code>data/prompts.json</code>、<code>data/runs.json</code>、<code>data/media/</code> 后再打包。</li>
+</ul>
+<h3>D. Gaoding Skills / Skill 集合页</h3>
+<p>位置：<code>/Users/edy/skills</code></p>
+<p>这是内部 Agent Skill 集合页，使用 React/Vite 构建，数据入口是 <code>static/skills.json</code>，对外提供 skill 发现、预览和安装复制。</p>
+<p>关键文件：</p>
+<ul>
+<li><code>README.md</code></li>
+<li><code>AGENTS.md</code></li>
+<li><code>static/skills.json</code></li>
+<li><code>skills/project-charter-interviewer/SKILL.md</code></li>
+<li><code>skills/gaoding-vpn-rules/SKILL.md</code></li>
+<li><code>skills/kimgo-workbench-member-sync/SKILL.md</code></li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>约 78 个文件，约 3.5 MB。</li>
+<li><code>static/skills.json</code> 记录了 9 个 skill / service 入口。</li>
+<li>Git 最新提交：<code>c39e12a</code>，日期 2026-06-09。</li>
+</ul>
+<p>当前集合入口：</p>
+<ul>
+<li><code>project-process-visualizer</code>：项目过程可视化。</li>
+<li><code>agent-lite-cli</code>：Agent Lite CLI FAT 测试。</li>
+<li><code>ai-tool-share</code>：HTML 分享服务入口。</li>
+<li><code>gaoding-vpn-rules</code>：公司域名 VPN/代理分流规则。</li>
+<li><code>project-charter-interviewer</code>：立项访谈官。</li>
+<li><code>kimgo-workbench-member-sync</code>：Kimgo 成员本地工作台同步。</li>
+<li><code>aetheris-cli-entry</code>：Aetheris CLI 入口。</li>
+<li><code>user-voice-analyst</code>：用户声音分析助手。</li>
+<li><code>support-feedback-export</code>：用户反馈 CSV 导出。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>这部分代表你的“AI 能力沉淀”能力：把一次性经验变成可安装、可维护、可分发的 Skill。</li>
+<li><code>project-charter-interviewer</code> 体现业务闭环和 Project Charter 思维。</li>
+<li><code>kimgo-workbench-member-sync</code> 体现本地工作台、快照同步、Dify 配置检查和成员侧隔离。</li>
+<li><code>gaoding-vpn-rules</code> 体现把 IT 排障经验封装为可执行规则生成器。</li>
+</ul>
+<p>适合展示方式：</p>
+<ul>
+<li>作为“Skill 作者 / Agent 能力库维护者”重点展示。</li>
+<li>可展示集合页截图、<code>static/skills.json</code> 数据契约、任一 <code>SKILL.md</code> 的结构。</li>
+</ul>
+<h3>E. 小红书 / Plog 自动化研究资产</h3>
+<p>位置：<code>/Users/edy/Documents/New project/xhs_research</code></p>
+<p>这是体量最大的研究资产目录，和小红书 Plog、素材抓取、样式分析、自动化生成、PSD 包等相关。</p>
+<p>扫描到的规模：</p>
+<ul>
+<li>约 5487 个文件，约 5.2 GB。</li>
+<li>包含 <code>runs/</code>、<code>automation2_brief/</code>、<code>automation2_psd/</code>、<code>codex_ai_previews/</code>、<code>plog_poster_tools/</code>、<code>github_xhs_skills/</code> 等目录。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>体现内容生产研究、素材抓取、风格分析和自动生成实验。</li>
+<li>能作为“AI 内容设计研究库”使用。</li>
+</ul>
+<p>适合展示方式：</p>
+<ul>
+<li>不建议整体外发，体量大且素材复杂。</li>
+<li>建议只挑选 <code>workbench_overview.html</code>、<code>plog_weekly_summary.html</code>、<code>codex_ai_previews/latest_codex_preview.png</code> 等非敏感成果做展示。</li>
+</ul>
+<h3>F. LibTV Workflow Extractor Extension</h3>
+<p>位置：<code>/Users/edy/Desktop/libtv-workflow-extractor-extension</code></p>
+<p>这是一个浏览器扩展项目，用来辅助提取 LibTV 工作流信息。</p>
+<p>关键文件：</p>
+<ul>
+<li><code>manifest.json</code></li>
+<li><code>content-script.js</code></li>
+<li><code>content-script.css</code></li>
+<li><code>popup.html</code></li>
+<li><code>popup.js</code></li>
+<li><code>options.html</code></li>
+<li><code>options.js</code></li>
+<li><code>background.js</code></li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>9 个文件，约 136 KB。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>作为采集系统的补充，说明你不只做页面工具，也能写浏览器端采集插件。</li>
+</ul>
+<h3>G. AI 视频内容生产分享包</h3>
+<p>位置：<code>/Users/edy/Downloads/content-pipeline-share</code></p>
+<p>这是可分享的内容生产工作流包。</p>
+<p>关键文件：</p>
+<ul>
+<li><code>content-pipeline.html</code>：标题为“AI 视频内容生产 · 工作流自动化”，主标题是“把高赞热点变成少人工参与的自动化工作流”。</li>
+<li><code>hotspot-evaluation-plan.html</code>：标题为“视频热点反推评估方案”。</li>
+<li><code>content-pipeline/</code>：包含流程截图，如 <code>workflow-config.png</code>、<code>audit-regenerate.png</code>、<code>multi-plan.png</code>。</li>
+<li><code>test/</code>：包含方案视频样例。</li>
+</ul>
+<p>扫描到的规模：</p>
+<ul>
+<li>12 个文件，约 25 MB。</li>
+</ul>
+<p>代表价值：</p>
+<ul>
+<li>这是最适合直接拿来汇报或分享的“成品包”。</li>
+<li>可以作为“AI 视频内容生产工作流自动化”的作品展示入口。</li>
+</ul>
+<h2>3. 按文件类型整理</h2>
+<h3>Skill / Agent</h3>
+<p>建议归类为“AI 能力沉淀”：</p>
+<ul>
+<li><code>/Users/edy/skills</code></li>
+<li><code>/Users/edy/Documents/视频/skills/reverse-video-prompt-completeness</code></li>
+<li><code>/Users/edy/Documents/视频/.agents/skills/gaoding-vpn-rules</code></li>
+<li><code>/Users/edy/Desktop/Video Workflow Collector/agents</code></li>
+<li><code>/Users/edy/Desktop/Video Workflow Collector/AGENT_WORKFLOW.md</code></li>
+</ul>
+<h3>Vibe Coding 原型</h3>
+<p>建议归类为“可演示本地工具”：</p>
+<ul>
+<li><code>/Users/edy/Documents/视频/video-pipeline-prototype.html</code></li>
+<li><code>/Users/edy/Documents/视频/video-prompt-workbench.html</code></li>
+<li><code>/Users/edy/Documents/视频/hotspot-evaluation-plan.html</code></li>
+<li><code>/Users/edy/Documents/视频/unique-hotspot-evaluator.html</code></li>
+<li><code>/Users/edy/Documents/视频/content-pipeline-mindmap.html</code></li>
+<li><code>/Users/edy/Documents/视频/agent-workbench-plan.html</code></li>
+<li><code>/Users/edy/Downloads/content-pipeline-share/content-pipeline.html</code></li>
+<li><code>/Users/edy/Downloads/world-pulse.html</code></li>
+</ul>
+<h3>Prompt / Workflow 数据</h3>
+<p>建议归类为“数据资产，不直接外发”：</p>
+<ul>
+<li><code>/Users/edy/Desktop/Prompt Hub Collector/data</code></li>
+<li><code>/Users/edy/Desktop/Video Workflow Collector/data</code></li>
+<li><code>/Users/edy/Documents/视频/generation-runs</code></li>
+<li><code>/Users/edy/Documents/视频/analysis-jobs</code></li>
+<li><code>/Users/edy/Documents/视频/automation-submissions</code></li>
+<li><code>/Users/edy/Documents/New project/xhs_research/runs</code></li>
+<li><code>/Users/edy/Documents/New project/xhs_research/automation2_brief</code></li>
+<li><code>/Users/edy/Documents/New project/xhs_research/automation2_psd</code></li>
+</ul>
+<h3>可交付包</h3>
+<p>建议归类为“可转交同事，但需清敏”：</p>
+<ul>
+<li><code>/Users/edy/Documents/视频/video-workbench-codex-package</code></li>
+<li><code>/Users/edy/Desktop/PromptHubCollector-20260430.zip</code></li>
+<li><code>/Users/edy/Desktop/PromptHubCollector-20260527.zip</code></li>
+<li><code>/Users/edy/Desktop/libtv-workflow-extractor-extension.zip</code></li>
+<li><code>/Users/edy/Downloads/content-pipeline-share.zip</code></li>
+</ul>
+<p>注意：凡是包含 <code>.env</code>、Dify key、公司内网 URL、真实资源 URL、账号登录态、浏览器 profile 的包，都不应直接发到公司外部。</p>
+<h3>素材 / 截图 / 视频</h3>
+<p>建议归类为“展示素材或实验素材”：</p>
+<ul>
+<li>桌面截图：<code>/Users/edy/Desktop/截屏2026-06-04...</code>、<code>/Users/edy/Desktop/截屏2026-06-09...</code>、<code>/Users/edy/Desktop/截屏2026-06-11...</code></li>
+<li>下载目录的生成图：<code>/Users/edy/Downloads/ChatGPT Image ...png</code></li>
+<li>下载目录的视频样例：<code>/Users/edy/Downloads/*.mp4</code></li>
+<li>字体包：<code>/Users/edy/Downloads/稿定字体包-*</code></li>
+</ul>
+<p>这些不是核心代码资产，但可以用于补充作品展示、页面设计和视频实验。</p>
+<h2>4. 推荐桌面整理结构</h2>
+<p>如果后续要实际移动文件，建议先按这个结构新建文件夹，再逐步迁移。当前我没有移动文件。</p>
+<pre><code>~/Desktop/AI作品集/
+├─ 01-视频反推与生成工作台/
+│  ├─ Documents-视频-主项目-快捷方式
+│  ├─ 关键页面截图
+│  └─ 可展示说明.md
+├─ 02-Prompt与Workflow采集器/
+│  ├─ Prompt Hub Collector
+│  ├─ Video Workflow Collector
+│  └─ libtv-workflow-extractor-extension
+├─ 03-Skills能力库/
+│  ├─ Gaoding Skills
+│  ├─ reverse-video-prompt-completeness
+│  └─ Project Charter / Kimgo / VPN Rules
+├─ 04-Vibe-Coding原型/
+│  ├─ hotspot-evaluation-plan.html
+│  ├─ unique-hotspot-evaluator.html
+│  ├─ content-pipeline-mindmap.html
+│  └─ content-pipeline-share
+├─ 05-研究数据与素材/
+│  ├─ xhs_research-只保留索引或样例
+│  ├─ generation-runs-只保留代表样例
+│  └─ screenshots-and-videos
+└─ 99-不可外发-含密钥或登录态/
+   ├─ .env
+   ├─ browser-profile
+   └─ data/media 原始缓存</code></pre>
+<h2>5. 对外展示优先级</h2>
+<p>第一优先级：</p>
+<ul>
+<li><code>/Users/edy/Documents/视频</code></li>
+<li><code>/Users/edy/Desktop/Video Workflow Collector</code></li>
+<li><code>/Users/edy/skills</code></li>
+<li><code>/Users/edy/Downloads/content-pipeline-share</code></li>
+</ul>
+<p>第二优先级：</p>
+<ul>
+<li><code>/Users/edy/Desktop/Prompt Hub Collector</code></li>
+<li><code>/Users/edy/Desktop/libtv-workflow-extractor-extension</code></li>
+<li><code>/Users/edy/Documents/New project/xhs_research</code></li>
+</ul>
+<p>第三优先级：</p>
+<ul>
+<li>截图、生成视频、字体包、安装包、旧 zip。</li>
+</ul>
+<h2>6. 可直接用于作品集的描述</h2>
+<h3>一句话版</h3>
+<p>我用 Vibe Coding 把 AI 内容生产、视频反推、Prompt 采集和 Agent 协作流程做成本地工作台与可复用 Skill，让经验可以被运行、被审核、被迁移、被交付。</p>
+<h3>项目版</h3>
+<ol>
+<li><strong>视频反推与生成工作台</strong>：构建了从源视频分析、参考素材绑定、prompt 完整性校验、Dify route 调用到生成结果记录的本地 AI 视频生产流水线。</li>
+<li><strong>Video Workflow Collector</strong>：设计并实现视频 prompt / 工作流采集台，用 Agent 分工区分证据抓取、稿定迁移和主控验收，避免模板内容误入真实案例库。</li>
+<li><strong>Prompt Hub Collector</strong>：实现本地 prompt 抓取、去重、质量评分、风险标记、翻译、审核和同步工具，把 prompt 从灵感素材变成可管理数据资产。</li>
+<li><strong>Gaoding Skills 集合页</strong>：维护内部 Skill 集合，将项目过程、立项访谈、VPN 规则、成员工作台同步等经验封装为可安装的 Agent Skill。</li>
+<li><strong>AI 视频内容生产自动化方案</strong>：沉淀热点筛选、独一性风险、同款反推价值、延展性评估和生产优先级，形成可分享 HTML 报告与工作流原型。</li>
+</ol>
+<h2>7. 风险与清理建议</h2>
+<p>需要保密：</p>
+<ul>
+<li><code>.env</code></li>
+<li>Dify API key</li>
+<li>公司内网 URL</li>
+<li>浏览器 profile / 登录态缓存</li>
+<li>真实素材原始 URL</li>
+<li><code>data/media</code> 中未清理的采集素材</li>
+</ul>
+<p>建议清理或隔离：</p>
+<ul>
+<li>重复 zip：保留最新版本，旧版本归档。</li>
+<li>下载目录里的安装包：Chrome、Codex、Cursor、Tiger 等可移入“安装包归档”。</li>
+<li>字体包：统一移入“设计资源/字体包”。</li>
+<li><code>xhs_research</code>：只保留代表样例到作品集，其余作为研究库，不直接展示。</li>
+</ul>
+<h2>8. 扫描备注</h2>
+<ul>
+<li>本次没有移动、删除、压缩任何原文件。</li>
+<li><code>Photos Library.photoslibrary</code> 因系统权限未读取。</li>
+<li><code>Library</code>、<code>.codex</code>、<code>.cursor</code> 中大量应用缓存和插件依赖只作为线索参考，不纳入作品主清单。</li>
+<li>如果要做下一步，可以基于本报告创建一个真正的 <code>AI作品集</code> 文件夹，并只放清敏后的代表材料。</li>
+</ul>
+</article></main></body></html>

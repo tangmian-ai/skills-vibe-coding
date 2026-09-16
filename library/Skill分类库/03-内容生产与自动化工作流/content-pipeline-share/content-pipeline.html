@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 视频内容生产 · 工作流自动化</title>
+<style>
+  :root{
+    --bg:#f3f1ec;
+    --paper:#fffdf8;
+    --ink:#171717;
+    --muted:#6d675f;
+    --soft:#aaa299;
+    --line:#ded7cc;
+    --line-strong:#bfb5a7;
+    --blue:#255fcb;
+    --green:#13845a;
+    --teal:#0b8588;
+    --violet:#7150c8;
+    --amber:#b67918;
+    --red:#bd4434;
+    --shadow:0 22px 60px rgba(48,39,25,.12), 0 1px 2px rgba(48,39,25,.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    color:var(--ink);
+    background:
+      linear-gradient(90deg, rgba(23,23,23,.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(23,23,23,.03) 1px, transparent 1px),
+      radial-gradient(900px 520px at 8% -10%, rgba(37,95,203,.12), transparent 58%),
+      radial-gradient(820px 500px at 100% 0%, rgba(19,132,90,.13), transparent 52%),
+      var(--bg);
+    background-size:42px 42px, 42px 42px, auto, auto, auto;
+    font-family:Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+  }
+  button{font:inherit}
+  button{
+    border:1px solid var(--line);
+    border-radius:999px;
+    min-height:34px;
+    padding:0 14px;
+    background:rgba(255,253,248,.74);
+    color:var(--ink);
+    font-weight:800;
+    cursor:pointer;
+  }
+  button:hover{border-color:var(--line-strong); background:#fff}
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    padding:18px 28px;
+    border-bottom:1px solid rgba(191,181,167,.65);
+    background:rgba(243,241,236,.82);
+    backdrop-filter:blur(14px) saturate(1.15);
+  }
+  .brand{max-width:850px}
+  .eyebrow{
+    margin:0 0 7px;
+    color:var(--muted);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(30px,4.7vw,62px);
+    line-height:.98;
+    letter-spacing:-.055em;
+  }
+  .sub{
+    max-width:780px;
+    margin-top:10px;
+    color:var(--muted);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14.5px;
+    line-height:1.7;
+  }
+  .tools{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    min-width:150px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .wrap{padding:28px clamp(18px,4vw,54px) 58px}
+  .purpose{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:12px;
+    margin-bottom:22px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .purpose-card{
+    padding:16px 18px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:rgba(255,253,248,.74);
+    box-shadow:0 10px 24px rgba(48,39,25,.06);
+  }
+  .purpose-card strong{display:block; margin-bottom:5px; font-size:16px}
+  .purpose-card span{color:var(--muted); font-size:13.5px; line-height:1.55}
+  .flow-wrap{overflow-x:auto; padding-bottom:8px}
+  .flow{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(6, minmax(170px, 1fr));
+    gap:12px;
+    min-width:1120px;
+    margin-bottom:24px;
+  }
+  .flow::before{
+    content:"";
+    position:absolute;
+    left:8%;
+    right:8%;
+    top:45px;
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--line-strong), transparent);
+  }
+  .step{
+    position:relative;
+    display:grid;
+    align-content:start;
+    gap:9px;
+    min-height:130px;
+    padding:15px 14px 14px;
+    border:1px solid rgba(222,215,204,.9);
+    border-radius:22px;
+    background:rgba(255,253,248,.78);
+    box-shadow:0 10px 24px rgba(48,39,25,.06);
+    text-align:left;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .step:hover{transform:translateY(-2px)}
+  .step.active{
+    border-color:var(--accent);
+    box-shadow:0 18px 42px rgba(48,39,25,.14);
+    background:#fffdf8;
+  }
+  .step-index{
+    display:grid;
+    place-items:center;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    color:#fff;
+    background:var(--accent);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:13px;
+    font-weight:900;
+  }
+  .step-title{
+    font-size:22px;
+    line-height:1.12;
+    font-weight:900;
+    letter-spacing:-.045em;
+  }
+  .step-summary{
+    color:var(--muted);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  .reader{
+    display:grid;
+    grid-template-columns:minmax(240px,.58fr) minmax(520px,1.42fr);
+    min-height:520px;
+    border:1px solid var(--line);
+    border-radius:32px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .reader-side{
+    position:relative;
+    padding:34px;
+    color:#fff;
+    background:
+      radial-gradient(360px 260px at 12% 0%, rgba(255,255,255,.22), transparent 58%),
+      linear-gradient(145deg, var(--accent), #171717);
+  }
+  .reader-side::after{
+    content:"";
+    position:absolute;
+    inset:auto -30px -60px auto;
+    width:210px;
+    height:210px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:50%;
+  }
+  .kicker{
+    margin:0 0 18px;
+    opacity:.78;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.18em;
+  }
+  .reader-side h2{
+    margin:0;
+    font-size:clamp(36px,5vw,72px);
+    line-height:.92;
+    letter-spacing:-.065em;
+  }
+  .reader-side p{
+    max-width:360px;
+    margin:24px 0 0;
+    opacity:.88;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.75;
+  }
+  .reader-main{
+    padding:30px clamp(24px,4vw,48px);
+    display:grid;
+    gap:20px;
+  }
+  .content-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:12px;
+  }
+  .info-card{
+    padding:17px 18px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:#fffaf1;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .info-card h3{
+    margin:0 0 10px;
+    font-size:17px;
+    letter-spacing:-.02em;
+  }
+  .info-card ul{
+    display:grid;
+    gap:8px;
+    margin:0;
+    padding:0;
+    list-style:none;
+  }
+  .info-card li{
+    position:relative;
+    padding-left:18px;
+    color:#2a251f;
+    font-size:14.5px;
+    line-height:1.55;
+  }
+  .info-card li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:.7em;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .manual-muted{
+    color:#9a968f !important;
+    opacity:.72;
+  }
+  .manual-muted::before{
+    background:#b9b2a8 !important;
+  }
+  .manual-muted::after{
+    content:"非本次重点";
+    display:inline-flex;
+    margin-left:8px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:#eee8df;
+    color:#8a8379;
+    font-size:11px;
+    font-weight:800;
+    vertical-align:middle;
+  }
+  .focus-line{
+    margin:0;
+    padding:17px 19px;
+    border:1px solid var(--line);
+    border-left:5px solid var(--accent);
+    border-radius:18px;
+    background:#fffdf8;
+    color:#2b251f;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:16px;
+    line-height:1.7;
+  }
+  .evidence-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:18px;
+    letter-spacing:-.02em;
+  }
+  .evidence-title span{
+    color:var(--muted);
+    font-size:12.5px;
+    font-weight:500;
+  }
+  .evidence-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:12px;
+  }
+  .shot{
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:#fffdf8;
+    text-align:left;
+    cursor:default;
+    box-shadow:0 10px 24px rgba(48,39,25,.06);
+  }
+  .shot-preview{
+    display:block;
+    width:100%;
+    min-height:0;
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    cursor:zoom-in;
+  }
+  .shot-preview:hover{background:transparent}
+  .shot img{
+    display:block;
+    width:100%;
+    height:210px;
+    object-fit:contain;
+    background:#131313;
+    border-bottom:1px solid var(--line);
+  }
+  .shot strong{
+    display:block;
+    padding:12px 14px 4px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14.5px;
+  }
+  .shot span{
+    display:block;
+    padding:0 14px 14px;
+    color:var(--muted);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  .shot-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:0 14px 14px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .shot-links a{
+    display:inline-flex;
+    align-items:center;
+    min-height:30px;
+    padding:0 11px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:#fff;
+    color:var(--ink);
+    font-size:12.5px;
+    font-weight:850;
+    text-decoration:none;
+  }
+  .shot-links a:hover{border-color:var(--accent); color:var(--accent)}
+  .corner-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:1;
+    padding:4px 9px;
+    border-radius:999px;
+    background:#fff0d9;
+    color:#9a5f00;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12px;
+    font-weight:900;
+    box-shadow:0 4px 14px rgba(0,0,0,.14);
+  }
+  .link-pill{
+    display:inline-flex;
+    align-items:center;
+    width:max-content;
+    min-height:34px;
+    padding:0 14px;
+    border-radius:999px;
+    color:#fff;
+    background:var(--accent);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:13px;
+    font-weight:900;
+    text-decoration:none;
+  }
+  .modal{
+    position:fixed;
+    inset:0;
+    z-index:80;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(12,12,12,.78);
+  }
+  .modal.open{display:flex}
+  .modal-card{
+    position:relative;
+    width:96vw;
+    height:92vh;
+    border-radius:22px;
+    background:#111;
+    overflow:hidden;
+    box-shadow:0 34px 100px rgba(0,0,0,.46);
+    display:flex;
+    flex-direction:column;
+  }
+  .modal-stage{
+    flex:1;
+    overflow:auto;
+    background:#111;
+    display:grid;
+    place-items:center;
+    padding:18px;
+  }
+  .modal img{
+    display:block;
+    max-width:none;
+    max-height:none;
+    width:calc(100% * var(--zoom, 1));
+    height:auto;
+    object-fit:contain;
+    transform-origin:center center;
+  }
+  .modal-caption{
+    min-height:58px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:13px 16px;
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .modal-caption p{margin:0; color:rgba(255,255,255,.72); font-size:13px}
+  .close{
+    position:absolute;
+    right:12px;
+    top:12px;
+    border-color:rgba(255,255,255,.22);
+    background:rgba(0,0,0,.55);
+    color:#fff;
+  }
+  .zoom-tools{
+    position:absolute;
+    left:12px;
+    top:12px;
+    z-index:2;
+    display:flex;
+    gap:8px;
+    padding:6px;
+    border-radius:999px;
+    background:rgba(0,0,0,.52);
+    backdrop-filter:blur(8px);
+  }
+  .zoom-tools button{
+    min-height:30px;
+    padding:0 11px;
+    border-color:rgba(255,255,255,.22);
+    background:rgba(255,255,255,.1);
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:12px;
+  }
+  @media (max-width:980px){
+    .topbar{position:static; padding:18px}
+    .purpose{grid-template-columns:1fr}
+    .reader{grid-template-columns:1fr}
+    .reader-side{min-height:260px}
+    .content-grid,.evidence-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff}
+    .topbar,.flow-wrap,.modal{display:none !important}
+    .wrap{padding:0}
+    .reader{display:block; border:0; box-shadow:none; border-radius:0}
+    .reader-side{color:#111; background:#fff; padding:0 0 20px}
+    .reader-side::after{display:none}
+    .reader-main{padding:0}
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <p class="eyebrow">AI Video Content Workflow</p>
+      <h1>把高赞热点变成少人工参与的自动化工作流</h1>
+      <div class="sub">这次重点是“怎么不人工”：顶部看流程，底部看每一步怎么用 AI 自动完成。人工相关内容统一弱化为灰色，只作为兜底背景。</div>
+    </div>
+    <div class="tools">
+      <button type="button" onclick="window.print()">打印</button>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <section class="purpose" aria-label="核心目标">
+      <div class="purpose-card"><strong>更高时效</strong><span>热点来了先快速判断，能做的马上进入方案和测试。</span></div>
+      <div class="purpose-card"><strong>更自动化</strong><span>抓取、评估、反推、审核、配置尽量交给 AI 或系统；宣传单独作为运营延展。</span></div>
+      <div class="purpose-card"><strong>更少人工</strong><span>把原本靠人工判断的经验沉淀成评分、能力边界、范例库和审核规则。</span></div>
+    </section>
+
+    <div class="flow-wrap">
+      <nav class="flow" id="flow" aria-label="内容生产主流程"></nav>
+    </div>
+    <section class="reader" id="reader" aria-live="polite"></section>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="图片预览">
+      <div class="zoom-tools" aria-label="缩放工具">
+        <button type="button" id="zoomOut">缩小</button>
+        <button type="button" id="zoomReset">100%</button>
+        <button type="button" id="zoomIn">放大</button>
+      </div>
+      <button type="button" class="close" id="closeModal">关闭</button>
+      <div class="modal-stage" id="modalStage">
+        <img id="modalImg" src="" alt="">
+      </div>
+      <div class="modal-caption">
+        <strong id="modalTitle"></strong>
+        <p id="modalDesc"></p>
+      </div>
+    </div>
+  </div>
+
+<script>
+const COLOR={blue:"#255fcb",green:"#13845a",teal:"#0b8588",violet:"#7150c8",amber:"#b67918",red:"#bd4434"};
+const IMG={
+  workflow:"assets/content-pipeline/workflow-config.png",
+  launch:"assets/content-pipeline/launch-config.png",
+  auditBox:"assets/content-pipeline/audit-locate.png",
+  videoAudit:"assets/content-pipeline/audit-locate2.png",
+  auditRegen:"assets/content-pipeline/audit-regenerate.png",
+  multiPlan:"assets/content-pipeline/multi-plan.png"
+};
+
+const stages=[
+  {
+    title:"获取",
+    color:"green",
+    summary:"抓高赞，也判断值不值得做。",
+    plain:"不是问“这个热不热”，而是问：普通账号能不能快速复制，能不能延展成更多内容。",
+    focus:"这一环节的重点：先筛掉“看起来很火但做不了”的内容，只让值得生产的热点进入后续流程。",
+    difficulty:["高赞内容很多，但不是每个热点都有生产价值。","只看播放量会误判：有些热点靠人设、版权、独家素材，复制不了。"],
+    automation:["抓取高赞、高互动内容，接入热点评估节点。","LLM 拆解为什么火，输出独一性风险、复刻成本、延展性和推荐等级。"],
+    build:["站内需求判断标准。","热点评分体系：热度增速、爆款验证、复刻速度、延展性、账号适配、情绪强度。","独一性淘汰规则：强人设、当事人、版权 IP、独家素材直接降级或淘汰。"],
+    link:{href:"hotspot-evaluation-plan.html",label:"查看热点评估方案"},
+    evidence:[]
+  },
+  {
+    title:"方案制定",
+    color:"violet",
+    summary:"反推结构，给出复刻或多方案。",
+    plain:"把“这个视频为什么火”翻译成“系统可以怎么做”，让方案生成从人工脑暴变成自动出多套可选项。",
+    focus:"这一环节的重点：让系统自动拆结构、出 Prompt、给多方案，减少人工从 0 想方案。",
+    difficulty:["人工想方案慢，且容易只想到单一路线。","复刻会撞到模型能力边界：风格、动作、构图、主体替换不一定稳定。"],
+    automation:["配置工作流反推源视频/图片，生成结构化字段和 Prompt。","复刻路线得到相似结果；方案路线给出更多解决思路。","同一素材生成 A/B/C 多套方案，减少人工创意成本。"],
+    build:["模型能力边界库：哪些风格能匹配，哪些动作做不了。","优质案例库和多方案评估标准。","Prompt 模板、主体替换和参考图绑定规则。"],
+    evidence:[
+      {src:IMG.workflow,title:"配置工作流反推：已跑通",desc:"源素材输入、双模型反推、完整性校验、Prompt 编辑和生成配置已接到工作台。"},
+      {src:IMG.multiPlan,title:"多方案制作：减少人工想法成本",desc:"同一个热点或素材输出多套制作方案，减少从 0 想创意的人工投入。",badge:"调试中",links:[
+        {href:"test/方案1.mp4",label:"方案1 视频"},
+        {href:"test/方案2.mp4",label:"方案2 视频"},
+        {href:"test/方案3.mp4",label:"方案3 视频"}
+      ]}
+    ]
+  },
+  {
+    title:"效果测试",
+    color:"amber",
+    summary:"审核定位，再二次生成调整。",
+    plain:"不是只说“效果不好”，而是定位哪里不好，并把问题变成下一次生成的修复指令。",
+    focus:"这一环节的重点：把主观审核变成可定位、可复现、可再次生成的调整闭环。",
+    difficulty:["生成结果经常局部不对：主体、比例、结构、真实感、细节容易出问题。","人工审核只能凭感觉描述，难以稳定转成修复动作。"],
+    automation:["先用定位框标出图片问题区域。","DeepSeek 3VL 结合定位结果做反推审核，输出具体问题和修复建议。","把建议加入下一次生成，形成“审核 - 修复 - 再生成”闭环。"],
+    build:["满意度、审美、品牌调性标准。","图像问题类型库：结构、比例、肢体、口器、主体一致性等。","优质范例修复方法库。"],
+    evidence:[
+      {src:IMG.auditBox,title:"审核定位：测试中",desc:"在图片上框选问题位置，避免模型只给笼统评价。"},
+      {src:IMG.videoAudit,title:"视频审核：测试中",desc:"对多方案视频结果做对比审核，检查模型生成效果、还原度和可继续调整的问题。",badge:"测试中"},
+      {src:IMG.auditRegen,title:"审核到再生成：测试中",desc:"DeepSeek 3VL 给出问题和修复建议后，再进入二次生成调整。"}
+    ]
+  },
+  {
+    title:"配置",
+    color:"blue",
+    summary:"把通过测试的方案变成可上线配置。",
+    plain:"一次生成成功不够，要把它整理成下次能复用、能上线的配置。",
+    focus:"这一环节的重点：把一次成功的生成结果沉淀成标准配置，减少下次重复人工操作。",
+    difficulty:["轻舟配置有规范，但字段、素材、参数、Prompt 和标签多。","如果全靠人工维护，速度慢，也难形成标准。"],
+    automation:["配置工作流自动生成 Prompt、生成参数、上传链路和后端配置。","规范性强的部分由系统直接生成配置草稿。","变量内容先通过结构化字段和规则检查降低人工确认量。"],
+    build:["轻舟配置模板。","内容标签体系和配置字段标准。","上架前自动检查规则。"],
+    evidence:[
+      {src:IMG.workflow,title:"配置工作流界面：已跑通",desc:"从反推到 Prompt、参数、生成对比、后端配置，已经形成工作台链路。"}
+    ]
+  },
+  {
+    title:"发布上线",
+    color:"red",
+    summary:"确认配置，完成发布。",
+    plain:"上线解决的是“这个内容能不能正式进入用户可用状态”，不包含后续运营宣传。",
+    focus:"这一环节的重点：发布前做最后确认和拦截，确保配置、标签、素材和内容本身都可上线。",
+    difficulty:["人工大内容打标变量大，不适合一开始完全交给 AI。","发布前如果没有自动检查，变量内容容易带着问题上线。"],
+    automation:["轻舟自动化配置确认后上线。","规范字段、素材、参数和发布配置进入系统检查链路。","标签、参数、素材完整性先由规则自动校验。"],
+    build:["发布前自动检查规则。","内容标签体系和上线检查清单。","配置版本、发布记录和问题回滚机制。"],
+    evidence:[
+      {src:IMG.launch,title:"上线配置：已跑通",desc:"规范字段、素材、参数和发布配置进入轻舟确认；人工打标只作为非重点兜底。"}
+    ]
+  },
+  {
+    title:"宣传",
+    color:"teal",
+    summary:"上线后的运营延展。",
+    plain:"宣传不属于前面的生产上线体系，它是内容上线后的分发和运营动作。",
+    focus:"这一环节的重点：把已上线内容推给更多用户，并把反馈数据带回后续选题和评估。",
+    difficulty:["上线后如果没有分发，内容无法被足够多用户看到。","宣传动作涉及账号、节奏、标签和效果复盘，和生产链路不是同一类问题。"],
+    automation:["Agent 自运营账号自动发送相关内容并打 tag。","根据内容类型生成不同平台的宣传文案。","把发布表现回流给热点评估和方案制定。"],
+    build:["营销账号体系。","平台标签和投放节奏规则。","宣传数据回流和自动复盘机制。"],
+    evidence:[]
+  }
+];
+
+let active=0;
+const flow=document.getElementById("flow");
+const reader=document.getElementById("reader");
+const modal=document.getElementById("modal");
+const modalStage=document.getElementById("modalStage");
+const modalImg=document.getElementById("modalImg");
+const modalTitle=document.getElementById("modalTitle");
+const modalDesc=document.getElementById("modalDesc");
+let zoom=1;
+
+function el(tag,className,text){
+  const node=document.createElement(tag);
+  if(className) node.className=className;
+  if(text!==undefined) node.textContent=text;
+  return node;
+}
+
+function listCard(title,items,options={}){
+  const card=el("article","info-card");
+  card.appendChild(el("h3",null,title));
+  const list=el("ul");
+  items.forEach(item=>{
+    const li=el("li",options.muteManual&&item.includes("人工")?"manual-muted":null,item);
+    list.appendChild(li);
+  });
+  card.appendChild(list);
+  return card;
+}
+
+function renderFlow(){
+  flow.innerHTML="";
+  stages.forEach((stage,index)=>{
+    const btn=el("button","step"+(index===active?" active":""));
+    btn.type="button";
+    btn.style.setProperty("--accent",COLOR[stage.color]);
+    btn.setAttribute("aria-current",index===active?"step":"false");
+    btn.onclick=()=>{active=index; render();};
+    btn.appendChild(el("span","step-index",String(index+1).padStart(2,"0")));
+    btn.appendChild(el("span","step-title",stage.title));
+    btn.appendChild(el("span","step-summary",stage.summary));
+    flow.appendChild(btn);
+  });
+}
+
+function renderReader(){
+  const stage=stages[active];
+  reader.style.setProperty("--accent",COLOR[stage.color]);
+  reader.innerHTML="";
+
+  const side=el("aside","reader-side");
+  side.appendChild(el("p","kicker","STEP "+String(active+1).padStart(2,"0")));
+  side.appendChild(el("h2",null,stage.title));
+  side.appendChild(el("p",null,stage.plain));
+
+  const main=el("div","reader-main");
+  main.appendChild(el("p","focus-line",stage.focus));
+  const grid=el("div","content-grid");
+  grid.appendChild(listCard("当前难点",stage.difficulty));
+  grid.appendChild(listCard("AI 自动化",stage.automation,{muteManual:true}));
+  grid.appendChild(listCard("长期搭建",stage.build,{muteManual:true}));
+  main.appendChild(grid);
+
+  if(stage.link){
+    const link=el("a","link-pill",stage.link.label);
+    link.href=stage.link.href;
+    link.target="_blank";
+    link.rel="noreferrer";
+    main.appendChild(link);
+  }
+
+  const title=el("h3","evidence-title","证据 / 界面截图");
+  title.appendChild(el("span",null,stage.evidence.length ? "点击图片可放大" : "该环节以评估方案和规则沉淀为主"));
+  main.appendChild(title);
+
+  if(stage.evidence.length){
+    const shots=el("div","evidence-grid");
+    stage.evidence.forEach(item=>{
+      const shot=el("article","shot");
+      const preview=el("button","shot-preview");
+      preview.type="button";
+      preview.onclick=()=>openModal(item);
+      const img=el("img");
+      img.src=item.src;
+      img.alt=item.title;
+      preview.appendChild(img);
+      shot.appendChild(preview);
+      if(item.badge) shot.appendChild(el("span","corner-badge",item.badge));
+      shot.appendChild(el("strong",null,item.title));
+      shot.appendChild(el("span",null,item.desc));
+      if(item.links&&item.links.length){
+        const links=el("div","shot-links");
+        item.links.forEach(linkItem=>{
+          const link=el("a",null,linkItem.label);
+          link.href=linkItem.href;
+          link.target="_blank";
+          link.rel="noreferrer";
+          links.appendChild(link);
+        });
+        shot.appendChild(links);
+      }
+      shots.appendChild(shot);
+    });
+    main.appendChild(shots);
+  }
+
+  reader.appendChild(side);
+  reader.appendChild(main);
+}
+
+function openModal(item){
+  zoom=1;
+  setZoom(1);
+  modalImg.src=item.src;
+  modalImg.alt=item.title;
+  modalTitle.textContent=item.title;
+  modalDesc.textContent=item.desc;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  requestAnimationFrame(()=>{ modalStage.scrollLeft=0; modalStage.scrollTop=0; });
+}
+
+function closeModal(){
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+}
+
+function setZoom(value){
+  zoom=Math.max(.5,Math.min(4,value));
+  modalImg.style.setProperty("--zoom",zoom);
+  document.getElementById("zoomReset").textContent=Math.round(zoom*100)+"%";
+}
+
+function render(){
+  renderFlow();
+  renderReader();
+}
+
+document.getElementById("closeModal").onclick=closeModal;
+document.getElementById("zoomIn").onclick=()=>setZoom(zoom+.25);
+document.getElementById("zoomOut").onclick=()=>setZoom(zoom-.25);
+document.getElementById("zoomReset").onclick=()=>setZoom(1);
+modal.addEventListener("click",event=>{ if(event.target===modal) closeModal(); });
+modalStage.addEventListener("wheel",event=>{
+  if(!event.ctrlKey) return;
+  event.preventDefault();
+  setZoom(zoom+(event.deltaY<0?.2:-.2));
+},{passive:false});
+document.addEventListener("keydown",event=>{ if(event.key==="Escape") closeModal(); });
+
+render();
+</script>
+</body>
+</html>

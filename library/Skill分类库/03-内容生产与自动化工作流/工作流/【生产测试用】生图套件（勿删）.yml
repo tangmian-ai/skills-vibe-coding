@@ -1,0 +1,3901 @@
+app:
+  description: 根据提示词和参数生成一张图片，返回图片URL，支持多模型
+  icon: 🤖
+  icon_background: '#FCE7F6'
+  mode: workflow
+  name: 【生产测试用】生图套件（勿删）
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: langgenius/gaoding:1.0618.0108-221957049@4150cba7cc1b2b5b522ad1a59e4d49d6d99b95c48d282cb39745e9c388aa7de9
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: 8000000000001-source-8000000000002-target
+      selected: false
+      source: '8000000000001'
+      sourceHandle: source
+      target: '8000000000002'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 8000000000002-false-8000000000006-target
+      selected: false
+      source: '8000000000002'
+      sourceHandle: 'false'
+      target: '8000000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: variable-aggregator
+      id: 8000000000005-source-8000000000007-target
+      selected: false
+      source: '8000000000005'
+      sourceHandle: source
+      target: '8000000000007'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: variable-aggregator
+      id: 8000000000006-source-8000000000007-target
+      selected: false
+      source: '8000000000006'
+      sourceHandle: source
+      target: '8000000000007'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1776677242118-b7737ab9-9852-44e9-a929-25b4b5a295d7-1776677708070-target
+      selected: false
+      source: '1776677242118'
+      sourceHandle: b7737ab9-9852-44e9-a929-25b4b5a295d7
+      target: '1776677708070'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1776677242118-f588fe9a-279c-41a5-a17b-ec56a874c945-17766778623340-target
+      selected: false
+      source: '1776677242118'
+      sourceHandle: f588fe9a-279c-41a5-a17b-ec56a874c945
+      target: '17766778623340'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1776677242118-5cfe3311-8bbf-490f-ab52-401774ae114a-17766778666300-target
+      selected: false
+      source: '1776677242118'
+      sourceHandle: 5cfe3311-8bbf-490f-ab52-401774ae114a
+      target: '17766778666300'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1776677601110-true-1776678964419-target
+      selected: false
+      source: '1776677601110'
+      sourceHandle: 'true'
+      target: '1776678964419'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 1776677708070-source-1773908986615-target
+      selected: false
+      source: '1776677708070'
+      sourceHandle: source
+      target: '1773908986615'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 17766778623340-source-1773908986615-target
+      selected: false
+      source: '17766778623340'
+      sourceHandle: source
+      target: '1773908986615'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 17766778666300-source-1773908986615-target
+      selected: false
+      source: '17766778666300'
+      sourceHandle: source
+      target: '1773908986615'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1776677601110-dfca31f1-51c5-44d4-85fe-7bf2716c987b-1776677624261-target
+      selected: false
+      source: '1776677601110'
+      sourceHandle: dfca31f1-51c5-44d4-85fe-7bf2716c987b
+      target: '1776677624261'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1776677624261-source-1776677242118-target
+      selected: false
+      source: '1776677624261'
+      sourceHandle: source
+      target: '1776677242118'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1776677601110-41badb33-8f00-448e-b53d-c1ee95f2959f-1776832094524-target
+      selected: false
+      source: '1776677601110'
+      sourceHandle: 41badb33-8f00-448e-b53d-c1ee95f2959f
+      target: '1776832094524'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1776678964419-fail-branch-17769111384410-target
+      selected: false
+      source: '1776678964419'
+      sourceHandle: fail-branch
+      target: '17769111384410'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: if-else
+      id: 8000000000007-source-1776677601110-target
+      selected: false
+      source: '8000000000007'
+      sourceHandle: source
+      target: '1776677601110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1776677708070-source-1780670247805-target
+      selected: false
+      source: '1776677708070'
+      sourceHandle: source
+      target: '1780670247805'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 17766778623340-source-1780670247805-target
+      selected: false
+      source: '17766778623340'
+      sourceHandle: source
+      target: '1780670247805'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 17766778666300-source-1780670247805-target
+      selected: false
+      source: '17766778666300'
+      sourceHandle: source
+      target: '1780670247805'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1776678964419-source-1780670490692-target
+      selected: false
+      source: '1776678964419'
+      sourceHandle: source
+      target: '1780670490692'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 17769111384410-source-1780670490692-target
+      selected: false
+      source: '17769111384410'
+      sourceHandle: source
+      target: '1780670490692'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1776832094524-source-1780670490692-target
+      selected: false
+      source: '1776832094524'
+      sourceHandle: source
+      target: '1780670490692'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 8000000000002-true-8000000000005-target
+      selected: false
+      source: '8000000000002'
+      sourceHandle: 'true'
+      target: '8000000000005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 8000000000001-source-8000000000005-target
+      selected: false
+      source: '8000000000001'
+      sourceHandle: source
+      target: '8000000000005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: code
+      id: 1773908986615-source-1780678905396-target
+      selected: false
+      source: '1773908986615'
+      sourceHandle: source
+      target: '1780678905396'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1780679264155-source-1780678994612-target
+      selected: false
+      source: '1780679264155'
+      sourceHandle: source
+      target: '1780678994612'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: tool
+      id: 1780678905396-source-1780679264155-target
+      source: '1780678905396'
+      sourceHandle: source
+      target: '1780679264155'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 1780678994612-source-1780680353395-target
+      source: '1780678994612'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: code
+      id: 1780680353395-source-1780670679548-target
+      source: '1780680353395'
+      sourceHandle: source
+      target: '1780670679548'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: variable-aggregator
+      id: 1780670490692-source-1780680353395-target
+      selected: false
+      source: '1780670490692'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: variable-aggregator
+      id: 1780670247805-source-1780680353395-target
+      source: '1780670247805'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 1776832094524-source-1780680353395-target
+      source: '1776832094524'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 17769111384410-source-1780680353395-target
+      source: '17769111384410'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: variable-aggregator
+      id: 1776678964419-source-1780680353395-target
+      source: '1776678964419'
+      sourceHandle: source
+      target: '1780680353395'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: 1780670679548-source-1780998201608-target
+      source: '1780670679548'
+      sourceHandle: source
+      target: '1780998201608'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: 生图提示词
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: paragraph
+          variable: image_prompt
+        - default: nanobanana2
+          hint: ''
+          label: 图片模型
+          max_length: 48
+          options:
+          - nanobanana2
+          - 即梦4.5
+          - 即梦5.0
+          - 即梦4.0
+          - gptimage2
+          placeholder: ''
+          required: false
+          type: select
+          variable: image_model
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          default: ''
+          hint: ''
+          label: 参考图片（可多张）
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: paragraph
+          variable: images_ref
+        - default: '9:16'
+          label: 尺寸
+          max_length: 1024
+          options: []
+          required: false
+          type: paragraph
+          variable: image_ratio
+        - default: 1K
+          hint: ''
+          label: 清晰度
+          max_length: 48
+          options:
+          - 1K
+          - 2K
+          - 4K
+          placeholder: ''
+          required: false
+          type: select
+          variable: resolution
+        - default: '11'
+          hint: ''
+          label: 内容id
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: content_id
+        - default: '11'
+          hint: ''
+          label: 任务id
+          max_length: null
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: task_id
+      height: 265
+      id: '8000000000001'
+      position:
+        x: 2046.1370973622898
+        y: 258.106787108674
+      positionAbsolute:
+        x: 2046.1370973622898
+        y: 258.106787108674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: cond-ref-imgs
+            value: ''
+            varType: array[file]
+            variable_selector:
+            - '8000000000001'
+            - images_ref
+          id: 'true'
+          logical_operator: and
+        selected: false
+        title: 有参考图?
+        type: if-else
+      height: 124
+      id: '8000000000002'
+      position:
+        x: 2428.6764709716754
+        y: 279.106787108674
+      positionAbsolute:
+        x: 2428.6764709716754
+        y: 279.106787108674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import re\n\ndef main(urls: str) -> dict:\n    invalid = [\"\", \"\
+          null\", \"none\", \"undefined\"]\n    \n    # 去掉单引号、花括号、方括号等非URL字符\n   \
+          \ urls = re.sub(r\"['\\\"\\{\\}\\[\\]]\", \"\", urls)\n    \n    # 按 |、逗号、空格分割\n\
+          \    parts = re.split(r'[|\\s,]+', urls.strip())\n    \n    valid = []\n\
+          \    for u in parts:\n        u = u.strip()\n        # 严格校验：必须是 http(s)://\
+          \ 开头，且不含非法字符\n        if (u\n            and u.lower() not in invalid\n\
+          \            and re.match(r'https?://[^\\s\\{\\}\\[\\]\\'\\\"]+$', u, re.IGNORECASE)\n\
+          \        ):\n            valid.append(u)\n    \n    return {\n        \"\
+          urls\": \"|\".join(valid)\n    }"
+        code_language: python3
+        outputs:
+          urls:
+            children: null
+            type: string
+        selected: false
+        title: URL重组
+        type: code
+        variables:
+        - value_selector:
+          - '8000000000001'
+          - images_ref
+          value_type: string
+          variable: urls
+      height: 52
+      id: '8000000000005'
+      position:
+        x: 2697.948419167205
+        y: 279.106787108674
+      positionAbsolute:
+        x: 2697.948419167205
+        y: 279.106787108674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "def main() -> dict:\n    return {\"ref_urls\": \"\"}"
+        code_language: python3
+        outputs:
+          ref_urls:
+            children: null
+            type: string
+        selected: false
+        title: 无参考图
+        type: code
+        variables: []
+      height: 52
+      id: '8000000000006'
+      position:
+        x: 2697.948419167205
+        y: 359.81987378228075
+      positionAbsolute:
+        x: 2697.948419167205
+        y: 359.81987378228075
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        advanced_settings:
+          group_enabled: false
+          groups: []
+        groups:
+        - group_name: 默认
+          output_type: string
+          variables:
+          - - '8000000000005'
+            - ref_urls
+          - - '8000000000006'
+            - ref_urls
+        output_type: string
+        selected: false
+        title: 聚合图片URL
+        type: variable-aggregator
+        variables:
+        - - '8000000000005'
+          - urls
+        - - '8000000000006'
+          - ref_urls
+      height: 134
+      id: '8000000000007'
+      position:
+        x: 2993.0542955752508
+        y: 279.106787108674
+      positionAbsolute:
+        x: 2993.0542955752508
+        y: 279.106787108674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        output_type: array[object]
+        selected: false
+        title: 需要文件转URL图片聚合
+        type: variable-aggregator
+        variables:
+        - - '17766778623340'
+          - json
+        - - '1776677708070'
+          - json
+        - - '17766778666300'
+          - json
+      height: 160
+      id: '1773908986615'
+      position:
+        x: 4514.139908698104
+        y: 702.3308843469463
+      positionAbsolute:
+        x: 4514.139908698104
+        y: 702.3308843469463
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: b7737ab9-9852-44e9-a929-25b4b5a295d7
+          conditions:
+          - comparison_operator: contains
+            id: ee522888-3c04-4f04-b7ae-1ee3527df5ca
+            value: '4.0'
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: b7737ab9-9852-44e9-a929-25b4b5a295d7
+          logical_operator: and
+        - case_id: f588fe9a-279c-41a5-a17b-ec56a874c945
+          conditions:
+          - comparison_operator: contains
+            id: 3f28783e-8aee-4752-980e-284dbdab47fb
+            value: '4.5'
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: f588fe9a-279c-41a5-a17b-ec56a874c945
+          logical_operator: and
+        - case_id: 5cfe3311-8bbf-490f-ab52-401774ae114a
+          conditions:
+          - comparison_operator: contains
+            id: bc97fd36-3617-41e1-afba-89748f3c4897
+            value: '5.0'
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: 5cfe3311-8bbf-490f-ab52-401774ae114a
+          logical_operator: and
+        selected: false
+        title: 即梦模型选择
+        type: if-else
+      height: 220
+      id: '1776677242118'
+      position:
+        x: 3848.646134664586
+        y: 668.2876712554281
+      positionAbsolute:
+        x: 3848.646134664586
+        y: 668.2876712554281
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 3db8f11f-069a-4943-98b4-c519e9a09ff8
+            value: nano
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: 'true'
+          logical_operator: and
+        - case_id: 41badb33-8f00-448e-b53d-c1ee95f2959f
+          conditions:
+          - comparison_operator: contains
+            id: 76a195ea-206e-417a-ada2-ec83c043de48
+            value: gpt
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: 41badb33-8f00-448e-b53d-c1ee95f2959f
+          logical_operator: and
+        - case_id: dfca31f1-51c5-44d4-85fe-7bf2716c987b
+          conditions:
+          - comparison_operator: contains
+            id: 8ddd63fa-4708-4d90-b62d-04ac1fb6220a
+            value: 即梦
+            varType: string
+            variable_selector:
+            - '8000000000001'
+            - image_model
+          id: dfca31f1-51c5-44d4-85fe-7bf2716c987b
+          logical_operator: and
+        selected: false
+        title: 模型选择
+        type: if-else
+      height: 220
+      id: '1776677601110'
+      position:
+        x: 3281.9950197550756
+        y: 279.106787108674
+      positionAbsolute:
+        x: 3281.9950197550756
+        y: 279.106787108674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import math\nimport unicodedata\n\nRESOLUTION_MAP = {\n    \"1k\":\
+          \ 1_000_000,\n    \"2k\": 2_000_000,\n    \"3k\": 3_000_000,\n    \"4k\"\
+          : 4_000_000,\n}\n\n# 即梦要求最少 3,686,400 像素\nMIN_PIXELS = 3_686_400\n\ndef\
+          \ main(ratio: str, resolution: str) -> dict:\n    try:\n        res_key\
+          \ = (resolution or \"4k\").strip().lower()\n        if res_key not in RESOLUTION_MAP:\n\
+          \            raise ValueError(f\"不支持的档位 '{resolution}'，可选：1k / 2k / 3k /\
+          \ 4k\")\n\n        target_pixels = max(RESOLUTION_MAP[res_key], MIN_PIXELS)\n\
+          \n        normalized = unicodedata.normalize('NFKC', (ratio or \"\").strip())\n\
+          \        parts = normalized.split(':')\n        if len(parts) != 2:\n  \
+          \          raise ValueError(\"比例格式应为 '宽:高'，例如 '16:9'\")\n\n        w, h\
+          \ = int(parts[0]), int(parts[1])\n        if w <= 0 or h <= 0:\n       \
+          \     raise ValueError(\"宽高比数值必须为正整数\")\n\n        k = math.sqrt(target_pixels\
+          \ / (w * h))\n        width  = max(8, round(k * w / 8) * 8)\n        height\
+          \ = max(8, round(k * h / 8) * 8)\n\n        return {\"width\": width, \"\
+          height\": height}\n\n    except (ValueError, ZeroDivisionError, IndexError)\
+          \ as e:\n        return {\"error\": str(e)}"
+        code_language: python3
+        outputs:
+          height:
+            children: null
+            type: number
+          width:
+            children: null
+            type: number
+        selected: false
+        title: 比例转尺寸
+        type: code
+        variables:
+        - value_selector:
+          - '8000000000001'
+          - image_ratio
+          value_type: string
+          variable: ratio
+        - value_selector:
+          - '8000000000001'
+          - resolution
+          value_type: string
+          variable: resolution
+      height: 52
+      id: '1776677624261'
+      position:
+        x: 3848.646134664586
+        y: 590.3260861473899
+      positionAbsolute:
+        x: 3848.646134664586
+        y: 590.3260861473899
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: seedream_v40
+          form: form
+          human_description:
+            en_US: Select the model version to use
+            ja_JP: Select the model version to use
+            pt_BR: Select the model version to use
+            zh_Hans: 选择要使用的模型版本
+          label:
+            en_US: Model Version
+            ja_JP: Model Version
+            pt_BR: Model Version
+            zh_Hans: 模型版本
+          llm_description: The model version to use for image generation.
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: JiMeng 4.0
+              ja_JP: JiMeng 4.0
+              pt_BR: JiMeng 4.0
+              zh_Hans: 即梦4.0
+            value: jimeng_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.0
+              ja_JP: Seedream 4.0
+              pt_BR: Seedream 4.0
+              zh_Hans: 方舟4.0
+            value: seedream_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.5
+              ja_JP: Seedream 4.5
+              pt_BR: Seedream 4.5
+              zh_Hans: 方舟4.5
+            value: seedream_v45
+          - icon: ''
+            label:
+              en_US: Seedream 5.0
+              ja_JP: Seedream 5.0
+              pt_BR: Seedream 5.0
+              zh_Hans: 方舟5.0
+            value: seedream_v50
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Prompt for generating images, both Chinese and English can be input
+            ja_JP: Prompt for generating images, both Chinese and English can be input
+            pt_BR: Prompt for generating images, both Chinese and English can be input
+            zh_Hans: 用于生成图像的提示词，中英文均可输入
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: The prompt for generating images.
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image URLs for reference, multiple images use "|" to split
+            ja_JP: Image URLs for reference, multiple images use "|" to split
+            pt_BR: Image URLs for reference, multiple images use "|" to split
+            zh_Hans: 参考图片URL，多个图片使用"|"分割
+          label:
+            en_US: Image URLs
+            ja_JP: Image URLs
+            pt_BR: Image URLs
+            zh_Hans: 图片URL列表
+          llm_description: The input image URLs for reference.
+          max: null
+          min: null
+          name: images
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            ja_JP: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            pt_BR: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            zh_Hans: 图片尺寸，格式为"宽x高"（如"1024x768"），优先级高于width/height
+          label:
+            en_US: Size
+            ja_JP: Size
+            pt_BR: Size
+            zh_Hans: 尺寸
+          llm_description: The image size in format "widthxheight".
+          max: null
+          min: null
+          name: size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Width of the generated image (ignored when size is provided)
+            ja_JP: Width of the generated image (ignored when size is provided)
+            pt_BR: Width of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的宽度（当size参数存在时忽略）
+          label:
+            en_US: Width
+            ja_JP: Width
+            pt_BR: Width
+            zh_Hans: 宽度
+          llm_description: The width of the generated image.
+          max: null
+          min: null
+          name: width
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Height of the generated image (ignored when size is provided)
+            ja_JP: Height of the generated image (ignored when size is provided)
+            pt_BR: Height of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的高度（当size参数存在时忽略）
+          label:
+            en_US: Height
+            ja_JP: Height
+            pt_BR: Height
+            zh_Hans: 高度
+          llm_description: The height of the generated image.
+          max: null
+          min: null
+          name: height
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: -1
+          form: llm
+          human_description:
+            en_US: Random seed for reproducible results
+            ja_JP: Random seed for reproducible results
+            pt_BR: Random seed for reproducible results
+            zh_Hans: 随机种子，用于生成可重现的结果
+          label:
+            en_US: Seed
+            ja_JP: Seed
+            pt_BR: Seed
+            zh_Hans: 随机种子
+          llm_description: The random seed for image generation.
+          max: null
+          min: null
+          name: seed
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Force single image generation (false = auto-determine based on
+              prompt)
+            ja_JP: Force single image generation (false = auto-determine based on
+              prompt)
+            pt_BR: Force single image generation (false = auto-determine based on
+              prompt)
+            zh_Hans: 强制单图生成（false = 根据提示词自动判断）
+          label:
+            en_US: Force Single Image
+            ja_JP: Force Single Image
+            pt_BR: Force Single Image
+            zh_Hans: 强制单图生成
+          llm_description: Whether to force single image generation.
+          max: null
+          min: null
+          name: force_single
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: jpeg
+          form: llm
+          human_description:
+            en_US: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            ja_JP: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            pt_BR: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            zh_Hans: 输出格式，用于生成图像,只对5.0版本有效
+          label:
+            en_US: Output Format
+            ja_JP: Output Format
+            pt_BR: Output Format
+            zh_Hans: 输出格式,只对5.0版本有效
+          llm_description: The output format for the generated image.
+          max: null
+          min: null
+          name: output_format
+          options:
+          - icon: ''
+            label:
+              en_US: jpeg
+              ja_JP: jpeg
+              pt_BR: jpeg
+              zh_Hans: jpeg
+            value: jpeg
+          - icon: ''
+            label:
+              en_US: png
+              ja_JP: png
+              pt_BR: png
+              zh_Hans: png
+            value: png
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Content ID, used for image storage
+            ja_JP: Content ID, used for image storage
+            pt_BR: Content ID, used for image storage
+            zh_Hans: 内容ID，用于图片转储
+          label:
+            en_US: Content ID
+            ja_JP: Content ID
+            pt_BR: Content ID
+            zh_Hans: 内容ID
+          llm_description: The content ID, used to identify the content.
+          max: null
+          min: null
+          name: content_id
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Task ID, used to report data logs
+            ja_JP: Task ID, used to report data logs
+            pt_BR: Task ID, used to report data logs
+            zh_Hans: 任务ID，有传入时才会上报数据日志
+          label:
+            en_US: Task ID
+            ja_JP: Task ID
+            pt_BR: Task ID
+            zh_Hans: 任务ID
+          llm_description: The task ID, used to identify the task.
+          max: null
+          min: null
+          name: task_id
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: User Parameters, used to report data logs
+            ja_JP: User Parameters, used to report data logs
+            pt_BR: User Parameters, used to report data logs
+            zh_Hans: 用户输入参数，多个参数使用','分割，用于日志上报
+          label:
+            en_US: User Parameters
+            ja_JP: User Parameters
+            pt_BR: User Parameters
+            zh_Hans: 用户参数
+          llm_description: The user parameters, used to report data logs.
+          max: null
+          min: null
+          name: user_parameters
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          label:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          llm_description: Whether to use file transfer.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: standard
+          form: form
+          human_description:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          label:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          llm_description: The mode of the prompt optimization function.
+          max: null
+          min: null
+          name: optimize_prompt_optionsnew
+          options:
+          - icon: ''
+            label:
+              en_US: Standard, higher quality, longer time
+              ja_JP: Standard, higher quality, longer time
+              pt_BR: Standard, higher quality, longer time
+              zh_Hans: 标准，生成内容的质量更高，耗时较长。
+            value: standard
+          - icon: ''
+            label:
+              en_US: Fast, lower quality, shorter time
+              ja_JP: Fast, lower quality, shorter time
+              pt_BR: Fast, lower quality, shorter time
+              zh_Hans: 快速，生成内容的质量较低，耗时较短。
+            value: fast
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          content_id: ''
+          force_single: ''
+          height: ''
+          images: ''
+          model: ''
+          optimize_prompt_optionsnew: ''
+          output_format: ''
+          prompt: ''
+          seed: ''
+          size: ''
+          task_id: ''
+          use_file_transfer: ''
+          user_parameters: ''
+          width: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0420.1038-191671236@ef6be7cac4f6e0b27561e8630bfcdff439ec050c8ff18231eae499bf07a4ea35
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: 即梦4.0
+        tool_configurations:
+          force_single:
+            type: constant
+            value: false
+          model:
+            type: constant
+            value: seedream_v40
+          optimize_prompt_optionsnew:
+            type: constant
+            value: standard
+          use_file_transfer:
+            type: constant
+            value: true
+          user_parameters:
+            type: mixed
+            value: null
+        tool_description: 火山通用-即梦图片生成
+        tool_label: 火山通用-即梦图片生成
+        tool_name: gaoding_volcengine_jimeng_universal
+        tool_node_version: '2'
+        tool_parameters:
+          content_id:
+            type: mixed
+            value: '{{#8000000000001.task_id#}}'
+          height:
+            type: variable
+            value:
+            - '1776677624261'
+            - height
+          images:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+          output_format:
+            type: constant
+            value: jpeg
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          seed:
+            type: constant
+            value: -1
+          size:
+            type: mixed
+            value: ''
+          task_id:
+            type: mixed
+            value: '{{#8000000000001.content_id#}}'
+          width:
+            type: variable
+            value:
+            - '1776677624261'
+            - width
+        type: tool
+      height: 222
+      id: '1776677708070'
+      position:
+        x: 4146.361927364197
+        y: 512.7056392256808
+      positionAbsolute:
+        x: 4146.361927364197
+        y: 512.7056392256808
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: seedream_v40
+          form: form
+          human_description:
+            en_US: Select the model version to use
+            ja_JP: Select the model version to use
+            pt_BR: Select the model version to use
+            zh_Hans: 选择要使用的模型版本
+          label:
+            en_US: Model Version
+            ja_JP: Model Version
+            pt_BR: Model Version
+            zh_Hans: 模型版本
+          llm_description: The model version to use for image generation.
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: JiMeng 4.0
+              ja_JP: JiMeng 4.0
+              pt_BR: JiMeng 4.0
+              zh_Hans: 即梦4.0
+            value: jimeng_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.0
+              ja_JP: Seedream 4.0
+              pt_BR: Seedream 4.0
+              zh_Hans: 方舟4.0
+            value: seedream_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.5
+              ja_JP: Seedream 4.5
+              pt_BR: Seedream 4.5
+              zh_Hans: 方舟4.5
+            value: seedream_v45
+          - icon: ''
+            label:
+              en_US: Seedream 5.0
+              ja_JP: Seedream 5.0
+              pt_BR: Seedream 5.0
+              zh_Hans: 方舟5.0
+            value: seedream_v50
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Prompt for generating images, both Chinese and English can be input
+            ja_JP: Prompt for generating images, both Chinese and English can be input
+            pt_BR: Prompt for generating images, both Chinese and English can be input
+            zh_Hans: 用于生成图像的提示词，中英文均可输入
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: The prompt for generating images.
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image URLs for reference, multiple images use "|" to split
+            ja_JP: Image URLs for reference, multiple images use "|" to split
+            pt_BR: Image URLs for reference, multiple images use "|" to split
+            zh_Hans: 参考图片URL，多个图片使用"|"分割
+          label:
+            en_US: Image URLs
+            ja_JP: Image URLs
+            pt_BR: Image URLs
+            zh_Hans: 图片URL列表
+          llm_description: The input image URLs for reference.
+          max: null
+          min: null
+          name: images
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            ja_JP: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            pt_BR: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            zh_Hans: 图片尺寸，格式为"宽x高"（如"1024x768"），优先级高于width/height
+          label:
+            en_US: Size
+            ja_JP: Size
+            pt_BR: Size
+            zh_Hans: 尺寸
+          llm_description: The image size in format "widthxheight".
+          max: null
+          min: null
+          name: size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Width of the generated image (ignored when size is provided)
+            ja_JP: Width of the generated image (ignored when size is provided)
+            pt_BR: Width of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的宽度（当size参数存在时忽略）
+          label:
+            en_US: Width
+            ja_JP: Width
+            pt_BR: Width
+            zh_Hans: 宽度
+          llm_description: The width of the generated image.
+          max: null
+          min: null
+          name: width
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Height of the generated image (ignored when size is provided)
+            ja_JP: Height of the generated image (ignored when size is provided)
+            pt_BR: Height of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的高度（当size参数存在时忽略）
+          label:
+            en_US: Height
+            ja_JP: Height
+            pt_BR: Height
+            zh_Hans: 高度
+          llm_description: The height of the generated image.
+          max: null
+          min: null
+          name: height
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: -1
+          form: llm
+          human_description:
+            en_US: Random seed for reproducible results
+            ja_JP: Random seed for reproducible results
+            pt_BR: Random seed for reproducible results
+            zh_Hans: 随机种子，用于生成可重现的结果
+          label:
+            en_US: Seed
+            ja_JP: Seed
+            pt_BR: Seed
+            zh_Hans: 随机种子
+          llm_description: The random seed for image generation.
+          max: null
+          min: null
+          name: seed
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Force single image generation (false = auto-determine based on
+              prompt)
+            ja_JP: Force single image generation (false = auto-determine based on
+              prompt)
+            pt_BR: Force single image generation (false = auto-determine based on
+              prompt)
+            zh_Hans: 强制单图生成（false = 根据提示词自动判断）
+          label:
+            en_US: Force Single Image
+            ja_JP: Force Single Image
+            pt_BR: Force Single Image
+            zh_Hans: 强制单图生成
+          llm_description: Whether to force single image generation.
+          max: null
+          min: null
+          name: force_single
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: jpeg
+          form: llm
+          human_description:
+            en_US: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            ja_JP: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            pt_BR: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            zh_Hans: 输出格式，用于生成图像,只对5.0版本有效
+          label:
+            en_US: Output Format
+            ja_JP: Output Format
+            pt_BR: Output Format
+            zh_Hans: 输出格式,只对5.0版本有效
+          llm_description: The output format for the generated image.
+          max: null
+          min: null
+          name: output_format
+          options:
+          - icon: ''
+            label:
+              en_US: jpeg
+              ja_JP: jpeg
+              pt_BR: jpeg
+              zh_Hans: jpeg
+            value: jpeg
+          - icon: ''
+            label:
+              en_US: png
+              ja_JP: png
+              pt_BR: png
+              zh_Hans: png
+            value: png
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Content ID, used for image storage
+            ja_JP: Content ID, used for image storage
+            pt_BR: Content ID, used for image storage
+            zh_Hans: 内容ID，用于图片转储
+          label:
+            en_US: Content ID
+            ja_JP: Content ID
+            pt_BR: Content ID
+            zh_Hans: 内容ID
+          llm_description: The content ID, used to identify the content.
+          max: null
+          min: null
+          name: content_id
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Task ID, used to report data logs
+            ja_JP: Task ID, used to report data logs
+            pt_BR: Task ID, used to report data logs
+            zh_Hans: 任务ID，有传入时才会上报数据日志
+          label:
+            en_US: Task ID
+            ja_JP: Task ID
+            pt_BR: Task ID
+            zh_Hans: 任务ID
+          llm_description: The task ID, used to identify the task.
+          max: null
+          min: null
+          name: task_id
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: User Parameters, used to report data logs
+            ja_JP: User Parameters, used to report data logs
+            pt_BR: User Parameters, used to report data logs
+            zh_Hans: 用户输入参数，多个参数使用','分割，用于日志上报
+          label:
+            en_US: User Parameters
+            ja_JP: User Parameters
+            pt_BR: User Parameters
+            zh_Hans: 用户参数
+          llm_description: The user parameters, used to report data logs.
+          max: null
+          min: null
+          name: user_parameters
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          label:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          llm_description: Whether to use file transfer.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: standard
+          form: form
+          human_description:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          label:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          llm_description: The mode of the prompt optimization function.
+          max: null
+          min: null
+          name: optimize_prompt_optionsnew
+          options:
+          - icon: ''
+            label:
+              en_US: Standard, higher quality, longer time
+              ja_JP: Standard, higher quality, longer time
+              pt_BR: Standard, higher quality, longer time
+              zh_Hans: 标准，生成内容的质量更高，耗时较长。
+            value: standard
+          - icon: ''
+            label:
+              en_US: Fast, lower quality, shorter time
+              ja_JP: Fast, lower quality, shorter time
+              pt_BR: Fast, lower quality, shorter time
+              zh_Hans: 快速，生成内容的质量较低，耗时较短。
+            value: fast
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          content_id: ''
+          force_single: ''
+          height: ''
+          images: ''
+          model: ''
+          optimize_prompt_optionsnew: ''
+          output_format: ''
+          prompt: ''
+          seed: ''
+          size: ''
+          task_id: ''
+          use_file_transfer: ''
+          user_parameters: ''
+          width: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0420.1038-191671236@ef6be7cac4f6e0b27561e8630bfcdff439ec050c8ff18231eae499bf07a4ea35
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: 即梦4.5
+        tool_configurations:
+          force_single:
+            type: constant
+            value: true
+          model:
+            type: constant
+            value: seedream_v45
+          optimize_prompt_optionsnew:
+            type: constant
+            value: standard
+          use_file_transfer:
+            type: constant
+            value: false
+          user_parameters:
+            type: mixed
+            value: null
+        tool_description: 火山通用-即梦图片生成
+        tool_label: 火山通用-即梦图片生成
+        tool_name: gaoding_volcengine_jimeng_universal
+        tool_node_version: '2'
+        tool_parameters:
+          content_id:
+            type: mixed
+            value: '{{#8000000000001.task_id#}}'
+          height:
+            type: variable
+            value:
+            - '1776677624261'
+            - height
+          images:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+          output_format:
+            type: constant
+            value: jpeg
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          seed:
+            type: constant
+            value: -1
+          size:
+            type: mixed
+            value: ''
+          task_id:
+            type: mixed
+            value: '{{#8000000000001.content_id#}}'
+          width:
+            type: variable
+            value:
+            - '1776677624261'
+            - width
+        type: tool
+      height: 222
+      id: '17766778623340'
+      position:
+        x: 4146.361927364197
+        y: 749.304200218803
+      positionAbsolute:
+        x: 4146.361927364197
+        y: 749.304200218803
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: seedream_v40
+          form: form
+          human_description:
+            en_US: Select the model version to use
+            ja_JP: Select the model version to use
+            pt_BR: Select the model version to use
+            zh_Hans: 选择要使用的模型版本
+          label:
+            en_US: Model Version
+            ja_JP: Model Version
+            pt_BR: Model Version
+            zh_Hans: 模型版本
+          llm_description: The model version to use for image generation.
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: JiMeng 4.0
+              ja_JP: JiMeng 4.0
+              pt_BR: JiMeng 4.0
+              zh_Hans: 即梦4.0
+            value: jimeng_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.0
+              ja_JP: Seedream 4.0
+              pt_BR: Seedream 4.0
+              zh_Hans: 方舟4.0
+            value: seedream_v40
+          - icon: ''
+            label:
+              en_US: Seedream 4.5
+              ja_JP: Seedream 4.5
+              pt_BR: Seedream 4.5
+              zh_Hans: 方舟4.5
+            value: seedream_v45
+          - icon: ''
+            label:
+              en_US: Seedream 5.0
+              ja_JP: Seedream 5.0
+              pt_BR: Seedream 5.0
+              zh_Hans: 方舟5.0
+            value: seedream_v50
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Prompt for generating images, both Chinese and English can be input
+            ja_JP: Prompt for generating images, both Chinese and English can be input
+            pt_BR: Prompt for generating images, both Chinese and English can be input
+            zh_Hans: 用于生成图像的提示词，中英文均可输入
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: The prompt for generating images.
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image URLs for reference, multiple images use "|" to split
+            ja_JP: Image URLs for reference, multiple images use "|" to split
+            pt_BR: Image URLs for reference, multiple images use "|" to split
+            zh_Hans: 参考图片URL，多个图片使用"|"分割
+          label:
+            en_US: Image URLs
+            ja_JP: Image URLs
+            pt_BR: Image URLs
+            zh_Hans: 图片URL列表
+          llm_description: The input image URLs for reference.
+          max: null
+          min: null
+          name: images
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            ja_JP: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            pt_BR: Image size in format "widthxheight" (e.g., "1024x768"), takes priority
+              over width/height
+            zh_Hans: 图片尺寸，格式为"宽x高"（如"1024x768"），优先级高于width/height
+          label:
+            en_US: Size
+            ja_JP: Size
+            pt_BR: Size
+            zh_Hans: 尺寸
+          llm_description: The image size in format "widthxheight".
+          max: null
+          min: null
+          name: size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Width of the generated image (ignored when size is provided)
+            ja_JP: Width of the generated image (ignored when size is provided)
+            pt_BR: Width of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的宽度（当size参数存在时忽略）
+          label:
+            en_US: Width
+            ja_JP: Width
+            pt_BR: Width
+            zh_Hans: 宽度
+          llm_description: The width of the generated image.
+          max: null
+          min: null
+          name: width
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Height of the generated image (ignored when size is provided)
+            ja_JP: Height of the generated image (ignored when size is provided)
+            pt_BR: Height of the generated image (ignored when size is provided)
+            zh_Hans: 生成图像的高度（当size参数存在时忽略）
+          label:
+            en_US: Height
+            ja_JP: Height
+            pt_BR: Height
+            zh_Hans: 高度
+          llm_description: The height of the generated image.
+          max: null
+          min: null
+          name: height
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: -1
+          form: llm
+          human_description:
+            en_US: Random seed for reproducible results
+            ja_JP: Random seed for reproducible results
+            pt_BR: Random seed for reproducible results
+            zh_Hans: 随机种子，用于生成可重现的结果
+          label:
+            en_US: Seed
+            ja_JP: Seed
+            pt_BR: Seed
+            zh_Hans: 随机种子
+          llm_description: The random seed for image generation.
+          max: null
+          min: null
+          name: seed
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Force single image generation (false = auto-determine based on
+              prompt)
+            ja_JP: Force single image generation (false = auto-determine based on
+              prompt)
+            pt_BR: Force single image generation (false = auto-determine based on
+              prompt)
+            zh_Hans: 强制单图生成（false = 根据提示词自动判断）
+          label:
+            en_US: Force Single Image
+            ja_JP: Force Single Image
+            pt_BR: Force Single Image
+            zh_Hans: 强制单图生成
+          llm_description: Whether to force single image generation.
+          max: null
+          min: null
+          name: force_single
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: jpeg
+          form: llm
+          human_description:
+            en_US: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            ja_JP: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            pt_BR: Output format for the generated image, default is jpeg, only valid
+              for 5.0 version
+            zh_Hans: 输出格式，用于生成图像,只对5.0版本有效
+          label:
+            en_US: Output Format
+            ja_JP: Output Format
+            pt_BR: Output Format
+            zh_Hans: 输出格式,只对5.0版本有效
+          llm_description: The output format for the generated image.
+          max: null
+          min: null
+          name: output_format
+          options:
+          - icon: ''
+            label:
+              en_US: jpeg
+              ja_JP: jpeg
+              pt_BR: jpeg
+              zh_Hans: jpeg
+            value: jpeg
+          - icon: ''
+            label:
+              en_US: png
+              ja_JP: png
+              pt_BR: png
+              zh_Hans: png
+            value: png
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Content ID, used for image storage
+            ja_JP: Content ID, used for image storage
+            pt_BR: Content ID, used for image storage
+            zh_Hans: 内容ID，用于图片转储
+          label:
+            en_US: Content ID
+            ja_JP: Content ID
+            pt_BR: Content ID
+            zh_Hans: 内容ID
+          llm_description: The content ID, used to identify the content.
+          max: null
+          min: null
+          name: content_id
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Task ID, used to report data logs
+            ja_JP: Task ID, used to report data logs
+            pt_BR: Task ID, used to report data logs
+            zh_Hans: 任务ID，有传入时才会上报数据日志
+          label:
+            en_US: Task ID
+            ja_JP: Task ID
+            pt_BR: Task ID
+            zh_Hans: 任务ID
+          llm_description: The task ID, used to identify the task.
+          max: null
+          min: null
+          name: task_id
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: User Parameters, used to report data logs
+            ja_JP: User Parameters, used to report data logs
+            pt_BR: User Parameters, used to report data logs
+            zh_Hans: 用户输入参数，多个参数使用','分割，用于日志上报
+          label:
+            en_US: User Parameters
+            ja_JP: User Parameters
+            pt_BR: User Parameters
+            zh_Hans: 用户参数
+          llm_description: The user parameters, used to report data logs.
+          max: null
+          min: null
+          name: user_parameters
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          label:
+            en_US: Use File Transfer
+            ja_JP: Use File Transfer
+            pt_BR: Use File Transfer
+            zh_Hans: 使用文件转存
+          llm_description: Whether to use file transfer.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: standard
+          form: form
+          human_description:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          label:
+            en_US: Set the mode of the prompt optimization function
+            ja_JP: Set the mode of the prompt optimization function
+            pt_BR: Set the mode of the prompt optimization function
+            zh_Hans: 设置提示词优化功能使用的模式
+          llm_description: The mode of the prompt optimization function.
+          max: null
+          min: null
+          name: optimize_prompt_optionsnew
+          options:
+          - icon: ''
+            label:
+              en_US: Standard, higher quality, longer time
+              ja_JP: Standard, higher quality, longer time
+              pt_BR: Standard, higher quality, longer time
+              zh_Hans: 标准，生成内容的质量更高，耗时较长。
+            value: standard
+          - icon: ''
+            label:
+              en_US: Fast, lower quality, shorter time
+              ja_JP: Fast, lower quality, shorter time
+              pt_BR: Fast, lower quality, shorter time
+              zh_Hans: 快速，生成内容的质量较低，耗时较短。
+            value: fast
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          content_id: ''
+          force_single: ''
+          height: ''
+          images: ''
+          model: ''
+          optimize_prompt_optionsnew: ''
+          output_format: ''
+          prompt: ''
+          seed: ''
+          size: ''
+          task_id: ''
+          use_file_transfer: ''
+          user_parameters: ''
+          width: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0420.1038-191671236@ef6be7cac4f6e0b27561e8630bfcdff439ec050c8ff18231eae499bf07a4ea35
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: 即梦5.0
+        tool_configurations:
+          force_single:
+            type: constant
+            value: true
+          model:
+            type: constant
+            value: seedream_v50
+          optimize_prompt_optionsnew:
+            type: constant
+            value: standard
+          use_file_transfer:
+            type: constant
+            value: false
+          user_parameters:
+            type: mixed
+            value: null
+        tool_description: 火山通用-即梦图片生成
+        tool_label: 火山通用-即梦图片生成
+        tool_name: gaoding_volcengine_jimeng_universal
+        tool_node_version: '2'
+        tool_parameters:
+          content_id:
+            type: mixed
+            value: '{{#8000000000001.content_id#}}'
+          height:
+            type: variable
+            value:
+            - '1776677624261'
+            - height
+          images:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+          output_format:
+            type: constant
+            value: jpeg
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          seed:
+            type: constant
+            value: -1
+          size:
+            type: mixed
+            value: ''
+          task_id:
+            type: mixed
+            value: '{{#8000000000001.task_id#}}'
+          width:
+            type: variable
+            value:
+            - '1776677624261'
+            - width
+        type: tool
+      height: 222
+      id: '17766778666300'
+      position:
+        x: 4146.361927364197
+        y: 992.2781986639375
+      positionAbsolute:
+        x: 4146.361927364197
+        y: 992.2781986639375
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        error_strategy: fail-branch
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: ''
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: A | separated list of reference image URLs for style consistency
+            ja_JP: A | separated list of reference image URLs for style consistency
+            pt_BR: A | separated list of reference image URLs for style consistency
+            zh_Hans: 参考图像 URL 的竖线分隔列表，用于保持风格一致
+          label:
+            en_US: Reference Image URLs
+            ja_JP: Reference Image URLs
+            pt_BR: Reference Image URLs
+            zh_Hans: 参考图像 URL, 多个 URL 用半角竖线分隔
+          llm_description: A | separated list of reference image URLs for style consistency
+          max: null
+          min: null
+          name: urls
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: grsai
+          form: form
+          human_description:
+            en_US: Select the Nano Banana provider to use(default:Grsai).
+            ja_JP: Select the Nano Banana provider to use(default:Grsai).
+            pt_BR: Select the Nano Banana provider to use(default:Grsai).
+            zh_Hans: 选择要使用的 Nano Banana 提供商。
+          label:
+            en_US: provider
+            ja_JP: provider
+            pt_BR: provider
+            zh_Hans: 厂商
+          llm_description: Select the Nano Banana provider to use.
+          max: null
+          min: null
+          name: provider
+          options:
+          - icon: ''
+            label:
+              en_US: Grsai (便宜，推荐)
+              ja_JP: Grsai (便宜，推荐)
+              pt_BR: Grsai (便宜，推荐)
+              zh_Hans: Grsai (便宜，推荐)
+            value: grsai
+          - icon: ''
+            label:
+              en_US: Aiznt (便宜，推荐)
+              ja_JP: Aiznt (便宜，推荐)
+              pt_BR: Aiznt (便宜，推荐)
+              zh_Hans: Aiznt (便宜，推荐)
+            value: aiznt
+          - icon: ''
+            label:
+              en_US: AceData
+              ja_JP: AceData
+              pt_BR: AceData
+              zh_Hans: AceData
+            value: acedata
+          - icon: ''
+            label:
+              en_US: Replicate （贵，不推荐）
+              ja_JP: Replicate （贵，不推荐）
+              pt_BR: Replicate （贵，不推荐）
+              zh_Hans: Replicate （贵，不推荐）
+            value: replicate
+          - icon: ''
+            label:
+              en_US: Vertex （贵，不推荐）
+              ja_JP: Vertex （贵，不推荐）
+              pt_BR: Vertex （贵，不推荐）
+              zh_Hans: Vertex （贵，不推荐）
+            value: vertex
+          - icon: ''
+            label:
+              en_US: StreamLake（快手）
+              ja_JP: StreamLake（快手）
+              pt_BR: StreamLake（快手）
+              zh_Hans: StreamLake（快手）
+            value: streamlake
+          - icon: ''
+            label:
+              en_US: SophNet（便宜）
+              ja_JP: SophNet（便宜）
+              pt_BR: SophNet（便宜）
+              zh_Hans: SophNet（便宜）
+            value: sophnet
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: auto
+          form: llm
+          human_description:
+            en_US: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            ja_JP: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            pt_BR: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            zh_Hans: 输入宽高比（1:1,2:3,3:2,4:3,3:4,16:9, 9:16），默认 auto
+          label:
+            en_US: Aspect Ratio
+            ja_JP: Aspect Ratio
+            pt_BR: Aspect Ratio
+            zh_Hans: 宽高比
+          llm_description: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+          max: null
+          min: null
+          name: aspect_ratio
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 1K
+          form: llm
+          human_description:
+            en_US: Select the image size to use (1K, 2K, 4K).
+            ja_JP: Select the image size to use (1K, 2K, 4K).
+            pt_BR: Select the image size to use (1K, 2K, 4K).
+            zh_Hans: 选择要使用的图片尺寸(1K, 2K, 4K)。
+          label:
+            en_US: Image Size
+            ja_JP: Image Size
+            pt_BR: Image Size
+            zh_Hans: 图片尺寸
+          llm_description: Select the image size to use (1K, 2K, 4K).
+          max: null
+          min: null
+          name: image_size
+          options:
+          - icon: ''
+            label:
+              en_US: 1K
+              ja_JP: 1K
+              pt_BR: 1K
+              zh_Hans: 1K
+            value: 1K
+          - icon: ''
+            label:
+              en_US: 2K
+              ja_JP: 2K
+              pt_BR: 2K
+              zh_Hans: 2K
+            value: 2K
+          - icon: ''
+            label:
+              en_US: 4K
+              ja_JP: 4K
+              pt_BR: 4K
+              zh_Hans: 4K
+            value: 4K
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: false
+          form: form
+          human_description:
+            en_US: Close Progress Reports
+            ja_JP: Close Progress Reports
+            pt_BR: Close Progress Reports
+            zh_Hans: 关闭进度报告
+          label:
+            en_US: Close Progress Reports
+            ja_JP: Close Progress Reports
+            pt_BR: Close Progress Reports
+            zh_Hans: 关闭进度报告
+          llm_description: ''
+          max: null
+          min: null
+          name: shut_progress
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: gemini-3-pro-image-preview
+          form: form
+          human_description:
+            en_US: The model
+            ja_JP: The model
+            pt_BR: The model
+            zh_Hans: 模型
+          label:
+            en_US: Model
+            ja_JP: Model
+            pt_BR: Model
+            zh_Hans: 模型
+          llm_description: The model
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: Gemini 2.5 Flash Image Preview
+              ja_JP: Gemini 2.5 Flash Image Preview
+              pt_BR: Gemini 2.5 Flash Image Preview
+              zh_Hans: Gemini 2.5 Flash Image Preview
+            value: gemini-2.5-flash-image-preview
+          - icon: ''
+            label:
+              en_US: Gemini 3 Pro Image Preview
+              ja_JP: Gemini 3 Pro Image Preview
+              pt_BR: Gemini 3 Pro Image Preview
+              zh_Hans: Gemini 3 Pro Image Preview
+            value: gemini-3-pro-image-preview
+          - icon: ''
+            label:
+              en_US: Gemini 3.1 Flash Image Preview
+              ja_JP: Gemini 3.1 Flash Image Preview
+              pt_BR: Gemini 3.1 Flash Image Preview
+              zh_Hans: Gemini 3.1 Flash Image Preview
+            value: gemini-3.1-flash-image-preview
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: false
+          form: form
+          human_description:
+            en_US: Enable File Transfer
+            ja_JP: Enable File Transfer
+            pt_BR: Enable File Transfer
+            zh_Hans: 开启文件转存
+          label:
+            en_US: Enable File Transfer
+            ja_JP: Enable File Transfer
+            pt_BR: Enable File Transfer
+            zh_Hans: 开启文件转存
+          llm_description: Whether to enable file transfer.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          aspect_ratio: ''
+          image_size: ''
+          model: ''
+          prompt: ''
+          provider: ''
+          shut_progress: ''
+          urls: ''
+          use_file_transfer: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0420.1038-191671236@ef6be7cac4f6e0b27561e8630bfcdff439ec050c8ff18231eae499bf07a4ea35
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: banana2.0
+        tool_configurations:
+          model:
+            type: constant
+            value: gemini-3-pro-image-preview
+          provider:
+            type: constant
+            value: streamlake
+          shut_progress:
+            type: constant
+            value: false
+          use_file_transfer:
+            type: constant
+            value: false
+        tool_description: '使用 Nano Banana API 生成 AI 艺术作品，具备先进的绘画能力(支持 Grsai, Aiznt,
+          AceData, Replicate)：
+
+          - 文本转图像：从详细文本描述创建图像
+
+          - 参考图像支持：使用现有图像作为参考以保持风格一致
+
+          - 高质量输出：生成商业级艺术作品
+
+          - 快速处理：高效的 AI 驱动图像生成
+
+          - 灵活的主机配置：支持海外和国内主机切换
+
+
+          功能特点：
+
+          - 支持详细的文本描述
+
+          - 可选的参考图像 URL 以保持风格一致
+
+          - 可配置的进度报告
+
+          - 实时状态监控
+
+          - 支持不同地区的主机切换
+
+          '
+        tool_label: Nano Banana AI 绘画(合集)
+        tool_name: gaoding_nano_banana
+        tool_node_version: '2'
+        tool_parameters:
+          aspect_ratio:
+            type: mixed
+            value: '{{#8000000000001.image_ratio#}}'
+          image_size:
+            type: variable
+            value:
+            - '8000000000001'
+            - resolution
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          urls:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+        type: tool
+      height: 232
+      id: '1776678964419'
+      position:
+        x: 3835.7870895113883
+        y: -37.35302349662949
+      positionAbsolute:
+        x: 3835.7870895113883
+        y: -37.35302349662949
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: Describe the image you want to generate or edit.
+            ja_JP: Describe the image you want to generate or edit.
+            pt_BR: Describe the image you want to generate or edit.
+            zh_Hans: 描述你希望生成或编辑的图片内容。
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: Describe the image you want to generate or edit.
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional reference image URLs separated by |. Supports 1-10 public
+              URLs.
+            ja_JP: Optional reference image URLs separated by |. Supports 1-10 public
+              URLs.
+            pt_BR: Optional reference image URLs separated by |. Supports 1-10 public
+              URLs.
+            zh_Hans: 可选的参考图片 URL，多个 URL 用半角竖线分隔，支持 1-10 张公开可访问的图片。
+          label:
+            en_US: Reference Image URLs
+            ja_JP: Reference Image URLs
+            pt_BR: Reference Image URLs
+            zh_Hans: 参考图片 URLs
+          llm_description: Optional reference image URLs separated by |. Supports
+            1-10 public URLs.
+          max: null
+          min: null
+          name: images
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: ai6700
+          form: form
+          human_description:
+            en_US: Select the provider to use.
+            ja_JP: Select the provider to use.
+            pt_BR: Select the provider to use.
+            zh_Hans: 选择要使用的供应商。
+          label:
+            en_US: Provider
+            ja_JP: Provider
+            pt_BR: Provider
+            zh_Hans: 厂商
+          llm_description: Select the provider to use.
+          max: null
+          min: null
+          name: provider
+          options:
+          - icon: ''
+            label:
+              en_US: AI6700
+              ja_JP: AI6700
+              pt_BR: AI6700
+              zh_Hans: AI6700
+            value: ai6700
+          - icon: ''
+            label:
+              en_US: Aiznt
+              ja_JP: Aiznt
+              pt_BR: Aiznt
+              zh_Hans: Aiznt
+            value: aiznt
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: gpt-image-2
+          form: form
+          human_description:
+            en_US: Select the GPT Image model.
+            ja_JP: Select the GPT Image model.
+            pt_BR: Select the GPT Image model.
+            zh_Hans: 选择 GPT Image 模型。
+          label:
+            en_US: Model
+            ja_JP: Model
+            pt_BR: Model
+            zh_Hans: 模型
+          llm_description: Select the GPT Image model.
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: GPT Image 2.0
+              ja_JP: GPT Image 2.0
+              pt_BR: GPT Image 2.0
+              zh_Hans: GPT Image 2.0
+            value: gpt-image-2
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: auto
+          form: llm
+          human_description:
+            en_US: Select the image size.
+            ja_JP: Select the image size.
+            pt_BR: Select the image size.
+            zh_Hans: 选择图片比例。
+          label:
+            en_US: Size
+            ja_JP: Size
+            pt_BR: Size
+            zh_Hans: 图片比例
+          llm_description: Select the image size.
+          max: null
+          min: null
+          name: size
+          options:
+          - icon: ''
+            label:
+              en_US: Auto
+              ja_JP: Auto
+              pt_BR: Auto
+              zh_Hans: 自动
+            value: auto
+          - icon: ''
+            label:
+              en_US: '1:1'
+              ja_JP: '1:1'
+              pt_BR: '1:1'
+              zh_Hans: 1:1 正方形
+            value: '1:1'
+          - icon: ''
+            label:
+              en_US: '3:2'
+              ja_JP: '3:2'
+              pt_BR: '3:2'
+              zh_Hans: '3:2'
+            value: '3:2'
+          - icon: ''
+            label:
+              en_US: '2:3'
+              ja_JP: '2:3'
+              pt_BR: '2:3'
+              zh_Hans: '2:3'
+            value: '2:3'
+          - icon: ''
+            label:
+              en_US: '16:9'
+              ja_JP: '16:9'
+              pt_BR: '16:9'
+              zh_Hans: '16:9'
+            value: '16:9'
+          - icon: ''
+            label:
+              en_US: '9:16'
+              ja_JP: '9:16'
+              pt_BR: '9:16'
+              zh_Hans: '9:16'
+            value: '9:16'
+          - icon: ''
+            label:
+              en_US: '4:3'
+              ja_JP: '4:3'
+              pt_BR: '4:3'
+              zh_Hans: '4:3'
+            value: '4:3'
+          - icon: ''
+            label:
+              en_US: '3:4'
+              ja_JP: '3:4'
+              pt_BR: '3:4'
+              zh_Hans: '3:4'
+            value: '3:4'
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: Optional content ID used for file transfer.
+            ja_JP: Optional content ID used for file transfer.
+            pt_BR: Optional content ID used for file transfer.
+            zh_Hans: 可选的内容 ID，用于文件转存。
+          label:
+            en_US: Content ID
+            ja_JP: Content ID
+            pt_BR: Content ID
+            zh_Hans: 内容 ID
+          llm_description: Optional content ID used for file transfer.
+          max: null
+          min: null
+          name: content_id
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: true
+          form: form
+          human_description:
+            en_US: Whether to transfer the generated image to FTS.
+            ja_JP: Whether to transfer the generated image to FTS.
+            pt_BR: Whether to transfer the generated image to FTS.
+            zh_Hans: 是否将生成图片转存到 FTS。
+          label:
+            en_US: Enable File Transfer
+            ja_JP: Enable File Transfer
+            pt_BR: Enable File Transfer
+            zh_Hans: 开启文件转存
+          llm_description: Whether to transfer the generated image to FTS.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          content_id: ''
+          images: ''
+          model: ''
+          prompt: ''
+          provider: ''
+          size: ''
+          use_file_transfer: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0422.1044-136237505@b47ff32a05be731c9348659ecde481fffc64ba029158e3846d190b38e16841a6
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 1000
+        selected: false
+        title: GPT Image2
+        tool_configurations:
+          model:
+            type: constant
+            value: gpt-image-2
+          provider:
+            type: constant
+            value: openai
+          use_file_transfer:
+            type: constant
+            value: false
+        tool_description: '通过多个供应商接入 GPT Image 2.0，支持文生图和图生图。当前支持 AI6700 和 Aiznt，并保留多供应商扩展结构。
+
+          '
+        tool_label: GPT Image AI 绘画
+        tool_name: gaoding_gpt_image
+        tool_node_version: '2'
+        tool_parameters:
+          background:
+            type: constant
+            value: auto
+          content_id:
+            type: mixed
+            value: '{{#8000000000001.content_id#}}'
+          images:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+          output_format:
+            type: constant
+            value: png
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          quality:
+            type: constant
+            value: high
+          resolution:
+            type: variable
+            value:
+            - '8000000000001'
+            - resolution
+          size:
+            type: variable
+            value:
+            - '8000000000001'
+            - image_ratio
+        type: tool
+      height: 170
+      id: '1776832094524'
+      position:
+        x: 4102.818166308692
+        y: 237.45333391202485
+      positionAbsolute:
+        x: 4102.818166308692
+        y: 237.45333391202485
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: ''
+          form: llm
+          human_description:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          label:
+            en_US: Prompt
+            ja_JP: Prompt
+            pt_BR: Prompt
+            zh_Hans: 提示词
+          llm_description: ''
+          max: null
+          min: null
+          name: prompt
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: A | separated list of reference image URLs for style consistency
+            ja_JP: A | separated list of reference image URLs for style consistency
+            pt_BR: A | separated list of reference image URLs for style consistency
+            zh_Hans: 参考图像 URL 的竖线分隔列表，用于保持风格一致
+          label:
+            en_US: Reference Image URLs
+            ja_JP: Reference Image URLs
+            pt_BR: Reference Image URLs
+            zh_Hans: 参考图像 URL, 多个 URL 用半角竖线分隔
+          llm_description: A | separated list of reference image URLs for style consistency
+          max: null
+          min: null
+          name: urls
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: grsai
+          form: form
+          human_description:
+            en_US: Select the Nano Banana provider to use(default:Grsai).
+            ja_JP: Select the Nano Banana provider to use(default:Grsai).
+            pt_BR: Select the Nano Banana provider to use(default:Grsai).
+            zh_Hans: 选择要使用的 Nano Banana 提供商。
+          label:
+            en_US: provider
+            ja_JP: provider
+            pt_BR: provider
+            zh_Hans: 厂商
+          llm_description: Select the Nano Banana provider to use.
+          max: null
+          min: null
+          name: provider
+          options:
+          - icon: ''
+            label:
+              en_US: Grsai (便宜，推荐)
+              ja_JP: Grsai (便宜，推荐)
+              pt_BR: Grsai (便宜，推荐)
+              zh_Hans: Grsai (便宜，推荐)
+            value: grsai
+          - icon: ''
+            label:
+              en_US: Aiznt (便宜，推荐)
+              ja_JP: Aiznt (便宜，推荐)
+              pt_BR: Aiznt (便宜，推荐)
+              zh_Hans: Aiznt (便宜，推荐)
+            value: aiznt
+          - icon: ''
+            label:
+              en_US: AceData
+              ja_JP: AceData
+              pt_BR: AceData
+              zh_Hans: AceData
+            value: acedata
+          - icon: ''
+            label:
+              en_US: Replicate （贵，不推荐）
+              ja_JP: Replicate （贵，不推荐）
+              pt_BR: Replicate （贵，不推荐）
+              zh_Hans: Replicate （贵，不推荐）
+            value: replicate
+          - icon: ''
+            label:
+              en_US: Vertex （贵，不推荐）
+              ja_JP: Vertex （贵，不推荐）
+              pt_BR: Vertex （贵，不推荐）
+              zh_Hans: Vertex （贵，不推荐）
+            value: vertex
+          - icon: ''
+            label:
+              en_US: StreamLake（快手）
+              ja_JP: StreamLake（快手）
+              pt_BR: StreamLake（快手）
+              zh_Hans: StreamLake（快手）
+            value: streamlake
+          - icon: ''
+            label:
+              en_US: SophNet（便宜）
+              ja_JP: SophNet（便宜）
+              pt_BR: SophNet（便宜）
+              zh_Hans: SophNet（便宜）
+            value: sophnet
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: auto
+          form: llm
+          human_description:
+            en_US: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            ja_JP: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            pt_BR: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+            zh_Hans: 输入宽高比（1:1,2:3,3:2,4:3,3:4,16:9, 9:16），默认 auto
+          label:
+            en_US: Aspect Ratio
+            ja_JP: Aspect Ratio
+            pt_BR: Aspect Ratio
+            zh_Hans: 宽高比
+          llm_description: Enter the aspect ratio (1:1,2:3,3:2,4:3,3:4,16:9, 9:16)
+          max: null
+          min: null
+          name: aspect_ratio
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 1K
+          form: llm
+          human_description:
+            en_US: Select the image size to use (1K, 2K, 4K).
+            ja_JP: Select the image size to use (1K, 2K, 4K).
+            pt_BR: Select the image size to use (1K, 2K, 4K).
+            zh_Hans: 选择要使用的图片尺寸(1K, 2K, 4K)。
+          label:
+            en_US: Image Size
+            ja_JP: Image Size
+            pt_BR: Image Size
+            zh_Hans: 图片尺寸
+          llm_description: Select the image size to use (1K, 2K, 4K).
+          max: null
+          min: null
+          name: image_size
+          options:
+          - icon: ''
+            label:
+              en_US: 1K
+              ja_JP: 1K
+              pt_BR: 1K
+              zh_Hans: 1K
+            value: 1K
+          - icon: ''
+            label:
+              en_US: 2K
+              ja_JP: 2K
+              pt_BR: 2K
+              zh_Hans: 2K
+            value: 2K
+          - icon: ''
+            label:
+              en_US: 4K
+              ja_JP: 4K
+              pt_BR: 4K
+              zh_Hans: 4K
+            value: 4K
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: false
+          form: form
+          human_description:
+            en_US: Close Progress Reports
+            ja_JP: Close Progress Reports
+            pt_BR: Close Progress Reports
+            zh_Hans: 关闭进度报告
+          label:
+            en_US: Close Progress Reports
+            ja_JP: Close Progress Reports
+            pt_BR: Close Progress Reports
+            zh_Hans: 关闭进度报告
+          llm_description: ''
+          max: null
+          min: null
+          name: shut_progress
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: gemini-3-pro-image-preview
+          form: form
+          human_description:
+            en_US: The model
+            ja_JP: The model
+            pt_BR: The model
+            zh_Hans: 模型
+          label:
+            en_US: Model
+            ja_JP: Model
+            pt_BR: Model
+            zh_Hans: 模型
+          llm_description: The model
+          max: null
+          min: null
+          name: model
+          options:
+          - icon: ''
+            label:
+              en_US: Gemini 2.5 Flash Image Preview
+              ja_JP: Gemini 2.5 Flash Image Preview
+              pt_BR: Gemini 2.5 Flash Image Preview
+              zh_Hans: Gemini 2.5 Flash Image Preview
+            value: gemini-2.5-flash-image-preview
+          - icon: ''
+            label:
+              en_US: Gemini 3 Pro Image Preview
+              ja_JP: Gemini 3 Pro Image Preview
+              pt_BR: Gemini 3 Pro Image Preview
+              zh_Hans: Gemini 3 Pro Image Preview
+            value: gemini-3-pro-image-preview
+          - icon: ''
+            label:
+              en_US: Gemini 3.1 Flash Image Preview
+              ja_JP: Gemini 3.1 Flash Image Preview
+              pt_BR: Gemini 3.1 Flash Image Preview
+              zh_Hans: Gemini 3.1 Flash Image Preview
+            value: gemini-3.1-flash-image-preview
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: false
+          form: form
+          human_description:
+            en_US: Enable File Transfer
+            ja_JP: Enable File Transfer
+            pt_BR: Enable File Transfer
+            zh_Hans: 开启文件转存
+          label:
+            en_US: Enable File Transfer
+            ja_JP: Enable File Transfer
+            pt_BR: Enable File Transfer
+            zh_Hans: 开启文件转存
+          llm_description: Whether to enable file transfer.
+          max: null
+          min: null
+          name: use_file_transfer
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          aspect_ratio: ''
+          image_size: ''
+          model: ''
+          prompt: ''
+          provider: ''
+          shut_progress: ''
+          urls: ''
+          use_file_transfer: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0420.1038-191671236@ef6be7cac4f6e0b27561e8630bfcdff439ec050c8ff18231eae499bf07a4ea35
+        provider_icon: https://api-dify-fat.gaoding.com/console/api/workspaces/current/plugin/icon?tenant_id=87289204-f835-414c-806d-429741b58614&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        selected: false
+        title: banana2.0异常分支
+        tool_configurations:
+          model:
+            type: constant
+            value: gemini-3-pro-image-preview
+          provider:
+            type: constant
+            value: vertex
+          shut_progress:
+            type: constant
+            value: false
+          use_file_transfer:
+            type: constant
+            value: false
+        tool_description: '使用 Nano Banana API 生成 AI 艺术作品，具备先进的绘画能力(支持 Grsai, Aiznt,
+          AceData, Replicate)：
+
+          - 文本转图像：从详细文本描述创建图像
+
+          - 参考图像支持：使用现有图像作为参考以保持风格一致
+
+          - 高质量输出：生成商业级艺术作品
+
+          - 快速处理：高效的 AI 驱动图像生成
+
+          - 灵活的主机配置：支持海外和国内主机切换
+
+
+          功能特点：
+
+          - 支持详细的文本描述
+
+          - 可选的参考图像 URL 以保持风格一致
+
+          - 可配置的进度报告
+
+          - 实时状态监控
+
+          - 支持不同地区的主机切换
+
+          '
+        tool_label: Nano Banana AI 绘画(合集)
+        tool_name: gaoding_nano_banana
+        tool_node_version: '2'
+        tool_parameters:
+          aspect_ratio:
+            type: mixed
+            value: '{{#8000000000001.image_ratio#}}'
+          image_size:
+            type: variable
+            value:
+            - '8000000000001'
+            - resolution
+          prompt:
+            type: mixed
+            value: '{{#8000000000001.image_prompt#}}'
+          urls:
+            type: mixed
+            value: '{{#8000000000007.output#}}'
+        type: tool
+      height: 166
+      id: '17769111384410'
+      position:
+        x: 4102.818166308692
+        y: 28.923222344527318
+      positionAbsolute:
+        x: 4102.818166308692
+        y: 28.923222344527318
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import json\n\ndef main(width, height) -> dict:\n    params = {\"width\"\
+          : int(width), \"height\": int(height)}\n    return {\"params_used\": json.dumps(params,\
+          \ ensure_ascii=False)}"
+        code_language: python3
+        outputs:
+          params_used:
+            children: null
+            type: string
+        selected: false
+        title: 即梦用户参数
+        type: code
+        variables:
+        - value_selector:
+          - '1776677624261'
+          - width
+          value_type: number
+          variable: width
+        - value_selector:
+          - '1776677624261'
+          - height
+          value_type: number
+          variable: height
+      height: 52
+      id: '1780670247805'
+      position:
+        x: 4519.583832229036
+        y: 882.589531466692
+      positionAbsolute:
+        x: 4519.583832229036
+        y: 882.589531466692
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import json\n\ndef main(ratio: str) -> dict:\n    params = {\"ratio\"\
+          : ratio}\n    return {\"params_used\": json.dumps(params, ensure_ascii=False)}"
+        code_language: python3
+        outputs:
+          params_used:
+            children: null
+            type: string
+        selected: false
+        title: 默认用户参数
+        type: code
+        variables:
+        - value_selector:
+          - '8000000000001'
+          - image_ratio
+          value_type: string
+          variable: ratio
+      height: 52
+      id: '1780670490692'
+      position:
+        x: 4519.583832229036
+        y: -37.35302349662949
+      positionAbsolute:
+        x: 4519.583832229036
+        y: -37.35302349662949
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "urls = []\nif image_ref_urls:\n    if isinstance(image_ref_urls, list):\n\
+          \        urls = [str(u).strip() for u in image_ref_urls if str(u).strip()]\n\
+          \    elif isinstance(image_ref_urls, str):\n        s = image_ref_urls.strip()\n\
+          \        if s.startswith(\"[\"):\n            try:\n                parsed\
+          \ = json.loads(s)\n                if isinstance(parsed, list):\n      \
+          \              urls = [str(u).strip() for u in parsed if str(u).strip()]\n\
+          \            except Exception:\n                urls = []\n        if not\
+          \ urls:\n            for sep in [\"|\", \",\", \"\\n\"]:\n             \
+          \   if sep in s:\n                    urls = [u.strip() for u in s.split(sep)\
+          \ if u.strip()]\n                    break\n            else:\n        \
+          \        urls = [s] if s else []\n\nif len(urls) == 1:\n    lines.append(f\"\
+          参考图：{urls[0]}\")\nelif len(urls) > 1:\n    for i, url in enumerate(urls,\
+          \ 1):\n        lines.append(f\"参考图{i}：{url}\")"
+        code_language: python3
+        outputs:
+          summary:
+            children: null
+            type: string
+        selected: false
+        title: 信息梳理
+        type: code
+        variables:
+        - value_selector:
+          - '1780680353395'
+          - params_used
+          - output
+          value_type: object
+          variable: params_used
+        - value_selector:
+          - '8000000000001'
+          - image_model
+          value_type: string
+          variable: image_model
+        - value_selector:
+          - '8000000000001'
+          - image_prompt
+          value_type: string
+          variable: image_prompt
+        - value_selector:
+          - '8000000000007'
+          - output
+          value_type: string
+          variable: image_ref_urls
+      height: 52
+      id: '1780670679548'
+      position:
+        x: 5086.5674799426415
+        y: 626.4344463187474
+      positionAbsolute:
+        x: 5086.5674799426415
+        y: 626.4344463187474
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import re\nimport json\n\ndef main(arg1):\n    # 如果是字典先转json字符串\n \
+          \   if not isinstance(arg1, str):\n        arg1 = json.dumps(arg1, ensure_ascii=False)\n\
+          \    # 提取http/https\n    url_list = re.findall(r'https?://[^\\s\"\\']+',\
+          \ arg1)\n    # 返回第一个链接，没有返回空\n    res = url_list[0] if url_list else \"\"\
+          \n    return {\"result\": res}"
+        code_language: python3
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 提取链接
+        type: code
+        variables:
+        - value_selector:
+          - '1773908986615'
+          - output
+          value_type: array[object]
+          variable: arg1
+      height: 52
+      id: '1780678905396'
+      position:
+        x: 4519.583832229036
+        y: 626.4344463187474
+      positionAbsolute:
+        x: 4519.583832229036
+        y: 626.4344463187474
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The input image URL, used to transfer to the upload image tool
+              to upload the image.
+            ja_JP: The input image URL, used to transfer to the upload image tool
+              to upload the image.
+            pt_BR: The input image URL, used to transfer to the upload image tool
+              to upload the image.
+            zh_Hans: 输入的图片 URL
+          label:
+            en_US: Input Image URL
+            ja_JP: Input Image URL
+            pt_BR: Input Image URL
+            zh_Hans: 输入的图片 URL
+          llm_description: The input image URL, used to transfer to the upload image
+            tool to upload the image.
+          max: null
+          min: null
+          name: image_url
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The input image, used to transfer to the upload image tool to upload
+              the image.
+            ja_JP: The input image, used to transfer to the upload image tool to upload
+              the image.
+            pt_BR: The input image, used to transfer to the upload image tool to upload
+              the image.
+            zh_Hans: 输入的图片
+          label:
+            en_US: Input Image
+            ja_JP: Input Image
+            pt_BR: Input Image
+            zh_Hans: 输入的图片
+          llm_description: The input image, used to transfer to the upload image tool
+            to upload the image.
+          max: null
+          min: null
+          name: image
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: file
+        params:
+          image: ''
+          image_url: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0605.1826-202441190@944dad25fd55b6a09c1855d61bb2e5d7decbb17dea82cac544a906dab8309f63
+        provider_icon: https://api-dify.insmind.com/console/api/workspaces/current/plugin/icon?tenant_id=9898dc52-b264-406a-be4b-8c99fddb433f&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        selected: false
+        title: 上传图片
+        tool_configurations: {}
+        tool_description: 上传图片
+        tool_label: 上传图片
+        tool_name: gaoding_upload_image
+        tool_node_version: '2'
+        tool_parameters:
+          image:
+            type: variable
+            value:
+            - '1780679264155'
+            - files
+          image_url:
+            type: mixed
+            value: ''
+        type: tool
+      height: 52
+      id: '1780678994612'
+      position:
+        x: 4519.583832229036
+        y: 422.6401214309937
+      positionAbsolute:
+        x: 4519.583832229036
+        y: 422.6401214309937
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The input URL, support image, video, etc., used to convert to file.
+            ja_JP: The input URL, support image, video, etc., used to convert to file.
+            pt_BR: The input URL, support image, video, etc., used to convert to file.
+            zh_Hans: 输入 URL, 支持图片、视频等，用于转换为文件。
+          label:
+            en_US: Input URL (url, support image, video, etc.)
+            ja_JP: Input URL (url, support image, video, etc.)
+            pt_BR: Input URL (url, support image, video, etc.)
+            zh_Hans: 输入 URL (url, 支持图片、视频等)
+          llm_description: The input URL, support image, video, etc., used to convert
+            to file.
+          max: null
+          min: null
+          name: image_url
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: local_file
+          form: form
+          human_description:
+            en_US: Choose the output type. 'local_file' will save the image to local
+              file (default), 'remote_file' will only pass the URL without downloading.
+            ja_JP: Choose the output type. 'local_file' will save the image to local
+              file (default), 'remote_file' will only pass the URL without downloading.
+            pt_BR: Choose the output type. 'local_file' will save the image to local
+              file (default), 'remote_file' will only pass the URL without downloading.
+            zh_Hans: 选择输出类型。'local_file' 会保存图片到本地文件（默认），'remote_file' 只传递 URL 不下载。
+          label:
+            en_US: Output Type
+            ja_JP: Output Type
+            pt_BR: Output Type
+            zh_Hans: 输出类型
+          llm_description: Choose output type - 'local_file' will save the image to
+            local file (default), 'remote_file' will only pass the URL without downloading.
+          max: null
+          min: null
+          name: output_type
+          options:
+          - icon: ''
+            label:
+              en_US: Local File
+              ja_JP: Local File
+              pt_BR: Local File
+              zh_Hans: 本地文件
+            value: local_file
+          - icon: ''
+            label:
+              en_US: Remote File
+              ja_JP: Remote File
+              pt_BR: Remote File
+              zh_Hans: 远程文件
+            value: remote_file
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          image_url: ''
+          output_type: ''
+        plugin_id: langgenius/gaoding
+        plugin_unique_identifier: langgenius/gaoding:1.0605.1826-202441190@944dad25fd55b6a09c1855d61bb2e5d7decbb17dea82cac544a906dab8309f63
+        provider_icon: https://api-dify.insmind.com/console/api/workspaces/current/plugin/icon?tenant_id=9898dc52-b264-406a-be4b-8c99fddb433f&filename=468b177b446c0a525642b77fdbd05b1a9821e722e94efadcd598135ee4bee60a.svg
+        provider_id: langgenius/gaoding/gaoding
+        provider_name: langgenius/gaoding/gaoding
+        provider_type: builtin
+        selected: false
+        title: 图片 URL 转文件
+        tool_configurations:
+          output_type:
+            type: constant
+            value: remote_file
+        tool_description: 将图片 URL 直接包装为文件，不进行下载，方便提供给 LLM 使用。但需要注意兼容问题
+        tool_label: 图片 URL 转文件
+        tool_name: image_url_to_file
+        tool_node_version: '2'
+        tool_parameters:
+          image_url:
+            type: mixed
+            value: '{{#1780678905396.result#}}'
+        type: tool
+      height: 88
+      id: '1780679264155'
+      position:
+        x: 4519.583832229036
+        y: 497.1733516823583
+      positionAbsolute:
+        x: 4519.583832229036
+        y: 497.1733516823583
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        advanced_settings:
+          group_enabled: true
+          groups:
+          - groupId: 3ce54a49-6156-4d7c-b36e-dadf124ccc55
+            group_name: image_url
+            output_type: string
+            variables:
+            - - '1780678994612'
+              - text
+            - - '1776832094524'
+              - text
+            - - '17769111384410'
+              - text
+            - - '1776678964419'
+              - text
+          - groupId: df83967a-85f9-414d-9fd0-76ecb3115db0
+            group_name: params_used
+            output_type: string
+            variables:
+            - - '1780670247805'
+              - params_used
+            - - '1780670490692'
+              - params_used
+        output_type: any
+        selected: false
+        title: 变量聚合器 3
+        type: variable-aggregator
+        variables: []
+      height: 266
+      id: '1780680353395'
+      position:
+        x: 5086.5674799426415
+        y: 692.895924664514
+      positionAbsolute:
+        x: 5086.5674799426415
+        y: 692.895924664514
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        outputs:
+        - value_selector:
+          - '1780680353395'
+          - image_url
+          - output
+          value_type: object
+          variable: image_url
+        - value_selector:
+          - '1780670679548'
+          - summary
+          value_type: string
+          variable: summary
+        selected: false
+        title: 输出
+        type: end
+      height: 114
+      id: '1780998201608'
+      position:
+        x: 5357.172466136061
+        y: 626.4344463187474
+      positionAbsolute:
+        x: 5357.172466136061
+        y: 626.4344463187474
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: -1268.0261945123075
+      y: 198.29826989220817
+      zoom: 0.48010239276236244
+  rag_pipeline_variables: []

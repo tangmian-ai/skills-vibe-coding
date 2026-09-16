@@ -1,0 +1,14 @@
+{
+  "name": "xhs-plog-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "钉钉 PLOG 选题智能体的本地小红书检索工具，使用 Tavily Search API。",
+  "scripts": {
+    "search": "node --env-file=.env search.js",
+    "search:list": "node -e \"const c=require('./关键词清单.json');console.log(c.大主题.map(t=>t.name).join('\\n'))\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
